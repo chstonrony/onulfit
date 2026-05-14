@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-
-export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
-import { anthropic, SYSTEM_PROMPT } from "@/lib/claude";
+import { SYSTEM_PROMPT } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
 import { getMockOutfit, IS_DEMO_MODE } from "@/lib/mockData";
+
+export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,47 +21,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    /* ── 데모 모드: API 키가 없으면 샘플 코디 반환 ── */
+    /* ── 데모 모드: API 키 없을 때 샘플 코디 반환 ── */
     if (IS_DEMO_MODE) {
-      // 실제 느낌을 주기 위해 살짝 딜레이
       await new Promise((r) => setTimeout(r, 900));
-      const mockOutfit = getMockOutfit(situation.trim());
-      return NextResponse.json(mockOutfit);
+      return NextResponse.json(getMockOutfit(situation.trim()));
     }
 
-    /* ── 실제 모드: Claude API 호출 ── */
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2048,
-      system: [
-        {
-          type: "text",
-          text: SYSTEM_PROMPT,
-          cache_control: { type: "ephemeral" },
-        },
-      ],
-      messages: [
-        {
-          role: "user",
-          content: situation.trim(),
-        },
-      ],
+    /* ── 실제 모드: Anthropic API 직접 호출 (fetch) ──
+       @anthropic-ai/sdk 는 node:path 에 의존해 Edge Runtime 미호환.
+       fetch 로 직접 호출하면 모든 Edge 환경에서 동작한다.           */
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key":        process.env.ANTHROPIC_API_KEY!,
+        "anthropic-version": "2023-06-01",
+        "anthropic-beta":   "prompt-caching-2024-07-31",
+        "content-type":     "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 2048,
+        system: [
+          {
+            type: "text",
+            text: SYSTEM_PROMPT,
+            cache_control: { type: "ephemeral" },
+          },
+        ],
+        messages: [{ role: "user", content: situation.trim() }],
+      }),
     });
 
-    const textBlock = message.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
-      throw new Error("Claude가 응답을 반환하지 않았습니다.");
+    if (!res.ok) {
+      const err = await res.text();
+      console.error("Anthropic API error:", res.status, err);
+      return NextResponse.json(
+        { error: "AI 서버와 통신 중 오류가 발생했어요. 잠시 후 다시 시도해주세요." },
+        { status: 502 }
+      );
     }
 
-    // 마크다운 코드 펜스 제거 후 JSON 파싱
-    const rawText = textBlock.text
+    const json = await res.json();
+    const textBlock = json.content?.find((b: { type: string }) => b.type === "text");
+    if (!textBlock) throw new Error("Claude가 응답을 반환하지 않았습니다.");
+
+    const rawText = (textBlock.text as string)
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
 
     const outfit: OutfitRecommendation = JSON.parse(rawText);
-
     return NextResponse.json(outfit);
+
   } catch (error) {
     if (error instanceof SyntaxError) {
       return NextResponse.json(
@@ -71,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
     console.error("Outfit API error:", error);
     return NextResponse.json(
-      { error: "코디 추천 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요." },
+      { error: "코디 추천 중 오류가 발생했어요. 잠시 후 다시 시도해주세요." },
       { status: 500 }
     );
   }

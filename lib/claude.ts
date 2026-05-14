@@ -1,8 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
-
-export const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+/* Anthropic SDK는 node:path에 의존해 Edge Runtime 미호환.
+   API 호출은 app/api/outfit/route.ts에서 fetch()로 직접 처리.
+   이 파일은 시스템 프롬프트만 export한다.                    */
 
 export const SYSTEM_PROMPT = `당신은 대한민국 30~50대 여성을 위한 전문 패션 스타일리스트입니다.
 사용자의 상황과 기분을 분석하여 완벽한 헤드투토 코디를 제안합니다.
