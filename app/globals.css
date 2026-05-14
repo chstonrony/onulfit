@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Palette ── */
+  --color-cream:    #FAF8F5;
+  --color-sidebar:  #F0EBE3;
+  --color-sand:     #E8DDD0;
+  --color-snow:     #FFFFFF;
+  --color-border:   #E5E0D8;
+  --color-mocha:    #2C2825;
+  --color-subtext:  #9B8E85;
+  --color-warm:     #C4A882;
+
+  /* ── Font Stacks ──
+     헤딩용: 영문(Cormorant) → 한글(Gowun Batang) → generic serif
+     본문용: 영문(Jost) → 한글(Noto Sans KR) → generic sans        */
+  --font-heading: var(--font-cormorant), var(--font-gowun), "Batang", serif;
+  --font-ko-serif: var(--font-gowun), "Batang", serif;
+  --font-sans:    var(--font-jost), var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-ko:      var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FAF8F5;
+  color: #2C2825;
+  /* 기본 본문: Jost(영문) + Noto Sans KR(한글) */
+  font-family: var(--font-jost), var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* 한글 줄바꿈 기본 설정 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
+
+/* ── 한글 텍스트 전체에 keep-all 적용 ── */
+:lang(ko) {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* ── 한글 본문 line-height 1.8 ── */
+p, span, div, li, a {
+  line-height: inherit;
+}
+
+/* ── Placeholder: Noto Sans KR 300 italic ── */
+textarea::placeholder,
+input::placeholder {
+  font-family: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
+  font-style: italic;
+  font-weight: 300;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #9B8E85;
+}
+
+/* ── Luxury Label: Jost 200, ALL CAPS, wide tracking ── */
+.luxury-label {
+  font-family: var(--font-jost), sans-serif;
+  font-weight: 200;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #9B8E85;
+  line-height: 1.5;
+}
+
+/* ── Keyframes ── */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bubbleEnter {
+  from { opacity: 0; transform: scale(0.97); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeInChar {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadePulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 1; }
+}
+
+@keyframes tileEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes paletteEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.88); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes moodEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Utilities ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--t-sk1, rgba(229,224,216,0.50)) 25%,
+    var(--t-sk2, rgba(229,224,216,0.90)) 50%,
+    var(--t-sk1, rgba(229,224,216,0.50)) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.card-enter {
+  animation: cardEnter 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bubble-enter {
+  animation: bubbleEnter 240ms ease-out both;
+}
+
+/* ── 테마 전환 애니메이션 (0.4s ease) ──
+   .theme-root 하위 모든 요소의 색상 관련 속성에 적용.
+   animation 속성은 건드리지 않으므로 card-enter / bubble-enter 등과 충돌 없음. */
+.theme-root,
+.theme-root * {
+  transition:
+    background-color 0.4s ease,
+    color            0.4s ease,
+    border-color     0.4s ease,
+    fill             0.4s ease;
+}
+
+/* ── 그레인 텍스처 오버레이 ── */
+.grain-panel {
+  position: relative;
+}
+.grain-panel::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E5E0D8; border-radius: 2px; }
