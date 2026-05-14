@@ -5,6 +5,7 @@ import {
   Jost,
   Noto_Sans_KR,
 } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
 /* ── 영문 세리프 ── */
@@ -108,6 +109,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${gowunBatang.variable} ${jost.variable} ${notoSans.variable} h-full`}
     >
       <body className="h-full">{children}</body>
+      <GoogleAnalytics gaId="G-01XNX2CRQD" />
     </html>
   );
 }
