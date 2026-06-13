@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toPng } from "html-to-image";
+import StoryCard from "./StoryCard";
 import {
   BODY_QUESTIONS,
   COLOR_QUESTIONS,
@@ -226,6 +228,24 @@ function ResultView({
   const bg = BODY_GUIDE[body];
   const cg = COLOR_GUIDE[color];
   const cross = CROSS_GUIDE[`${body}-${color}`];
+  const storyRef = useRef<HTMLDivElement>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function saveStory() {
+    if (!storyRef.current || saving) return;
+    setSaving(true);
+    try {
+      const dataUrl = await toPng(storyRef.current, { pixelRatio: 3, cacheBust: true });
+      const a = document.createElement("a");
+      a.href = dataUrl;
+      a.download = `오늘핏_내결_${bm.label}_${cm.label}.png`;
+      a.click();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   const ITEM_LABELS: { key: keyof typeof bg.items; label: string }[] = [
     { key: "neckline", label: "넥라인" },
@@ -340,9 +360,37 @@ function ResultView({
         이제 상황만 알려주시면, 결이 이 골격과 색에 맞춰 골라드릴게요. {GYEOL.signature}
       </p>
 
+      {/* 결과 카드 저장 (인스타 공유 — 바이럴 유입) */}
+      <button
+        onClick={saveStory}
+        disabled={saving}
+        style={{
+          width: "100%",
+          padding: "15px",
+          marginBottom: "10px",
+          fontFamily: sans,
+          fontSize: "14px",
+          fontWeight: 500,
+          letterSpacing: "0.02em",
+          color: acc,
+          background: "transparent",
+          border: `1px solid ${acc}`,
+          borderRadius: "12px",
+          cursor: saving ? "default" : "pointer",
+          opacity: saving ? 0.6 : 1,
+        }}
+      >
+        {saving ? "이미지 만드는 중…" : "📸 내 결 카드 저장 · 공유하기"}
+      </button>
+
       <button onClick={onDone} style={ctaStyle(acc)}>
         코디 받으러 가기
       </button>
+
+      {/* 오프스크린 9:16 스토리 카드 (캡처용) */}
+      <div style={{ position: "fixed", left: "-9999px", top: 0, pointerEvents: "none" }} aria-hidden>
+        <StoryCard ref={storyRef} body={body} color={color} />
+      </div>
     </div>
   );
 }

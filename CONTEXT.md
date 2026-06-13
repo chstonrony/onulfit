@@ -18,7 +18,7 @@
 ## 기술 스택 / 배포
 - **Next.js 15** (App Router), React 19, TS, Tailwind v4
 - AI: Anthropic API **fetch 직접 호출**(Edge Runtime 호환, SDK는 node:path 의존으로 미사용). 모델 claude-sonnet-4-6, 프롬프트 캐싱 사용
-- **배포: Cloudflare Pages** (wrangler.toml + @cloudflare/next-on-pages). GitHub: chstonrony/onulfit. (.vercel 링크도 있으나 CF가 주)
+- **배포: Vercel (실제 라이브)** — onulfit.com은 Vercel 서빙(server: Vercel 확인, 프로젝트명 stylefit, 오늘무드·오늘눈치와 같은 팀). **git push로 자동배포 안 됨 → `vercel --prod`로 배포**. wrangler.toml/@cloudflare/next-on-pages는 옛 실험 흔적(미사용). GitHub: chstonrony/onulfit
 - 데모 모드: ANTHROPIC_API_KEY 없으면 mockData 반환 (lib/mockData.ts)
 - 로컬 개발 포트: 3200 (.claude/launch.json onulfit-dev — Onulmood 세션 기준)
 
