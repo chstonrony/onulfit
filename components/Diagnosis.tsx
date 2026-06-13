@@ -14,6 +14,7 @@ import {
   type Profile,
 } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
+import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -220,34 +221,115 @@ function ResultView({
   const serif = "var(--font-gowun), 'Batang', serif";
   const bm = BODY_META[body];
   const cm = COLOR_META[color];
+  const bg = BODY_GUIDE[body];
+  const cg = COLOR_GUIDE[color];
+  const cross = CROSS_GUIDE[`${body}-${color}`];
+
+  const ITEM_LABELS: { key: keyof typeof bg.items; label: string }[] = [
+    { key: "neckline", label: "넥라인" },
+    { key: "shoulder", label: "어깨·소매" },
+    { key: "top", label: "상의" },
+    { key: "bottom", label: "하의" },
+    { key: "dress", label: "원피스" },
+    { key: "outer", label: "아우터" },
+    { key: "fabric", label: "소재" },
+    { key: "shoesBag", label: "신발·가방" },
+    { key: "accessory", label: "액세서리" },
+  ];
+
+  const cardStyle: React.CSSProperties = { border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" };
+  const kicker = (t: string) => (
+    <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>{t}</p>
+  );
 
   return (
     <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-      <p style={{ fontFamily: serif, fontSize: "20px", color: txt, marginBottom: "24px" }}>
+      <p style={{ fontFamily: serif, fontSize: "20px", color: txt, marginBottom: "6px" }}>
         {GYEOL.glyph} {GYEOL.resultLead}
       </p>
 
-      {/* 골격 카드 */}
-      <div style={{ border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
-        <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>BODY</p>
+      {/* 조합 페르소나 (있을 때) */}
+      {cross && (
+        <p style={{ fontFamily: serif, fontSize: "16px", color: acc, marginBottom: "20px", wordBreak: "keep-all" }}>
+          “{bm.label} × {cm.label} — {cross.persona}”
+        </p>
+      )}
+      {!cross && <div style={{ height: "14px" }} />}
+
+      {/* 골격 카드 + 핵심 원칙 */}
+      <div style={cardStyle}>
+        {kicker("BODY · 골격")}
         <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{bm.label} 체형</p>
         <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{bm.tagline}</p>
-        <TagRow label="잘 어울려요" items={bm.suits} color={txt} bdr={bdr} sans={sans} />
-        <TagRow label="피하면 좋아요" items={bm.avoid} color={sub} bdr={bdr} sans={sans} />
+        <div style={{ borderLeft: `2px solid ${acc}`, paddingLeft: "12px", marginBottom: "14px" }}>
+          <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 500, color: txt, lineHeight: 1.6, wordBreak: "keep-all" }}>{bg.principle}</p>
+        </div>
+        <ul style={{ margin: 0, paddingLeft: "16px" }}>
+          {bg.characteristics.map((c, i) => (
+            <li key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: sub, lineHeight: 1.8, wordBreak: "keep-all" }}>{c}</li>
+          ))}
+        </ul>
       </div>
 
-      {/* 컬러 카드 */}
-      <div style={{ border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "24px", backgroundColor: "var(--t-side)" }}>
-        <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>COLOR</p>
-        <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{cm.label}</p>
-        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{cm.tagline}</p>
-        <div className="flex gap-2 mb-3">
-          {cm.swatch.map((hex) => (
-            <span key={hex} style={{ width: "32px", height: "32px", borderRadius: "8px", backgroundColor: hex, border: `1px solid ${bdr}` }} />
+      {/* 아이템별 가이드 (L1 핵심) */}
+      <div style={cardStyle}>
+        {kicker("STYLING · 아이템별 가이드")}
+        <div className="flex flex-col gap-3 mt-1">
+          {ITEM_LABELS.map(({ key, label }) => (
+            <div key={key}>
+              <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{label}</p>
+              <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.85, lineHeight: 1.6, wordBreak: "keep-all", marginBottom: "2px" }}>
+                <span style={{ color: acc, fontWeight: 600 }}>○ </span>{bg.items[key].good}
+              </p>
+              <p style={{ fontFamily: sans, fontSize: "12px", color: sub, lineHeight: 1.6, wordBreak: "keep-all" }}>
+                <span style={{ opacity: 0.7 }}>✕ </span>{bg.items[key].avoid}
+              </p>
+            </div>
           ))}
         </div>
-        <TagRow label="잘 어울려요" items={cm.palette} color={txt} bdr={bdr} sans={sans} />
       </div>
+
+      {/* 흔한 실수 + 코디 공식 */}
+      <div style={cardStyle}>
+        {kicker("TIPS")}
+        <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "6px" }}>흔한 실수</p>
+        <ul style={{ margin: "0 0 14px", paddingLeft: "16px" }}>
+          {bg.mistakes.map((m, i) => (
+            <li key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: sub, lineHeight: 1.7, wordBreak: "keep-all" }}>{m}</li>
+          ))}
+        </ul>
+        <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "6px" }}>결의 코디 공식</p>
+        <div className="flex flex-col gap-1.5">
+          {bg.formulas.map((f, i) => (
+            <p key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.9, lineHeight: 1.5, wordBreak: "keep-all", padding: "6px 10px", border: `1px solid ${bdr}`, borderRadius: "8px" }}>{f}</p>
+          ))}
+        </div>
+      </div>
+
+      {/* 컬러 카드 (상세) */}
+      <div style={{ ...cardStyle, marginBottom: "24px" }}>
+        {kicker("COLOR · 퍼스널컬러")}
+        <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{cm.label}</p>
+        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{cg.tip}</p>
+        <p style={{ fontFamily: sans, fontSize: "11px", color: txt, opacity: 0.6, marginBottom: "6px" }}>베스트 컬러</p>
+        <div className="flex flex-wrap gap-1.5 mb-3">
+          {cg.bestColors.map((c) => (
+            <span key={c} style={{ fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 10px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all" }}>{c}</span>
+          ))}
+        </div>
+        <TagRow label="피하면 좋아요" items={cg.worstColors} color={sub} bdr={bdr} sans={sans} />
+        <div className="flex flex-col gap-1 mt-2">
+          <MiniRow label="메탈" value={cg.metal} txt={txt} sub={sub} sans={sans} />
+          <MiniRow label="메이크업" value={cg.makeup} txt={txt} sub={sub} sans={sans} />
+          <MiniRow label="데님" value={cg.denim} txt={txt} sub={sub} sans={sans} />
+        </div>
+      </div>
+
+      {cross && (
+        <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.85, lineHeight: 1.7, marginBottom: "18px", wordBreak: "keep-all", padding: "12px 14px", border: `1px solid ${acc}`, borderRadius: "10px", backgroundColor: "var(--t-bai)" }}>
+          <span style={{ color: acc, fontWeight: 600 }}>시그니처 룩 · </span>{cross.signature}
+        </p>
+      )}
 
       <p style={{ fontFamily: sans, fontSize: "12px", color: sub, lineHeight: 1.7, marginBottom: "20px", wordBreak: "keep-all" }}>
         이제 상황만 알려주시면, 결이 이 골격과 색에 맞춰 골라드릴게요. {GYEOL.signature}
@@ -257,6 +339,15 @@ function ResultView({
         코디 받으러 가기
       </button>
     </div>
+  );
+}
+
+function MiniRow({ label, value, txt, sub, sans }: { label: string; value: string; txt: string; sub: string; sans: string }) {
+  return (
+    <p style={{ fontFamily: sans, fontSize: "12.5px", lineHeight: 1.6, wordBreak: "keep-all" }}>
+      <span style={{ color: sub }}>{label} · </span>
+      <span style={{ color: txt, opacity: 0.9 }}>{value}</span>
+    </p>
   );
 }
 

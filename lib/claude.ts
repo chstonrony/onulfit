@@ -3,15 +3,35 @@
    이 파일은 시스템 프롬프트와 프로필 주입 빌더를 export한다.    */
 
 import { BODY_META, COLOR_META, type BodyType, type ColorType } from "./profile";
+import { BODY_GUIDE, COLOR_GUIDE } from "./styleGuide";
 import { GYEOL_PERSONA_PROMPT } from "./gyeol";
 
-/** 골격·퍼스널컬러 프로필을 프롬프트 블록으로 변환 (없으면 빈 문자열) */
+/** 골격·퍼스널컬러 프로필을 프롬프트 블록으로 변환 (없으면 빈 문자열)
+    상세 스타일 가이드(styleGuide)를 끌어와 AI 추천 정밀도를 높인다. */
 export function buildProfileGuide(body?: BodyType, color?: ColorType): string {
   if (!body && !color) return "";
   const parts: string[] = ["\n\n## 이 사용자의 골격·퍼스널컬러 (반드시 반영)"];
-  if (body && BODY_META[body]) parts.push(`- 골격: ${BODY_META[body].label} — ${BODY_META[body].promptGuide}`);
-  if (color && COLOR_META[color]) parts.push(`- 퍼스널컬러: ${COLOR_META[color].label} — ${COLOR_META[color].promptGuide}`);
-  parts.push("위 가이드에 어긋나는 디자인·색은 제안하지 말 것. stylingTip에 왜 이 골격·색에 어울리는지 한 줄 곁들일 것.");
+
+  if (body && BODY_GUIDE[body]) {
+    const g = BODY_GUIDE[body];
+    parts.push(`### 골격: ${BODY_META[body].label}`);
+    parts.push(`- 원칙: ${g.principle}`);
+    parts.push(`- 상의: ${g.items.top.good} / 피할 것: ${g.items.top.avoid}`);
+    parts.push(`- 하의: ${g.items.bottom.good} / 피할 것: ${g.items.bottom.avoid}`);
+    parts.push(`- 넥라인: ${g.items.neckline.good}`);
+    parts.push(`- 소재: ${g.items.fabric.good} / 피할 것: ${g.items.fabric.avoid}`);
+    parts.push(`- 흔한 실수(피할 것): ${g.mistakes.join("; ")}`);
+  }
+
+  if (color && COLOR_GUIDE[color]) {
+    const c = COLOR_GUIDE[color];
+    parts.push(`### 퍼스널컬러: ${COLOR_META[color].label}`);
+    parts.push(`- 베스트 컬러(이 중에서 고를 것): ${c.bestColors.join(", ")}`);
+    parts.push(`- 피할 색: ${c.worstColors.join(", ")}`);
+    parts.push(`- 어울리는 금속: ${c.metal} / 데님: ${c.denim}`);
+  }
+
+  parts.push("위 가이드에 어긋나는 디자인·색은 절대 제안하지 말 것. 각 아이템 color는 베스트 컬러 안에서 고르고, stylingTip에 왜 이 골격·색에 어울리는지 결의 말투로 한 줄 곁들일 것.");
   return parts.join("\n");
 }
 
