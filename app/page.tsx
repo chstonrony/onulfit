@@ -434,7 +434,6 @@ function WelcomeGuide({
           textDecoration: "none",
         }}
       >
-        <span style={{ fontSize: "22px", lineHeight: 1, flexShrink: 0 }} aria-hidden>📖</span>
         <span style={{ flex: 1, minWidth: 0 }}>
           <span style={{
             display: "block",
@@ -443,18 +442,30 @@ function WelcomeGuide({
             letterSpacing: "0.18em",
             textTransform: "uppercase",
             color: vars["--t-point"] ?? vars["--t-acc"],
-            marginBottom: "3px",
+            marginBottom: "4px",
           }}>STYLE GUIDE</span>
           <span style={{
             display: "block",
             fontFamily: "var(--font-gowun), 'Batang', serif",
-            fontSize: "15px",
+            fontSize: "16px",
             color: "var(--t-txt)",
             lineHeight: 1.4,
             wordBreak: "keep-all",
           }}>체형·퍼스널컬러 코디법 가이드</span>
         </span>
-        <span style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "15px", color: vars["--t-point"] ?? vars["--t-acc"], flexShrink: 0 }}>→</span>
+        <span style={{
+          flexShrink: 0,
+          width: "30px",
+          height: "30px",
+          borderRadius: "50%",
+          border: `1px solid ${vars["--t-point"] ?? vars["--t-acc"]}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "var(--font-jost), sans-serif",
+          fontSize: "13px",
+          color: vars["--t-point"] ?? vars["--t-acc"],
+        }}>→</span>
       </Link>
 
       {/* 무드보드 — 앨범 그리드 (트렌드 레이아웃) */}
