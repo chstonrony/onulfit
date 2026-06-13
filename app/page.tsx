@@ -13,6 +13,7 @@ import MoodSelector from "@/components/MoodSelector";
 import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
+import Moodboard from "@/components/Moodboard";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
 
@@ -432,6 +433,9 @@ function WelcomeGuide({
       >
         체형·퍼스널컬러 코디법 가이드 보기 →
       </Link>
+
+      {/* 무드보드 — 앨범 그리드 (트렌드 레이아웃) */}
+      <Moodboard vars={vars} />
     </div>
   );
 }
