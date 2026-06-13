@@ -13,7 +13,7 @@ import MoodSelector from "@/components/MoodSelector";
 import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
-import Moodboard from "@/components/Moodboard";
+import OnulSeries from "@/components/series/OnulSeries";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
 
@@ -398,32 +398,35 @@ function WelcomeGuide({
   return (
     <div className="py-2">
 
-      {/* ── 히어로 — 큰 한방 (에디토리얼 이미지 + 카피 + CTA) ── */}
+      {/* ── 히어로 — 룩 타일 반복 콜라주 (핀터레스트 보드 감성) + 카피 ── */}
       <div className="bubble-enter" style={{ marginBottom: "28px" }}>
         <div style={{ position: "relative", width: "100%", borderRadius: "18px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/moodboard/1.jpg"
-            alt="오늘핏 — 오늘의 무드"
-            style={{ width: "100%", height: "440px", objectFit: "cover", objectPosition: "center top", display: "block" }}
-          />
-          {/* 하단 그라디언트 + 카피 */}
+          {/* 룩 타일 그리드 — 얼굴보다 룩·무드 위주(전신·워킹·뒷모습) */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3px", height: "490px" }}>
+            {["/moodboard/1.jpg", "/moodboard/5.jpg", "/moodboard/6.jpg", "/moodboard/8.jpg", "/moodboard/3.jpg", "/moodboard/7.jpg"].map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={i} src={src} alt="" loading={i < 2 ? "eager" : "lazy"}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            ))}
+          </div>
+          {/* 그라디언트 + 카피 */}
           <div style={{
-            position: "absolute", left: 0, right: 0, bottom: 0,
-            padding: "60px 22px 22px",
-            background: "linear-gradient(to top, rgba(20,16,12,0.72), rgba(20,16,12,0.25) 55%, transparent)",
+            position: "absolute", inset: 0,
+            display: "flex", flexDirection: "column", justifyContent: "flex-end",
+            padding: "22px",
+            background: "linear-gradient(to top, rgba(20,16,12,0.86), rgba(20,16,12,0.32) 46%, rgba(20,16,12,0.28))",
           }}>
-            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", marginBottom: "8px" }}>
+            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.78)", marginBottom: "8px" }}>
               ONULFIT · AI STYLIST
             </p>
-            <h1 style={{ fontFamily: serif, fontSize: "27px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}>
+            <h1 style={{ fontFamily: serif, fontSize: "27px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 14px rgba(0,0,0,0.45)" }}>
               오늘 뭐 입지,<br />그 고민은 결에게
             </h1>
           </div>
         </div>
 
         {/* 서브카피 + CTA */}
-        <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: "var(--t-sub)", margin: "16px 2px 14px", wordBreak: "keep-all" }}>
+        <p style={{ fontFamily: serif, fontSize: "15px", lineHeight: 1.85, letterSpacing: "0.01em", color: "var(--t-txt)", opacity: 0.78, margin: "18px 2px 16px", wordBreak: "keep-all" }}>
           체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 1분이면 돼요.
         </p>
         <button
@@ -449,19 +452,43 @@ function WelcomeGuide({
       </div>
       <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
 
-      {/* 스타일 가이드 — 눈에 띄는 카드 배너 (SEO·체류) */}
-      <Link
-        href="/guide"
+      {/* 스타일 가이드 — 포인트 컬러 카드 (호버 시 반전) */}
+      <GuideBanner vars={vars} />
+
+      {/* 오늘 시리즈 크로스링크 */}
+      <OnulSeries vars={vars} />
+    </div>
+  );
+}
+
+/* ── 스타일 가이드 배너 (포인트 컬러 + 호버 반전) ── */
+function GuideBanner({ vars }: { vars: Record<string, string> }) {
+  const [active, setActive] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const point = vars["--t-point"] ?? vars["--t-acc"];
+
+  return (
+    <Link href="/guide" style={{ textDecoration: "none", display: "block" }}>
+      <div
+        onMouseEnter={() => setActive(true)}
+        onMouseLeave={() => { setActive(false); setPressed(false); }}
+        onMouseDown={() => setPressed(true)}
+        onMouseUp={() => setPressed(false)}
+        onTouchStart={() => { setActive(true); setPressed(true); }}
+        onTouchEnd={() => { setActive(false); setPressed(false); }}
         style={{
           display: "flex",
           alignItems: "center",
           gap: "14px",
           marginTop: "22px",
           padding: "16px 18px",
-          border: `1px solid ${vars["--t-point"] ?? vars["--t-acc"]}`,
+          border: `1px solid ${point}`,
           borderRadius: "14px",
-          background: "var(--t-bai)",
-          textDecoration: "none",
+          background: active ? point : `${point}1A`,
+          transform: pressed ? "scale(0.985)" : active ? "translateY(-2px)" : "none",
+          boxShadow: active && !pressed ? `0 8px 22px ${point}38` : "none",
+          transition: "all 0.24s cubic-bezier(0.16,1,0.3,1)",
+          cursor: "pointer",
         }}
       >
         <span style={{ flex: 1, minWidth: 0 }}>
@@ -471,16 +498,18 @@ function WelcomeGuide({
             fontSize: "9.5px",
             letterSpacing: "0.18em",
             textTransform: "uppercase",
-            color: vars["--t-point"] ?? vars["--t-acc"],
+            color: active ? "rgba(255,255,255,0.85)" : point,
             marginBottom: "4px",
+            transition: "color 0.24s ease",
           }}>STYLE GUIDE</span>
           <span style={{
             display: "block",
             fontFamily: "var(--font-gowun), 'Batang', serif",
             fontSize: "16px",
-            color: "var(--t-txt)",
+            color: active ? "#fff" : "var(--t-txt)",
             lineHeight: 1.4,
             wordBreak: "keep-all",
+            transition: "color 0.24s ease",
           }}>체형·퍼스널컬러 코디법 가이드</span>
         </span>
         <span style={{
@@ -488,19 +517,18 @@ function WelcomeGuide({
           width: "30px",
           height: "30px",
           borderRadius: "50%",
-          border: `1px solid ${vars["--t-point"] ?? vars["--t-acc"]}`,
+          border: `1px solid ${active ? "rgba(255,255,255,0.7)" : point}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontFamily: "var(--font-jost), sans-serif",
           fontSize: "13px",
-          color: vars["--t-point"] ?? vars["--t-acc"],
+          color: active ? "#fff" : point,
+          transform: active ? "translateX(3px)" : "none",
+          transition: "all 0.24s ease",
         }}>→</span>
-      </Link>
-
-      {/* 무드보드 — 앨범 그리드 (트렌드 레이아웃) */}
-      <Moodboard vars={vars} />
-    </div>
+      </div>
+    </Link>
   );
 }
 
