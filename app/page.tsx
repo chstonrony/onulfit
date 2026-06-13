@@ -419,19 +419,42 @@ function WelcomeGuide({
       </div>
       <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
 
-      {/* 스타일 가이드 내부 링크 (SEO·체류) */}
+      {/* 스타일 가이드 — 눈에 띄는 카드 배너 (SEO·체류) */}
       <Link
         href="/guide"
         style={{
-          display: "inline-block",
-          marginTop: "20px",
-          fontFamily: "var(--font-noto-sans), sans-serif",
-          fontSize: "12.5px",
-          color: "var(--t-acc)",
+          display: "flex",
+          alignItems: "center",
+          gap: "14px",
+          marginTop: "22px",
+          padding: "16px 18px",
+          border: `1px solid ${vars["--t-point"] ?? vars["--t-acc"]}`,
+          borderRadius: "14px",
+          background: "var(--t-bai)",
           textDecoration: "none",
         }}
       >
-        체형·퍼스널컬러 코디법 가이드 보기 →
+        <span style={{ fontSize: "22px", lineHeight: 1, flexShrink: 0 }} aria-hidden>📖</span>
+        <span style={{ flex: 1, minWidth: 0 }}>
+          <span style={{
+            display: "block",
+            fontFamily: "var(--font-jost), sans-serif",
+            fontSize: "9.5px",
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            color: vars["--t-point"] ?? vars["--t-acc"],
+            marginBottom: "3px",
+          }}>STYLE GUIDE</span>
+          <span style={{
+            display: "block",
+            fontFamily: "var(--font-gowun), 'Batang', serif",
+            fontSize: "15px",
+            color: "var(--t-txt)",
+            lineHeight: 1.4,
+            wordBreak: "keep-all",
+          }}>체형·퍼스널컬러 코디법 가이드</span>
+        </span>
+        <span style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "15px", color: vars["--t-point"] ?? vars["--t-acc"], flexShrink: 0 }}>→</span>
       </Link>
 
       {/* 무드보드 — 앨범 그리드 (트렌드 레이아웃) */}
