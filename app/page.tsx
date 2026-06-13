@@ -189,7 +189,7 @@ export default function Home() {
         {/* 채팅 히스토리 */}
         <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
           {!hasMessages && (
-            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} />
+            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => setShowDiag(true)} />
           )}
 
           {messages.map((msg) => (
@@ -385,36 +385,66 @@ function WelcomeGuide({
   onExample,
   isLoading,
   vars,
+  onDiagnose,
 }: {
   onExample: (s: string) => void;
   isLoading: boolean;
   vars: Record<string, string>;
+  onDiagnose: () => void;
 }) {
+  const serif = "var(--font-gowun), 'Batang', serif";
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  const point = vars["--t-point"] ?? vars["--t-acc"];
   return (
     <div className="py-2">
-      <div className="bubble-enter mb-8">
-        <p style={{
-          fontFamily: "var(--font-gowun), 'Batang', serif",
-          fontWeight: 400,
-          fontSize: "22px",
-          lineHeight: 1.6,
-          letterSpacing: "0.03em",
-          wordBreak: "keep-all",
-          color: "var(--t-txt)",
-          marginBottom: "8px",
-        }}>
-          오늘, 어떤 나를 찾으세요
+
+      {/* ── 히어로 — 큰 한방 (에디토리얼 이미지 + 카피 + CTA) ── */}
+      <div className="bubble-enter" style={{ marginBottom: "28px" }}>
+        <div style={{ position: "relative", width: "100%", borderRadius: "18px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/moodboard/1.jpg"
+            alt="오늘핏 — 오늘의 무드"
+            style={{ width: "100%", height: "440px", objectFit: "cover", objectPosition: "center top", display: "block" }}
+          />
+          {/* 하단 그라디언트 + 카피 */}
+          <div style={{
+            position: "absolute", left: 0, right: 0, bottom: 0,
+            padding: "60px 22px 22px",
+            background: "linear-gradient(to top, rgba(20,16,12,0.72), rgba(20,16,12,0.25) 55%, transparent)",
+          }}>
+            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.7)", marginBottom: "8px" }}>
+              ONULFIT · AI STYLIST
+            </p>
+            <h1 style={{ fontFamily: serif, fontSize: "27px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 12px rgba(0,0,0,0.3)" }}>
+              오늘 뭐 입지,<br />그 고민은 결에게
+            </h1>
+          </div>
+        </div>
+
+        {/* 서브카피 + CTA */}
+        <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: "var(--t-sub)", margin: "16px 2px 14px", wordBreak: "keep-all" }}>
+          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 1분이면 돼요.
         </p>
-        <p style={{
-          fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
-          fontWeight: 400,
-          fontSize: "13px",
-          lineHeight: 1.7,
-          letterSpacing: "0.02em",
-          wordBreak: "keep-all",
-          color: "var(--t-sub)",
-        }}>
-          상황을 알려주시면 코디를 찾아드릴게요
+        <button
+          onClick={onDiagnose}
+          style={{
+            width: "100%", height: "54px",
+            fontFamily: sans, fontSize: "14px", fontWeight: 500, letterSpacing: "0.02em",
+            color: "#fff", backgroundColor: "var(--t-txt)", border: "none", borderRadius: "14px", cursor: "pointer",
+          }}
+        >
+          무료로 내 결 찾기 →
+        </button>
+      </div>
+
+      {/* ── 상황별 코디 ── */}
+      <div style={{ marginBottom: "14px" }}>
+        <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: point, marginBottom: "6px" }}>
+          BY SITUATION
+        </p>
+        <p style={{ fontFamily: serif, fontSize: "18px", color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
+          오늘, 어떤 자리예요?
         </p>
       </div>
       <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
