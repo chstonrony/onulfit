@@ -39,7 +39,7 @@
 - **가이드 글 5편**(styleGuide와 일관): golgyeok-self-check(골격 자가진단)·straight/wave/natural-styling(체형별 코디)·personal-color-guide(퍼스널컬러 4계절). 각 ## 소제목·리스트·코디공식, 진단 CTA·관련글 내부링크
 - 상세에 BlogPosting JSON-LD, canonical, OG. 홈 WelcomeGuide에 /guide 링크
 - 빌드 13/13 SSG, sitemap 7 URL, robots, 콘솔 0 검증
-- ⚠️ **글 분량 현재 ~650자(공백제외)** — 오늘무드 색인 기준(800자+)보다 가벼움. 품질·승인 위해 800자+로 확장 권장(운영자 감수 겸). 다음 루틴 후보
+- **글 5편 800자+로 확장 완료**(843~1037자): 각 글에 아우터·소품/넥라인·원피스/헷갈릴때·활용 섹션 + 상황(동창회·하객) 적용 추가. 담백한 정보형 톤 유지(결 캐릭터는 진단/코디에만)
 - ※ 배포: 이번 세션 커밋들 **GitHub 미푸시 = 라이브 미반영**. push 시 Cloudflare Pages 빌드
 
 ### 2026-06-13 세션 3 — 비주얼(핀터레스트) + 제휴 코드 자리
