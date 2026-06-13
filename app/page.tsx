@@ -11,6 +11,9 @@ import OutfitCard from "@/components/OutfitCard";
 import MoodSelector from "@/components/MoodSelector";
 import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
+import Diagnosis from "@/components/Diagnosis";
+import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
+import { GYEOL } from "@/lib/gyeol";
 
 /* 무드별 로고 파일 매핑 */
 function getLogoSrc(mood: MoodKey): string {
@@ -26,6 +29,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [mood, setMood] = useState<MoodKey>(DEFAULT_MOOD);
   const [mobileTab, setMobileTab] = useState<MobileTab>("chat");
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [showDiag, setShowDiag] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
   const theme = THEMES[mood];
@@ -34,6 +39,11 @@ export default function Home() {
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  // 저장된 골격·컬러 프로필 로드
+  useEffect(() => {
+    setProfile(getProfile());
+  }, []);
 
   const handleSubmit = async (situation: string) => {
     const userMsg: Message = {
@@ -51,7 +61,11 @@ export default function Home() {
       const res = await fetch("/api/outfit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ situation }),
+        body: JSON.stringify({
+          situation,
+          bodyType: profile?.body,
+          colorType: profile?.color,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "알 수 없는 오류가 발생했습니다.");
@@ -94,6 +108,15 @@ export default function Home() {
       className="theme-root grain-panel flex flex-col h-full lg:flex-row"
       style={vars as React.CSSProperties}
     >
+
+      {/* 결의 진단 오버레이 */}
+      {showDiag && (
+        <Diagnosis
+          vars={vars}
+          onComplete={(p) => setProfile(p)}
+          onClose={() => setShowDiag(false)}
+        />
+      )}
 
       {/* ══════════════════════════════════════════
           모바일 전용 헤더 (lg 이상에서 숨김)
@@ -157,6 +180,9 @@ export default function Home() {
           </div>
           <MoodSelector selected={mood} onChange={setMood} vars={vars} />
         </header>
+
+        {/* 결 프로필 칩 — 진단 진입점 */}
+        <ProfileChip profile={profile} vars={vars} onOpen={() => setShowDiag(true)} />
 
         {/* 채팅 히스토리 */}
         <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
@@ -307,6 +333,47 @@ export default function Home() {
         })}
       </nav>
 
+    </div>
+  );
+}
+
+/* ── 결 프로필 칩 (진단 진입점) ── */
+function ProfileChip({
+  profile,
+  vars,
+  onOpen,
+}: {
+  profile: Profile | null;
+  vars: Record<string, string>;
+  onOpen: () => void;
+}) {
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  const hasProfile = !!profile;
+  const labelText = hasProfile
+    ? `내 결 · ${BODY_META[profile!.body].label} · ${COLOR_META[profile!.color].label}`
+    : `${GYEOL.glyph} 결에게 골격·퍼스널컬러 진단받기`;
+
+  return (
+    <div className="flex-shrink-0 px-5 lg:px-6 pt-4">
+      <button
+        onClick={onOpen}
+        className="w-full flex items-center justify-between gap-2"
+        style={{
+          padding: "11px 14px",
+          backgroundColor: hasProfile ? "var(--t-bai)" : "var(--t-side)",
+          border: `1px solid ${hasProfile ? "var(--t-acc)" : "var(--t-bdr)"}`,
+          borderRadius: "12px",
+          cursor: "pointer",
+          textAlign: "left",
+        }}
+      >
+        <span style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: hasProfile ? 500 : 400, color: hasProfile ? "var(--t-txt)" : "var(--t-sub)", wordBreak: "keep-all" }}>
+          {labelText}
+        </span>
+        <span style={{ fontFamily: sans, fontSize: "11px", color: "var(--t-acc)", flexShrink: 0 }}>
+          {hasProfile ? "다시 진단 ✎" : "시작 →"}
+        </span>
+      </button>
     </div>
   );
 }

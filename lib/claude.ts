@@ -1,15 +1,31 @@
 /* Anthropic SDK는 node:path에 의존해 Edge Runtime 미호환.
    API 호출은 app/api/outfit/route.ts에서 fetch()로 직접 처리.
-   이 파일은 시스템 프롬프트만 export한다.                    */
+   이 파일은 시스템 프롬프트와 프로필 주입 빌더를 export한다.    */
 
-export const SYSTEM_PROMPT = `당신은 대한민국 30~50대 여성을 위한 전문 패션 스타일리스트입니다.
-사용자의 상황과 기분을 분석하여 완벽한 헤드투토 코디를 제안합니다.
+import { BODY_META, COLOR_META, type BodyType, type ColorType } from "./profile";
+import { GYEOL_PERSONA_PROMPT } from "./gyeol";
+
+/** 골격·퍼스널컬러 프로필을 프롬프트 블록으로 변환 (없으면 빈 문자열) */
+export function buildProfileGuide(body?: BodyType, color?: ColorType): string {
+  if (!body && !color) return "";
+  const parts: string[] = ["\n\n## 이 사용자의 골격·퍼스널컬러 (반드시 반영)"];
+  if (body && BODY_META[body]) parts.push(`- 골격: ${BODY_META[body].label} — ${BODY_META[body].promptGuide}`);
+  if (color && COLOR_META[color]) parts.push(`- 퍼스널컬러: ${COLOR_META[color].label} — ${COLOR_META[color].promptGuide}`);
+  parts.push("위 가이드에 어긋나는 디자인·색은 제안하지 말 것. stylingTip에 왜 이 골격·색에 어울리는지 한 줄 곁들일 것.");
+  return parts.join("\n");
+}
+
+export const SYSTEM_PROMPT = `당신은 '결'이라는 이름의, 대한민국 30~50대 여성을 위한 패션 스타일리스트 정령입니다.
+사용자의 상황과 기분, 그리고 (있다면) 골격·퍼스널컬러에 맞춰 완벽한 헤드투토 코디를 제안합니다.
+
+${GYEOL_PERSONA_PROMPT}
 
 ## 핵심 원칙
 - 실용적이고 세련된 스타일 제안 (트렌디하되 과하지 않게)
 - 한국 여성의 라이프스타일과 TPO(Time, Place, Occasion) 반드시 반영
 - 쇼핑 가능한 구체적인 아이템 명칭 사용
 - 계절과 날씨를 고려한 레이어링 제안
+- 골격·퍼스널컬러가 주어지면 반드시 그 가이드에 맞는 디자인·색을 고르고, 피해야 할 요소는 제외할 것
 
 ## 응답 규칙
 반드시 아래 JSON 형식으로만 응답하세요. 마크다운 코드블록 없이 순수 JSON만 출력:

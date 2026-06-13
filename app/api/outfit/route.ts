@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SYSTEM_PROMPT } from "@/lib/claude";
+import { SYSTEM_PROMPT, buildProfileGuide } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
 import { getMockOutfit, IS_DEMO_MODE } from "@/lib/mockData";
+import type { BodyType, ColorType } from "@/lib/profile";
 
 export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { situation } = body;
+    const { situation, bodyType, colorType } = body as {
+      situation?: string;
+      bodyType?: BodyType;
+      colorType?: ColorType;
+    };
 
     if (!situation || typeof situation !== "string" || situation.trim().length === 0) {
       return NextResponse.json({ error: "상황을 입력해주세요." }, { status: 400 });
@@ -43,12 +48,15 @@ export async function POST(request: NextRequest) {
         max_tokens: 2048,
         system: [
           {
+            // 고정 시스템 프롬프트만 캐싱 (프로필은 가변이라 user 메시지로 분리)
             type: "text",
             text: SYSTEM_PROMPT,
             cache_control: { type: "ephemeral" },
           },
         ],
-        messages: [{ role: "user", content: situation.trim() }],
+        messages: [
+          { role: "user", content: situation.trim() + buildProfileGuide(bodyType, colorType) },
+        ],
       }),
     });
 
