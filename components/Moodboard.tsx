@@ -15,7 +15,7 @@ interface Props {
   images?: string[];
 }
 
-// 운영자 실사진 (public/moodboard/). 순서로 그리드 배치.
+// 운영자 실사진 (public/moodboard/). 9칸(3×3), 포즈 섞어 배치.
 const PHOTOS = [
   "/moodboard/1.jpg",
   "/moodboard/2.jpg",
@@ -23,10 +23,13 @@ const PHOTOS = [
   "/moodboard/4.jpg",
   "/moodboard/5.jpg",
   "/moodboard/6.jpg",
+  "/moodboard/7.jpg",
+  "/moodboard/8.jpg",
+  "/moodboard/9.jpg",
 ];
 
 // 좋아요 하트를 올릴 타일 인덱스 (인스타 콜라주 느낌)
-const LIKED = new Set([1, 4]);
+const LIKED = new Set([1, 6]);
 
 function Heart() {
   return (
