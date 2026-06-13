@@ -15,20 +15,18 @@ interface Props {
   images?: string[];
 }
 
-const SAMPLE = [
-  "https://picsum.photos/seed/onulfit-a/400/400",
-  "https://picsum.photos/seed/onulfit-b/400/400",
-  "https://picsum.photos/seed/onulfit-c/400/400",
-  "https://picsum.photos/seed/onulfit-d/400/400",
-  "https://picsum.photos/seed/onulfit-e/400/400",
-  "https://picsum.photos/seed/onulfit-f/400/400",
-  "https://picsum.photos/seed/onulfit-g/400/400",
-  "https://picsum.photos/seed/onulfit-h/400/400",
-  "https://picsum.photos/seed/onulfit-i/400/400",
+// 운영자 실사진 (public/moodboard/). 순서로 그리드 배치.
+const PHOTOS = [
+  "/moodboard/1.jpg",
+  "/moodboard/2.jpg",
+  "/moodboard/3.jpg",
+  "/moodboard/4.jpg",
+  "/moodboard/5.jpg",
+  "/moodboard/6.jpg",
 ];
 
 // 좋아요 하트를 올릴 타일 인덱스 (인스타 콜라주 느낌)
-const LIKED = new Set([4, 7]);
+const LIKED = new Set([1, 4]);
 
 function Heart() {
   return (
@@ -40,8 +38,8 @@ function Heart() {
 }
 
 export default function Moodboard({ vars, images }: Props) {
-  const list = images && images.length ? images : SAMPLE;
-  const isSample = !(images && images.length);
+  const list = images && images.length ? images : PHOTOS;
+  const isSample = false;
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   const point = vars["--t-point"] ?? vars["--t-acc"];
 
