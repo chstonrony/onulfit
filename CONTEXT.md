@@ -34,6 +34,14 @@
 
 ## 세션 로그
 
+### 2026-06-13 세션 4 — 콘텐츠/SEO 기반 (A단계, 제휴 승인용 매체 콘텐츠)
+- **콘텐츠 시스템 신설**: lib/articles.ts + /guide(목록) + /guide/[slug](상세, SSG) + sitemap.ts + robots.ts
+- **가이드 글 5편**(styleGuide와 일관): golgyeok-self-check(골격 자가진단)·straight/wave/natural-styling(체형별 코디)·personal-color-guide(퍼스널컬러 4계절). 각 ## 소제목·리스트·코디공식, 진단 CTA·관련글 내부링크
+- 상세에 BlogPosting JSON-LD, canonical, OG. 홈 WelcomeGuide에 /guide 링크
+- 빌드 13/13 SSG, sitemap 7 URL, robots, 콘솔 0 검증
+- ⚠️ **글 분량 현재 ~650자(공백제외)** — 오늘무드 색인 기준(800자+)보다 가벼움. 품질·승인 위해 800자+로 확장 권장(운영자 감수 겸). 다음 루틴 후보
+- ※ 배포: 이번 세션 커밋들 **GitHub 미푸시 = 라이브 미반영**. push 시 Cloudflare Pages 빌드
+
 ### 2026-06-13 세션 3 — 비주얼(핀터레스트) + 제휴 코드 자리
 - **저작권 원칙 확정**: 인스타·핀터레스트 인플루언서/모델 사진 직접 호스팅 ❌(저작권+ToS, API로도 임의 피드 불가). → 합법 대안만 사용
 - **lib/lookboards.ts + components/Lookboard.tsx**: ① 핀터레스트 검색 딥링크 칩(승인·큐레이션 없이 즉시 작동 — 체형/컬러/교차/2025SS) ② 운영자 보드 큐레이션 시 임베드(CURATED_BOARDS에 URL 넣으면 pinit.js 임베드 활성). 진단 리포트에 LOOKBOOK 섹션으로 노출

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Message, OutfitRecommendation } from "@/lib/types";
 import { THEMES, DEFAULT_MOOD, MoodKey } from "@/lib/themes";
 import ChatBubble from "@/components/ChatBubble";
@@ -416,6 +417,21 @@ function WelcomeGuide({
         </p>
       </div>
       <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
+
+      {/* 스타일 가이드 내부 링크 (SEO·체류) */}
+      <Link
+        href="/guide"
+        style={{
+          display: "inline-block",
+          marginTop: "20px",
+          fontFamily: "var(--font-noto-sans), sans-serif",
+          fontSize: "12.5px",
+          color: "var(--t-acc)",
+          textDecoration: "none",
+        }}
+      >
+        체형·퍼스널컬러 코디법 가이드 보기 →
+      </Link>
     </div>
   );
 }
