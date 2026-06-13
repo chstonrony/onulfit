@@ -142,8 +142,8 @@ export default function SituationSelector({ onSelect, isLoading, vars }: Situati
         })}
       </div>
 
-      {/* ── 상황 리스트 ── */}
-      <div className="flex flex-col">
+      {/* ── 상황 리스트 (에디토리얼 카드) ── */}
+      <div className="flex flex-col" style={{ gap: "9px" }}>
         {current.situations.map((s, i) => (
           <SituationRow
             key={s.label}
@@ -184,27 +184,26 @@ function SituationRow({
       onMouseLeave={() => setHovered(false)}
       className="flex items-center text-left w-full"
       style={{
-        padding: "11px 0",
-        background: "none",
-        border: "none",
-        borderBottom: `1px solid ${vars["--t-bdr"]}`,
+        padding: "15px 17px",
+        background: hovered ? "var(--t-bai)" : "var(--t-side)",
+        border: `1px solid ${hovered ? vars["--t-acc"] : vars["--t-bdr"]}`,
+        borderRadius: "14px",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.3 : 1,
         transition: "all 0.18s ease",
         gap: "14px",
       }}
     >
-      {/* 번호 */}
+      {/* 번호 — 세리프 이탤릭, 액센트 원 */}
       <span
         style={{
           fontFamily: "var(--font-cormorant), Georgia, serif",
           fontStyle: "italic",
-          fontWeight: 400,
-          fontSize: "13px",
-          letterSpacing: "0.05em",
-          color: hovered ? vars["--t-acc"] : vars["--t-sub"],
-          opacity: 0.7,
-          minWidth: "20px",
+          fontWeight: 500,
+          fontSize: "15px",
+          letterSpacing: "0.02em",
+          color: vars["--t-acc"],
+          minWidth: "22px",
           transition: "color 0.18s ease",
           flexShrink: 0,
         }}
@@ -212,31 +211,31 @@ function SituationRow({
         {String(index).padStart(2, "0")}
       </span>
 
-      {/* 상황 이름 — Noto Sans KR: 모바일 가독성 최우선 */}
+      {/* 상황 이름 — 고운바탕 세리프(에디토리얼 톤) */}
       <span
         style={{
-          fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
+          fontFamily: "var(--font-gowun), 'Batang', serif",
           fontWeight: 400,
-          fontSize: "15px",
-          letterSpacing: "0.02em",
-          color: hovered ? vars["--t-acc"] : vars["--t-txt"],
+          fontSize: "16px",
+          letterSpacing: "0.01em",
+          color: vars["--t-txt"],
           flex: 1,
           transition: "all 0.18s ease",
           wordBreak: "keep-all",
-          lineHeight: 1.5,
+          lineHeight: 1.45,
         }}
       >
         {label}
       </span>
 
-      {/* 화살표 */}
+      {/* 화살표 — 모바일에서도 항상 보이게 (살아있는 느낌) */}
       <span
         style={{
           fontFamily: "var(--font-jost), sans-serif",
-          fontSize: "11px",
+          fontSize: "13px",
           color: vars["--t-acc"],
-          opacity: hovered ? 1 : 0,
-          transform: hovered ? "translateX(0)" : "translateX(-4px)",
+          opacity: hovered ? 1 : 0.5,
+          transform: hovered ? "translateX(2px)" : "translateX(0)",
           transition: "all 0.18s ease",
           flexShrink: 0,
         }}
