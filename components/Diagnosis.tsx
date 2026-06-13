@@ -15,6 +15,8 @@ import {
 } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
 import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
+import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
+import Lookboard from "./Lookboard";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -324,6 +326,9 @@ function ResultView({
           <MiniRow label="데님" value={cg.denim} txt={txt} sub={sub} sans={sans} />
         </div>
       </div>
+
+      {/* 룩북 — 핀터레스트 비주얼 레퍼런스 */}
+      <Lookboard vars={vars} chips={lookboardChips(body, color)} boardUrl={CURATED_BOARDS.byBody[body] || CURATED_BOARDS.trend} />
 
       {cross && (
         <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.85, lineHeight: 1.7, marginBottom: "18px", wordBreak: "keep-all", padding: "12px 14px", border: `1px solid ${acc}`, borderRadius: "10px", backgroundColor: "var(--t-bai)" }}>
