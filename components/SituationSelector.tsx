@@ -202,7 +202,7 @@ function SituationRow({
           fontWeight: 500,
           fontSize: "15px",
           letterSpacing: "0.02em",
-          color: vars["--t-acc"],
+          color: vars["--t-point"] ?? vars["--t-acc"],
           minWidth: "22px",
           transition: "color 0.18s ease",
           flexShrink: 0,
@@ -233,7 +233,7 @@ function SituationRow({
         style={{
           fontFamily: "var(--font-jost), sans-serif",
           fontSize: "13px",
-          color: vars["--t-acc"],
+          color: vars["--t-point"] ?? vars["--t-acc"],
           opacity: hovered ? 1 : 0.5,
           transform: hovered ? "translateX(2px)" : "translateX(0)",
           transition: "all 0.18s ease",

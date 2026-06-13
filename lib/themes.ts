@@ -47,6 +47,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#FAF8F5",
+      "--t-point": "#B89A6A",
       "--t-side": "#F0EBE3",
       "--t-bdr":  "#E5E0D8",
       "--t-bu":   "#E8DDD0",
@@ -79,6 +80,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#F5EFE6",
+      "--t-point": "#C4945A",
       "--t-side": "#EAE3D8",
       "--t-bdr":  "#D8D0C4",
       "--t-bu":   "#DDD5C8",
@@ -111,6 +113,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#2C2825",
+      "--t-point": "#C4A882",
       "--t-side": "#1E1A17",
       "--t-bdr":  "rgba(250,248,245,0.12)",
       "--t-bu":   "#3D3530",
@@ -143,6 +146,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#3A1020",
+      "--t-point": "#D4A5A5",
       "--t-side": "#2A0D1A",
       "--t-bdr":  "rgba(212,165,165,0.22)",
       "--t-bu":   "#4A1528",
@@ -175,6 +179,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#0E0E0E",
+      "--t-point": "#C9A96E",
       "--t-side": "#0A0A0A",
       "--t-bdr":  "rgba(201,169,110,0.22)",
       "--t-bu":   "#1A1A1A",
