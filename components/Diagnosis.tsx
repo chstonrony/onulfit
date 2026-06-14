@@ -22,6 +22,23 @@ import Lookboard from "./Lookboard";
 
 type Step = "intro" | "body" | "color" | "result";
 
+/* 색 이름 → 실제 hex (퍼스널컬러 칩 시각화) */
+const COLOR_HEX: Record<string, string> = {
+  "코랄": "#F4826F", "피치": "#FBC9A8", "아이보리": "#EFE7D6", "카멜": "#C19A6B",
+  "라이트 옐로우": "#F0E2A0", "애플 그린": "#9DBE4A", "라이트 카키": "#BDB484", "터콰이즈": "#3FC9C0",
+  "블랙": "#222222", "차콜": "#3A4750", "버건디": "#6E2A3A", "탁한 회색": "#8E8B86",
+  "로즈": "#CE6E80", "라벤더": "#B39DDB", "스카이 블루": "#8DC6E8", "소프트 그레이": "#C2BEB8",
+  "오프화이트": "#F1EBE0", "베이비 핑크": "#F2C4CC", "민트": "#A6E0C6", "연보라": "#C7B6E6",
+  "머스타드": "#D2A017", "다크 브라운": "#4A3528", "오렌지": "#E8843A",
+  "올리브": "#6F7D3A", "브라운": "#7A5230", "테라코타": "#C66B47", "카키": "#88824F",
+  "딥 그린": "#2E4D38", "와인": "#71303A", "형광색": "#C6F542", "쨍한 핑크": "#F5379E",
+  "퓨어 화이트": "#FBFAF7", "네이비": "#26324F", "그레이": "#9B9B9B", "푸시아": "#C8377E",
+  "로열 블루": "#2E54C8", "에메랄드": "#2E8B6E", "베이지": "#D6C5A8",
+};
+function colorHex(name: string): string {
+  return COLOR_HEX[name] ?? "#C9C2B8";
+}
+
 /* 결 심볼 마크 (onulfit 로고에서 심볼만 추출, 테마 색 적용) */
 function GyeolMark({ color, size = 18 }: { color: string; size?: number }) {
   return (
@@ -390,7 +407,10 @@ function ResultView({
         <p style={{ fontFamily: sans, fontSize: "11px", color: txt, opacity: 0.6, marginBottom: "6px" }}>베스트 컬러</p>
         <div className="flex flex-wrap gap-1.5 mb-3">
           {cg.bestColors.map((c) => (
-            <span key={c} style={{ fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 10px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all" }}>{c}</span>
+            <span key={c} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all" }}>
+              <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(c), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0 }} />
+              {c}
+            </span>
           ))}
         </div>
         <TagRow label="피하면 좋아요" items={cg.worstColors} color={sub} bdr={bdr} sans={sans} />
@@ -464,7 +484,8 @@ function TagRow({ label, items, color, bdr, sans }: { label: string; items: stri
       <p style={{ fontFamily: sans, fontSize: "11px", color, opacity: 0.6, marginBottom: "6px" }}>{label}</p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((it) => (
-          <span key={it} style={{ fontFamily: sans, fontSize: "12px", color, padding: "4px 10px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all" }}>
+          <span key={it} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all", opacity: 0.7 }}>
+            <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(it), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0, opacity: 0.6 }} />
             {it}
           </span>
         ))}
