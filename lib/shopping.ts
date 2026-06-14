@@ -37,8 +37,15 @@ export function getZigzagUrl(keyword: string): string {
   return withAffiliate(`https://zigzag.kr/search?query=${encodeURIComponent(keyword)}`);
 }
 
+/* ── W컨셉 제휴 (링크프라이스 승인 완료) ──
+   딥링크: bestmore.net/click.php?m=wconcept&a={제휴ID}&l=9999&l_cd1=3&l_cd2=0&tu={타겟URL}
+   tu 에 W컨셉 URL을 인코딩해 넣으면 추적+수수료 적립. */
+const WCONCEPT_AID = "A100705248";
+export function wconceptLink(targetUrl: string): string {
+  return `https://bestmore.net/click.php?m=wconcept&a=${WCONCEPT_AID}&l=9999&l_cd1=3&l_cd2=0&tu=${encodeURIComponent(targetUrl)}`;
+}
 export function getWConceptUrl(keyword: string): string {
-  return withAffiliate(`https://www.wconcept.co.kr/Search?keyword=${encodeURIComponent(keyword)}`);
+  return wconceptLink(`https://www.wconcept.co.kr/Search?keyword=${encodeURIComponent(keyword)}`);
 }
 
 /** 29cm 검색 (제휴 후보 추가) */

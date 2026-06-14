@@ -19,6 +19,7 @@ import { GYEOL } from "@/lib/gyeol";
 import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
+import { getWConceptUrl } from "@/lib/shopping";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -420,6 +421,41 @@ function ResultView({
           <MiniRow label="메이크업" value={cg.makeup} txt={txt} sub={sub} sans={sans} />
           <MiniRow label="데님" value={cg.denim} txt={txt} sub={sub} sans={sans} />
         </div>
+      </div>
+
+      {/* 쇼핑 — W컨셉 제휴 (내 컬러로 골라보기) */}
+      <div style={cardStyle}>
+        {kicker("SHOP · 내 컬러로 쇼핑")}
+        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "12px", wordBreak: "keep-all" }}>
+          {cm.label} 컬러로 골라봤어요. 마음에 드는 걸 눌러 W컨셉에서 둘러보세요.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {["원피스", "블라우스", "니트", "팬츠", "스커트"].map((item) => {
+            const kw = `${cg.bestColors[0]} ${item}`;
+            return (
+              <a
+                key={item}
+                href={getWConceptUrl(kw)}
+                target="_blank"
+                rel="noopener noreferrer sponsored"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "7px",
+                  fontFamily: sans, fontSize: "13px", color: txt,
+                  padding: "9px 14px 9px 10px",
+                  border: `1px solid ${acc}`, borderRadius: "999px",
+                  textDecoration: "none", wordBreak: "keep-all",
+                }}
+              >
+                <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(cg.bestColors[0]), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0 }} />
+                {kw}
+                <span style={{ color: acc }}>→</span>
+              </a>
+            );
+          })}
+        </div>
+        <p style={{ fontFamily: sans, fontSize: "11px", color: sub, opacity: 0.7, lineHeight: 1.6, marginTop: "12px", wordBreak: "keep-all" }}>
+          * 제휴 마케팅의 일환으로, 위 링크를 통한 구매 시 오늘핏에 일정 수수료가 적립될 수 있어요.
+        </p>
       </div>
 
       {/* 룩북 — 핀터레스트 비주얼 레퍼런스 */}
