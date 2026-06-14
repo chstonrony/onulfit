@@ -51,14 +51,14 @@ export default function GuidePage() {
 
         <div style={{ borderTop: "1px solid #ECE6DD", marginTop: "8px", paddingTop: "32px" }}>
           <Link
-            href="/"
+            href="/?diag=1"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center", height: "52px",
               fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "14px", fontWeight: 500,
               color: "#fff", backgroundColor: "#2C2825", borderRadius: "12px", textDecoration: "none",
             }}
           >
-            내 체형·컬러 무료로 진단받기 →
+            무료로 내 결 찾기 →
           </Link>
         </div>
       </div>

@@ -47,6 +47,15 @@ export default function Home() {
     setProfile(getProfile());
   }, []);
 
+  // /guide 등에서 ?diag=1 로 진입하면 진단 자동 오픈 (URL은 정리)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (new URLSearchParams(window.location.search).get("diag") === "1") {
+      setShowDiag(true);
+      window.history.replaceState(null, "", "/");
+    }
+  }, []);
+
   const handleSubmit = async (situation: string) => {
     const userMsg: Message = {
       id: crypto.randomUUID(),
