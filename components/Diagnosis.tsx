@@ -22,6 +22,18 @@ import Lookboard from "./Lookboard";
 
 type Step = "intro" | "body" | "color" | "result";
 
+/* 결 심볼 마크 (onulfit 로고에서 심볼만 추출, 테마 색 적용) */
+function GyeolMark({ color, size = 18 }: { color: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 72 72" fill="none" aria-hidden="true" style={{ flexShrink: 0, display: "block" }}>
+      <circle cx="36" cy="36" r="26" stroke={color} strokeWidth="3.2" />
+      <path d="M36 14 C36 14 36 12 36 11" stroke={color} strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M36 11 C36 11 31 11 29.5 13.5 C28 16 30.5 18.5 36 18.5 C41.5 18.5 44.5 21 43.5 24.5 C42.5 28 36 30 29 34.5 C25.5 37 24 39.5 25 42 C26 44.5 30 46 36 46 C42 46 46 44.5 47 42" stroke={color} strokeWidth="3.2" strokeLinecap="round" fill="none" />
+      <circle cx="36" cy="11" r="3" fill={color} />
+    </svg>
+  );
+}
+
 interface Props {
   vars: Record<string, string>;
   onComplete: (p: Profile) => void;
@@ -87,8 +99,9 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
         className="flex items-center justify-between px-6 py-4 flex-shrink-0"
         style={{ borderBottom: `1px solid ${bdr}` }}
       >
-        <span style={{ fontFamily: sans, fontSize: "13px", fontWeight: 500, color: txt, letterSpacing: "0.02em" }}>
-          {GYEOL.glyph} 결의 진단
+        <span style={{ display: "flex", alignItems: "center", gap: "7px", fontFamily: sans, fontSize: "13px", fontWeight: 500, color: txt, letterSpacing: "0.02em" }}>
+          <GyeolMark color={txt} size={18} />
+          결의 진단
         </span>
         <button
           onClick={onClose}
@@ -102,7 +115,7 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
       <div className="flex-1 px-6 py-8 max-w-[560px] mx-auto w-full">
         {step === "intro" && (
           <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-            <span style={{ fontSize: "44px", display: "block", marginBottom: "20px" }}>{GYEOL.glyph}</span>
+            <div style={{ marginBottom: "20px" }}><GyeolMark color={acc} size={46} /></div>
             <p style={{ fontFamily: serif, fontSize: "22px", lineHeight: 1.6, color: txt, wordBreak: "keep-all", marginBottom: "28px" }}>
               {GYEOL.diagIntro}
             </p>
