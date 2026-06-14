@@ -398,28 +398,26 @@ function WelcomeGuide({
   return (
     <div className="py-2">
 
-      {/* ── 히어로 — 룩 타일 반복 콜라주 (핀터레스트 보드 감성) + 카피 ── */}
+      {/* ── 히어로 — AI 에디토리얼 화보 (단일) + 카피 ── */}
       <div className="bubble-enter" style={{ marginBottom: "28px" }}>
         <div style={{ position: "relative", width: "100%", borderRadius: "18px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
-          {/* 룩 타일 그리드 — 얼굴보다 룩·무드 위주(전신·워킹·뒷모습) */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3px", height: "490px" }}>
-            {["/moodboard/1.jpg", "/moodboard/5.jpg", "/moodboard/6.jpg", "/moodboard/8.jpg", "/moodboard/3.jpg", "/moodboard/7.jpg"].map((src, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={i} src={src} alt="" loading={i < 2 ? "eager" : "lazy"}
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-            ))}
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/lookbook/hero-main.jpg"
+            alt="오늘핏 — 오늘의 룩"
+            style={{ width: "100%", height: "520px", objectFit: "cover", objectPosition: "center 22%", display: "block" }}
+          />
           {/* 그라디언트 + 카피 */}
           <div style={{
             position: "absolute", inset: 0,
             display: "flex", flexDirection: "column", justifyContent: "flex-end",
-            padding: "22px",
-            background: "linear-gradient(to top, rgba(20,16,12,0.86), rgba(20,16,12,0.32) 46%, rgba(20,16,12,0.28))",
+            padding: "24px 22px",
+            background: "linear-gradient(to top, rgba(28,22,16,0.82), rgba(28,22,16,0.18) 42%, transparent 70%)",
           }}>
-            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.78)", marginBottom: "8px" }}>
+            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.82)", marginBottom: "8px" }}>
               ONULFIT · AI STYLIST
             </p>
-            <h1 style={{ fontFamily: serif, fontSize: "27px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 14px rgba(0,0,0,0.45)" }}>
+            <h1 style={{ fontFamily: serif, fontSize: "28px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 16px rgba(0,0,0,0.5)" }}>
               오늘 뭐 입지,<br />그 고민은 결에게
             </h1>
           </div>
