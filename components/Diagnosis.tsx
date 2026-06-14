@@ -20,6 +20,7 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import { getWConceptUrl } from "@/lib/shopping";
+import CompletedLook from "./CompletedLook";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -422,6 +423,9 @@ function ResultView({
           <MiniRow label="데님" value={cg.denim} txt={txt} sub={sub} sans={sans} />
         </div>
       </div>
+
+      {/* 완성 코디 — 결이 큐레이션한 룩 (상품 조합) */}
+      <CompletedLook color={color} body={body} vars={vars} />
 
       {/* 쇼핑 — W컨셉 제휴 (내 컬러로 골라보기) */}
       <div style={cardStyle}>
