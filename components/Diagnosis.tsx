@@ -117,7 +117,8 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
             kicker={`골격 ${qIdx + 1} / ${BODY_QUESTIONS.length}`}
             intro={qIdx === 0 ? GYEOL.bodyIntro : undefined}
             question={BODY_QUESTIONS[qIdx].prompt}
-            options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, onClick: () => pickBody(o.value as BodyType) }))}
+            kind="body"
+            options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickBody(o.value as BodyType) }))}
             vars={vars}
           />
         )}
@@ -127,7 +128,8 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
             kicker={`컬러 ${qIdx + 1} / ${COLOR_QUESTIONS.length}`}
             intro={qIdx === 0 ? GYEOL.colorIntro : undefined}
             question={COLOR_QUESTIONS[qIdx].prompt}
-            options={COLOR_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, onClick: () => pickColor(o.value as "warm" | "cool" | "light" | "deep") }))}
+            kind="color"
+            options={COLOR_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickColor(o.value as "warm" | "cool" | "light" | "deep") }))}
             vars={vars}
           />
         )}
@@ -144,13 +146,15 @@ function QuestionView({
   kicker,
   intro,
   question,
+  kind,
   options,
   vars,
 }: {
   kicker: string;
   intro?: string;
   question: string;
-  options: { label: string; onClick: () => void }[];
+  kind: "body" | "color";
+  options: { label: string; value: string; onClick: () => void }[];
   vars: Record<string, string>;
 }) {
   const txt = vars["--t-txt"];
@@ -180,8 +184,11 @@ function QuestionView({
             onClick={o.onClick}
             style={{
               width: "100%",
+              display: "flex",
+              alignItems: "center",
+              gap: "16px",
               textAlign: "left",
-              padding: "16px 18px",
+              padding: "14px 16px",
               fontFamily: sans,
               fontSize: "14px",
               lineHeight: 1.5,
@@ -198,11 +205,45 @@ function QuestionView({
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = acc; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
-            {o.label}
+            <span style={{ flexShrink: 0, width: "52px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <OptionVisual kind={kind} value={o.value} acc={acc} />
+            </span>
+            <span style={{ flex: 1 }}>{o.label}</span>
           </button>
         ))}
       </div>
     </div>
+  );
+}
+
+function OptionVisual({ kind, value, acc }: { kind: "body" | "color"; value: string; acc: string }) {
+  if (kind === "color") {
+    const PAL: Record<string, string[]> = {
+      warm: ["#D98E5E", "#C4945A", "#7E8A4E"],
+      cool: ["#D98FB8", "#7B9BD4", "#B0A5D4"],
+      light: ["#F4CBBA", "#BFE0EE", "#EBD89E"],
+      deep: ["#7A3142", "#26414F", "#5A4628"],
+    };
+    const cols = PAL[value] ?? ["#cccccc", "#bbbbbb", "#aaaaaa"];
+    return (
+      <svg width="50" height="44" viewBox="0 0 50 44" aria-hidden="true">
+        {cols.map((c, i) => (
+          <circle key={i} cx={11 + i * 14} cy="22" r="9.5" fill={c} stroke="rgba(0,0,0,0.08)" strokeWidth="0.5" />
+        ))}
+      </svg>
+    );
+  }
+  const BODY: Record<string, string> = {
+    straight: "M15,16 L29,16 L28,52 L16,52 Z",
+    wave: "M14,16 L30,16 L24,33 L28,52 L16,52 L20,33 Z",
+    natural: "M11,16 L33,16 L30,52 L14,52 Z",
+  };
+  const d = BODY[value] ?? BODY.straight;
+  return (
+    <svg width="44" height="60" viewBox="0 0 44 60" aria-hidden="true">
+      <circle cx="22" cy="9" r="5.5" fill={`${acc}14`} stroke={acc} strokeWidth="1.5" />
+      <path d={d} fill={`${acc}14`} stroke={acc} strokeWidth="1.5" strokeLinejoin="round" />
+    </svg>
   );
 }
 
