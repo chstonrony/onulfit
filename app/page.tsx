@@ -364,7 +364,7 @@ function ProfileChip({
   const hasProfile = !!profile;
   const labelText = hasProfile
     ? `내 결 · ${BODY_META[profile!.body].label} · ${COLOR_META[profile!.color].label}`
-    : `${GYEOL.glyph} 결에게 골격·퍼스널컬러 진단받기`;
+    : `결에게 골격·퍼스널컬러 진단받기`;
 
   return (
     <div className="flex-shrink-0 px-5 lg:px-6 pt-4">

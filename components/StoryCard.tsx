@@ -53,7 +53,7 @@ const StoryCard = forwardRef<HTMLDivElement, Props>(({ body, color }, ref) => {
         {/* 브랜드 */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 26 }}>
           <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 600, color: INK, letterSpacing: "-0.01em" }}>
-            🧵 오늘핏 · 결의 진단
+            오늘핏 · 결의 진단
           </span>
           <span style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: 8, color: GOLD, letterSpacing: "0.18em" }}>
             STYLE REPORT

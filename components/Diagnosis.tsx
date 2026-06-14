@@ -337,8 +337,9 @@ function ResultView({
 
   return (
     <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-      <p style={{ fontFamily: serif, fontSize: "20px", color: txt, marginBottom: "6px" }}>
-        {GYEOL.glyph} {GYEOL.resultLead}
+      <p style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: serif, fontSize: "20px", color: txt, marginBottom: "6px" }}>
+        <GyeolMark color={acc} size={20} />
+        {GYEOL.resultLead}
       </p>
 
       {/* 조합 페르소나 (있을 때) */}

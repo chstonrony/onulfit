@@ -8,7 +8,7 @@
 
 export const GYEOL = {
   name: "결",
-  glyph: "🧵", // 실타래 — 천의 결. 추후 일러스트로 교체
+  glyph: "", // 이모지 제거 — 로고 심볼(GyeolMark)로 대체
   tagline: "당신에게 어울리는 결을 찾아드려요",
 
   /** 진단 시작 인트로 */
@@ -24,7 +24,7 @@ export const GYEOL = {
 
   /** 코디 결과지 화자 라벨/서명 */
   commentLabel: "결의 한 마디",
-  signature: "— 옷장 정령 결 🧵",
+  signature: "— 옷장 정령 결",
 
   /** 프로필 없이 코디 요청할 때 권유 */
   noProfileNudge:
