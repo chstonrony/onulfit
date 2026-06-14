@@ -39,6 +39,8 @@ export default function Home() {
   const vars = theme.vars;
 
   useEffect(() => {
+    // 웰컴 화면(메시지 없음)에선 히어로부터 보이도록 자동 스크롤 안 함
+    if (messages.length === 0) return;
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
