@@ -159,8 +159,8 @@ export default function Home() {
       ══════════════════════════════════════════ */}
       <div
         className={`
-          flex flex-col
-          lg:w-[460px] lg:min-w-[400px] lg:h-full lg:flex
+          flex flex-col flex-1 min-h-0
+          lg:flex-none lg:w-[460px] lg:min-w-[400px] lg:h-full lg:flex
           ${mobileTab === "chat" ? "flex" : "hidden lg:flex"}
         `}
         style={{
@@ -238,10 +238,10 @@ export default function Home() {
           <div ref={chatBottomRef} />
         </div>
 
-        {/* 입력창 */}
+        {/* 입력창 — 모바일 하단 탭바(약 64px) 위로 올라오게 여백 확보 */}
         <div
-          className="flex-shrink-0"
-          style={{ backgroundColor: "var(--t-side)" }}
+          className="flex-shrink-0 lg:!pb-0"
+          style={{ backgroundColor: "var(--t-side)", paddingBottom: "calc(64px + env(safe-area-inset-bottom))" }}
         >
           <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
