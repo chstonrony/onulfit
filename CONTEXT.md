@@ -34,6 +34,12 @@
 
 ## 세션 로그
 
+### 2026-06-15 세션 12 — 모바일 입력창 가시성 버그 + 카카오톡 공유 [배포 완료]
+- **입력창 버그 수정**(커밋 df14631): 모바일 좌측 컬럼에 높이 제약 없어 내부 스크롤 미작동 → 입력창("오늘의 상황을 알려주세요")이 콘텐츠 뒤 화면 밖(1676px)으로 밀림. `flex-1 min-h-0`(모바일)/`lg:flex-none` 추가 → 입력창 하단 고정·항상 노출. 입력창 래퍼에 탭바(64px) 여백 확보
+- **카카오톡 공유**(커밋 위): components/KakaoInit.tsx 신설 — `NEXT_PUBLIC_KAKAO_JS_KEY` 있으면 Kakao JS SDK(2.7.4) 로드+init. ShareButtons.handleKakao: 키 있으면 sendDefault 피드 카드(og-image.png·title·desc·코디추천받기 버튼), 없으면 navigator.share(모바일 카톡 포함)→링크복사 폴백. 기존 빈 app_key sharer URL(작동 안 함) 제거. layout에 <KakaoInit/> 마운트
+- 공유 버튼 위치: components/OutfitCard.tsx 하단 ShareButtons (코디 결과 생성 시 노출). og-image.png 라이브 200 확인
+- **운영자 액션 필요(리치 카드용)**: developers.kakao.com에서 앱 생성 → **JavaScript 키** → 플랫폼>Web에 https://onulfit.com 도메인 등록 → Vercel 환경변수 `NEXT_PUBLIC_KAKAO_JS_KEY` 등록 후 재배포. (키 없어도 네이티브 공유로 카톡 가능, 키 넣으면 노란 카카오 카드로 업그레이드)
+
 ### 2026-06-15 세션 11 — 홈 첫인상 구조·타이포 정돈 (어색함 점검) [배포 완료]
 - **문제(대표님 "어설퍼")**: 진단 결과 모바일 첫 화면에 MOOD 5알약(3줄 wrap)+프로필 칩이 사진보다 먼저 떠서 "설정패널 먼저" 느낌. 폰트 3종 혼재, 상황 탭 영어.
 - **상단 슬림화**: MoodSelector에 `compact` 프롭 추가(1줄 가로스크롤). 모바일 헤더 logo만+컴팩트 무드, 로고 132px로 키움 → 히어로가 거의 즉시 노출
@@ -168,4 +174,4 @@
 - [ ] **F. 옷장 사진 코디** (수익 아님·차별화): Claude 비전. 가장 무겁고 비용 큼 → 맨 나중, 유료 기능 후보
 - [ ] 결 일러스트 확정(🧵 대체), OutfitCard에 결 코멘트 화자 강화
 
-*마지막 업데이트: 2026-06-15 (세션 11)*
+*마지막 업데이트: 2026-06-15 (세션 12)*
