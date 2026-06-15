@@ -135,7 +135,7 @@ export default function Home() {
           모바일 전용 헤더 (lg 이상에서 숨김)
       ══════════════════════════════════════════ */}
       <header
-        className="lg:hidden flex-shrink-0 flex items-center justify-between px-5 py-4"
+        className="lg:hidden flex-shrink-0 flex flex-col gap-2.5 px-5 py-3"
         style={{
           backgroundColor: "var(--t-side)",
           borderBottom: "1px solid var(--t-bdr)",
@@ -145,13 +145,13 @@ export default function Home() {
           key={getLogoSrc(mood)}
           src={getLogoSrc(mood)}
           alt="OnulFit"
-          width={120}
-          height={36}
+          width={140}
+          height={42}
           priority
           unoptimized
-          style={{ width: "110px", height: "auto", display: "block" }}
+          style={{ width: "132px", height: "auto", display: "block" }}
         />
-        <MoodSelector selected={mood} onChange={setMood} vars={vars} />
+        <MoodSelector selected={mood} onChange={setMood} vars={vars} compact />
       </header>
 
       {/* ══════════════════════════════════════════
@@ -194,13 +194,15 @@ export default function Home() {
           <MoodSelector selected={mood} onChange={setMood} vars={vars} />
         </header>
 
-        {/* 결 프로필 칩 — 진단 진입점 */}
-        <ProfileChip profile={profile} vars={vars} onOpen={() => setShowDiag(true)} />
+        {/* 결 프로필 칩 — 진단 진입점 (데스크탑 전용 / 모바일은 히어로 아래로 이동) */}
+        <div className="hidden lg:block">
+          <ProfileChip profile={profile} vars={vars} onOpen={() => setShowDiag(true)} />
+        </div>
 
         {/* 채팅 히스토리 */}
         <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
           {!hasMessages && (
-            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => setShowDiag(true)} />
+            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => setShowDiag(true)} profile={profile} />
           )}
 
           {messages.map((msg) => (
@@ -397,16 +399,22 @@ function WelcomeGuide({
   isLoading,
   vars,
   onDiagnose,
+  profile,
 }: {
   onExample: (s: string) => void;
   isLoading: boolean;
   vars: Record<string, string>;
   onDiagnose: () => void;
+  profile: Profile | null;
 }) {
   const serif = "var(--font-gowun), 'Batang', serif";
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   const point = vars["--t-point"] ?? vars["--t-acc"];
   const acc = vars["--t-acc"];
+  const hasProfile = !!profile;
+  const profileLabel = hasProfile
+    ? `내 결 · ${BODY_META[profile!.body].label} · ${COLOR_META[profile!.color].label}`
+    : `결에게 골격·퍼스널컬러 진단받기`;
   return (
     <div className="py-2">
 
@@ -419,34 +427,26 @@ function WelcomeGuide({
           <img
             src="/hero-main.png"
             alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", height: "500px", objectFit: "cover", objectPosition: "center 30%", display: "block" }}
+            style={{ width: "100%", height: "548px", objectFit: "cover", objectPosition: "center 26%", display: "block" }}
           />
+          {/* 사진 위 헤드라인 — 가운데 고딕, 가볍게 툭 */}
           <div style={{
             position: "absolute", inset: 0,
-            display: "flex", flexDirection: "column", justifyContent: "space-between",
-            padding: "18px",
-            background: "linear-gradient(to bottom, rgba(20,16,12,0.22), transparent 24%, transparent 64%, rgba(20,16,12,0.42))",
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+            textAlign: "center", padding: "22px",
+            background: "radial-gradient(ellipse 85% 55% at 50% 50%, rgba(18,13,9,0.55), rgba(18,13,9,0.14) 58%, transparent 78%)",
           }}>
-            <span style={{
-              alignSelf: "flex-start",
-              fontFamily: sans, fontSize: "11px", fontWeight: 500, letterSpacing: "0.05em",
-              color: "#fff", backgroundColor: "rgba(255,255,255,0.16)",
-              WebkitBackdropFilter: "blur(8px)", backdropFilter: "blur(8px)",
-              padding: "7px 13px", borderRadius: "999px",
-            }}>오늘의 무드</span>
-            <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic", fontSize: "17px", color: "rgba(255,255,255,0.96)", textShadow: "0 1px 10px rgba(0,0,0,0.4)" }}>
-              onulfit
-            </span>
+            <h1 style={{ fontFamily: sans, fontSize: "40px", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.015em", color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}>
+              오늘 뭐 입지?
+            </h1>
+            <p style={{ fontFamily: sans, fontSize: "23px", fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.01em", color: "#fff", margin: "7px 0 0", wordBreak: "keep-all", textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}>
+              ‘그 고민은, <span style={{ borderBottom: `2.5px solid ${acc}`, paddingBottom: "2px" }}>결</span>에게’
+            </p>
           </div>
         </div>
 
-        {/* 헤드라인 */}
-        <h1 style={{ fontFamily: serif, fontSize: "29px", fontWeight: 400, lineHeight: 1.32, color: "var(--t-txt)", margin: "22px 2px 0", wordBreak: "keep-all" }}>
-          오늘 뭐 입지,<br />그 고민은 <span style={{ color: acc }}>결</span>에게
-        </h1>
-
         {/* 서브카피 */}
-        <p style={{ fontFamily: serif, fontSize: "15px", lineHeight: 1.8, color: "var(--t-txt)", opacity: 0.75, margin: "12px 2px 18px", wordBreak: "keep-all" }}>
+        <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.75, color: "var(--t-txt)", opacity: 0.72, margin: "24px 2px 20px", wordBreak: "keep-all" }}>
           체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 딱 1분이면 돼요.
         </p>
 
@@ -461,6 +461,28 @@ function WelcomeGuide({
         >
           무료로 내 결 찾기 →
         </button>
+
+        {/* 모바일 전용 — 내 결(프로필) 칩: 진단 완료 시에만 표시 (CTA와 중복 방지) */}
+        {hasProfile && (
+          <button
+            onClick={onDiagnose}
+            className="lg:hidden"
+            style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+              marginTop: "12px", padding: "12px 15px",
+              backgroundColor: "var(--t-card)",
+              border: `1px solid ${acc}`,
+              borderRadius: "14px", cursor: "pointer", textAlign: "left",
+            }}
+          >
+            <span style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 500, color: "var(--t-txt)", wordBreak: "keep-all" }}>
+              {profileLabel}
+            </span>
+            <span style={{ fontFamily: sans, fontSize: "11px", color: acc, flexShrink: 0 }}>
+              다시 진단 ✎
+            </span>
+          </button>
+        )}
       </div>
 
       {/* ── 상황별 코디 ── */}
@@ -468,7 +490,7 @@ function WelcomeGuide({
         <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: point, marginBottom: "6px" }}>
           BY SITUATION
         </p>
-        <p style={{ fontFamily: serif, fontSize: "18px", color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
+        <p style={{ fontFamily: sans, fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
           오늘, 어떤 자리예요?
         </p>
       </div>

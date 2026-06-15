@@ -111,22 +111,22 @@ export default function SituationSelector({ onSelect, isLoading, vars }: Situati
               key={cat.en}
               onClick={() => setActiveCategory(i)}
               style={{
-                fontFamily: "var(--font-cormorant), Georgia, serif",
-                fontStyle: "italic",
-                fontWeight: isActive ? 500 : 400,
-                fontSize: "17px",
-                letterSpacing: "0.02em",
+                fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
+                fontWeight: isActive ? 600 : 400,
+                fontSize: "15px",
+                letterSpacing: "-0.01em",
                 color: isActive ? vars["--t-txt"] : vars["--t-sub"],
-                opacity: isActive ? 1 : 0.45,
+                opacity: isActive ? 1 : 0.5,
                 background: "none",
                 border: "none",
                 padding: "2px 0",
                 cursor: "pointer",
                 position: "relative",
                 transition: "all 0.2s ease",
+                wordBreak: "keep-all",
               }}
             >
-              {cat.en}
+              {cat.category}
               {isActive && (
                 <span style={{
                   position: "absolute",
@@ -211,13 +211,13 @@ function SituationRow({
         {String(index).padStart(2, "0")}
       </span>
 
-      {/* 상황 이름 — 고운바탕 세리프(에디토리얼 톤) */}
+      {/* 상황 이름 — Pretendard (UI 통일) */}
       <span
         style={{
-          fontFamily: "var(--font-gowun), 'Batang', serif",
-          fontWeight: 400,
-          fontSize: "16px",
-          letterSpacing: "0.01em",
+          fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
+          fontWeight: 500,
+          fontSize: "15px",
+          letterSpacing: "-0.01em",
           color: vars["--t-txt"],
           flex: 1,
           transition: "all 0.18s ease",
