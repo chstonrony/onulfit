@@ -34,6 +34,14 @@
 
 ## 세션 로그
 
+### 2026-06-15 세션 8 — 타이포 개편 (폰트 정체성) [배포 완료]
+- **문제**: 대표님 — 전체 디자인이 눈에 안 띔 + "에브리데이 폰트" 안 어울림. 확인 결과 ① 본문 Jost(템플릿 느낌)+한글 Noto Sans(기본값) ② 무드 헤더(ColorPalette) 대형 이탤릭 "Everyday"가 모바일에서 과대
+- **layout.tsx**: 디스플레이/라벨 폰트 **Jost 제거 → Fraunces**(패션 매거진 세리프, 변수 --font-cormorant 유지해 인라인 참조 무수정). 한글 본문 **Noto Sans KR → Pretendard**(globals.css CDN @import + <html> 인라인 style로 --font-noto-sans 재배선, --font-jost→var(--font-cormorant))
+- **ColorPalette.tsx**: 무드명 clamp(62~92px)→clamp(36~60px) 축소. 최종 대표님 지정 — **OnulFit 로고와 동일 서체 Georgia 이탤릭**(로고 SVG가 Georgia italic). 이탤릭 정자 논의 후 로고 통일로 확정
+- 검증: 로컬 dev(3200) 모바일 393px 스샷 비교(데모 강제→원복), 라이브 onulfit.com 200·HTML 인라인 "Pretendard Variable" 확인. 커밋 5686173, `vercel --prod`
+- ※ 프리뷰(vercel 비-prod) URL은 Deployment Protection으로 401 → 폰 확인 불가라 프로덕션 직접 배포함
+- **다음**: 시그니처 컬러 + 대비 강화("눈에 확 띄게")는 별도 시안 후 진행 예정(폰트만으론 임팩트 부족 — 색·대비 문제)
+
 ### 2026-06-15 세션 7 — 무신사·지그재그 검색 링크 실작동 수정 [배포 완료]
 - **증상**: ItemCard의 무신사·지그재그·W컨셉 버튼은 이미 노출돼 있었으나, 검색 키워드에 색상어·성별어가 붙어(`아이보리 실크 블라우스 여성`) 클릭 시 결과 0~몇 건 → "링크 눌렀는데 아무것도 없음"
 - **shopping.ts**: `normalizeKeyword()` 추가(성별어 제거+공백 정리, LLM 생성분까지 보호). 무신사 검색 URL `/search/musinsa/goods?q=` → `/search/goods?keyword=`(옛 308→새 200 확인). zigzag/W컨셉/29cm도 정규화 적용
@@ -134,4 +142,4 @@
 - [ ] **F. 옷장 사진 코디** (수익 아님·차별화): Claude 비전. 가장 무겁고 비용 큼 → 맨 나중, 유료 기능 후보
 - [ ] 결 일러스트 확정(🧵 대체), OutfitCard에 결 코멘트 화자 강화
 
-*마지막 업데이트: 2026-06-15 (세션 7)*
+*마지막 업데이트: 2026-06-15 (세션 8)*
