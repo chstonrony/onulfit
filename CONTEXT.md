@@ -34,6 +34,14 @@
 
 ## 세션 로그
 
+### 2026-06-15 세션 7 — 무신사·지그재그 검색 링크 실작동 수정 [배포 완료]
+- **증상**: ItemCard의 무신사·지그재그·W컨셉 버튼은 이미 노출돼 있었으나, 검색 키워드에 색상어·성별어가 붙어(`아이보리 실크 블라우스 여성`) 클릭 시 결과 0~몇 건 → "링크 눌렀는데 아무것도 없음"
+- **shopping.ts**: `normalizeKeyword()` 추가(성별어 제거+공백 정리, LLM 생성분까지 보호). 무신사 검색 URL `/search/musinsa/goods?q=` → `/search/goods?keyword=`(옛 308→새 200 확인). zigzag/W컨셉/29cm도 정규화 적용
+- **mockData.ts**: 데모 searchKeyword 전부 품목 위주로 단축(`새틴 미디 스커트 베이지 여성`→`새틴 미디 스커트` 등)
+- **claude.ts**: SYSTEM_PROMPT에 "searchKeyword = 짧은 품목 키워드 2~3단어, 색·성별어 제외" 규칙 명시(예: 누드 스트랩 힐 여성 베이지→스트랩 힐)
+- 로컬 빌드 통과(12/12) → `vercel --prod` 배포(dpl_5UfXxnY8…, READY), onulfit.com 200·zigzag 검색 200 확인. 커밋 dd33641
+- ※ 직전 배포 에러는 빌드/CLI 문제 아니었음(이번 로컬 빌드·vercel 로그인 정상). 현 시점 정상 배포됨
+
 ### 2026-06-15 세션 6 — 첫인상 리디자인 + W컨셉 제휴 연결 (수익 구조 첫 가동) [전부 배포]
 - **메인 히어로 AI 화보**: 미드저니 생성 패션 화보(베이지 트렌치·아이보리 니트·와이드 팬츠)를 단일 풀화면 히어로로(콜라주 폐기). 4컷 `public/lookbook/`(hero-main + look-a/b/c). objectPosition center 22%. 대표님: 일상 스냅 콜라주 임팩트 약함 → AI 화보로
 - **진단 선택지 시각화**(Diagnosis.tsx): 골격 선택지에 체형 실루엣 SVG(straight/wave/natural), 컬러 선택지에 색 스와치. QuestionView에 kind+value 전달. OptionVisual 컴포넌트
@@ -126,4 +134,4 @@
 - [ ] **F. 옷장 사진 코디** (수익 아님·차별화): Claude 비전. 가장 무겁고 비용 큼 → 맨 나중, 유료 기능 후보
 - [ ] 결 일러스트 확정(🧵 대체), OutfitCard에 결 코멘트 화자 강화
 
-*마지막 업데이트: 2026-06-15 (세션 6)*
+*마지막 업데이트: 2026-06-15 (세션 7)*
