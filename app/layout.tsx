@@ -5,6 +5,7 @@ import {
   Noto_Sans_KR,
 } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import KakaoInit from "@/components/KakaoInit";
 import "./globals.css";
 
 /* ── 영문 디스플레이 세리프 (Fraunces — 패션 매거진 톤) ──
@@ -114,6 +115,7 @@ export default function RootLayout({
         />
       </head>
       <body className="h-full">{children}</body>
+      <KakaoInit />
       <GoogleAnalytics gaId="G-01XNX2CRQD" />
     </html>
   );

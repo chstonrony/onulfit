@@ -36,12 +36,11 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
 
   /* ── 카카오톡 공유 ── */
   const handleKakao = () => {
-    type KakaoWindow = Window & { Kakao?: { isInitialized: () => boolean; Share: { sendDefault: (opts: unknown) => void } } };
+    type KakaoWindow = Window & { Kakao?: { isInitialized?: () => boolean; Share: { sendDefault: (opts: unknown) => void } } };
     const kakaoWindow = window as KakaoWindow;
-    // 카카오 SDK가 로드된 경우
-    if (typeof window !== "undefined" && kakaoWindow.Kakao?.isInitialized()) {
-      const Kakao = kakaoWindow.Kakao!;
-      Kakao.Share.sendDefault({
+    // 카카오 SDK 로드 + 초기화된 경우 → 풍성한 카드 공유
+    if (typeof window !== "undefined" && kakaoWindow.Kakao?.isInitialized?.()) {
+      kakaoWindow.Kakao!.Share.sendDefault({
         objectType: "feed",
         content: {
           title: "OnulFit — 오늘, 어떤 나를 찾으세요",
@@ -55,11 +54,10 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
           { title: "코디 추천 받기", link: { mobileWebUrl: shareUrl, webUrl: shareUrl } },
         ],
       });
-    } else {
-      // SDK 없으면 카카오톡 공유 URL scheme 사용
-      const kakaoUrl = `https://sharer.kakao.com/talk/friends/picker/link?app_key=&url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-      window.open(kakaoUrl, "_blank", "width=500,height=600");
+      return;
     }
+    // SDK/키 미설정 → 모바일 네이티브 공유(카카오톡 포함) → 데스크탑은 링크 복사
+    handleNativeShare();
   };
 
   /* ── 네이티브 공유 (모바일) ── */
