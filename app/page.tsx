@@ -406,44 +406,57 @@ function WelcomeGuide({
   const serif = "var(--font-gowun), 'Batang', serif";
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   const point = vars["--t-point"] ?? vars["--t-acc"];
+  const acc = vars["--t-acc"];
   return (
     <div className="py-2">
 
-      {/* ── 히어로 — AI 에디토리얼 화보 (단일) + 카피 ── */}
-      <div className="bubble-enter" style={{ marginBottom: "28px" }}>
-        <div style={{ position: "relative", width: "100%", borderRadius: "18px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
+      {/* ── 히어로 — 클린 에디토리얼 (인스타 피드 감성) ── */}
+      <div className="bubble-enter" style={{ marginBottom: "30px" }}>
+
+        {/* 풀블리드 이미지 + 미니멀 오버레이 */}
+        <div style={{ position: "relative", width: "100%", borderRadius: "22px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/lookbook/hero-main.jpg"
+            src="/hero-main.png"
             alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", height: "520px", objectFit: "cover", objectPosition: "center 22%", display: "block" }}
+            style={{ width: "100%", height: "500px", objectFit: "cover", objectPosition: "center 30%", display: "block" }}
           />
-          {/* 그라디언트 + 카피 */}
           <div style={{
             position: "absolute", inset: 0,
-            display: "flex", flexDirection: "column", justifyContent: "flex-end",
-            padding: "24px 22px",
-            background: "linear-gradient(to top, rgba(28,22,16,0.82), rgba(28,22,16,0.18) 42%, transparent 70%)",
+            display: "flex", flexDirection: "column", justifyContent: "space-between",
+            padding: "18px",
+            background: "linear-gradient(to bottom, rgba(20,16,12,0.22), transparent 24%, transparent 64%, rgba(20,16,12,0.42))",
           }}>
-            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.24em", textTransform: "uppercase", color: "rgba(255,255,255,0.82)", marginBottom: "8px" }}>
-              ONULFIT · AI STYLIST
-            </p>
-            <h1 style={{ fontFamily: serif, fontSize: "28px", fontWeight: 400, lineHeight: 1.35, color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 1px 16px rgba(0,0,0,0.5)" }}>
-              오늘 뭐 입지,<br />그 고민은 결에게
-            </h1>
+            <span style={{
+              alignSelf: "flex-start",
+              fontFamily: sans, fontSize: "11px", fontWeight: 500, letterSpacing: "0.05em",
+              color: "#fff", backgroundColor: "rgba(255,255,255,0.16)",
+              WebkitBackdropFilter: "blur(8px)", backdropFilter: "blur(8px)",
+              padding: "7px 13px", borderRadius: "999px",
+            }}>오늘의 무드</span>
+            <span style={{ fontFamily: "var(--font-cormorant), Georgia, serif", fontStyle: "italic", fontSize: "17px", color: "rgba(255,255,255,0.96)", textShadow: "0 1px 10px rgba(0,0,0,0.4)" }}>
+              onulfit
+            </span>
           </div>
         </div>
 
-        {/* 서브카피 + CTA */}
-        <p style={{ fontFamily: serif, fontSize: "15px", lineHeight: 1.85, letterSpacing: "0.01em", color: "var(--t-txt)", opacity: 0.78, margin: "18px 2px 16px", wordBreak: "keep-all" }}>
-          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 1분이면 돼요.
+        {/* 헤드라인 */}
+        <h1 style={{ fontFamily: serif, fontSize: "29px", fontWeight: 400, lineHeight: 1.32, color: "var(--t-txt)", margin: "22px 2px 0", wordBreak: "keep-all" }}>
+          오늘 뭐 입지,<br />그 고민은 <span style={{ color: acc }}>결</span>에게
+        </h1>
+
+        {/* 서브카피 */}
+        <p style={{ fontFamily: serif, fontSize: "15px", lineHeight: 1.8, color: "var(--t-txt)", opacity: 0.75, margin: "12px 2px 18px", wordBreak: "keep-all" }}>
+          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 딱 1분이면 돼요.
         </p>
+
+        {/* CTA — 테라코타 포인트 */}
         <button
           onClick={onDiagnose}
           style={{
             width: "100%", height: "54px",
             fontFamily: sans, fontSize: "14px", fontWeight: 500, letterSpacing: "0.02em",
-            color: "#fff", backgroundColor: "var(--t-txt)", border: "none", borderRadius: "14px", cursor: "pointer",
+            color: "#fff", backgroundColor: acc, border: "none", borderRadius: "14px", cursor: "pointer",
           }}
         >
           무료로 내 결 찾기 →
