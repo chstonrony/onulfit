@@ -34,6 +34,12 @@
 
 ## 세션 로그
 
+### 2026-06-15 세션 9 — 시그니처 컬러(테라코타) + Pretendard 로딩 버그 수정 [배포 완료]
+- **시그니처 컬러**: everyday 테마 포인트색이 사실상 먹색(--t-acc #2C2825)이라 "눈에 안 띔". 3안(와인/테라코타/딥로즈)을 로컬 dev에 실제 입혀 모바일 스샷 비교 → 대표님 **테라코타(#B0512E)** 선택. --t-point #C2683F, 보조텍스트 대비 #9B8E85→#6E635B. 활성 무드 알약·CTA·칩·하단탭 등 --t-acc 구동부 전반에 적용(themes.ts everyday만 변경, 타 무드 유지)
+- **Pretendard 로딩 버그(중요)**: 세션8에서 globals.css `@import url(pretendard)`로 넣었으나 Tailwind v4 `@import "tailwindcss"` 전개 뒤로 밀려 "@import must precede all rules" 위반 → dev 500, **프로덕션선 한글 본문이 폴백 폰트로 표시 중이었음**(인라인 --font-noto-sans 변수만 있고 폰트 파일 미로드). globals.css @import 제거 + layout.tsx `<head><link rel=stylesheet>`로 교체 → dev `document.fonts.check` true 확인
+- 검증: 빌드 통과, 로컬 모바일 스샷(테라코타·Pretendard), 라이브 onulfit.com 200·Pretendard link 노출·#B0512E 번들 반영. 커밋 fb08405, `vercel --prod`
+- **다음 후보**: 대비 추가 손질(로고/서브텍스트), CTA·결과 카드에 테라코타 활용 확대, 다른 무드 테마도 포인트색 점검
+
 ### 2026-06-15 세션 8 — 타이포 개편 (폰트 정체성) [배포 완료]
 - **문제**: 대표님 — 전체 디자인이 눈에 안 띔 + "에브리데이 폰트" 안 어울림. 확인 결과 ① 본문 Jost(템플릿 느낌)+한글 Noto Sans(기본값) ② 무드 헤더(ColorPalette) 대형 이탤릭 "Everyday"가 모바일에서 과대
 - **layout.tsx**: 디스플레이/라벨 폰트 **Jost 제거 → Fraunces**(패션 매거진 세리프, 변수 --font-cormorant 유지해 인라인 참조 무수정). 한글 본문 **Noto Sans KR → Pretendard**(globals.css CDN @import + <html> 인라인 style로 --font-noto-sans 재배선, --font-jost→var(--font-cormorant))
@@ -142,4 +148,4 @@
 - [ ] **F. 옷장 사진 코디** (수익 아님·차별화): Claude 비전. 가장 무겁고 비용 큼 → 맨 나중, 유료 기능 후보
 - [ ] 결 일러스트 확정(🧵 대체), OutfitCard에 결 코멘트 화자 강화
 
-*마지막 업데이트: 2026-06-15 (세션 8)*
+*마지막 업데이트: 2026-06-15 (세션 9)*
