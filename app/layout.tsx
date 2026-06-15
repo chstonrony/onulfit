@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Cormorant_Garamond,
+  Fraunces,
   Gowun_Batang,
-  Jost,
   Noto_Sans_KR,
 } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
-/* ── 영문 세리프 ── */
-const cormorant = Cormorant_Garamond({
+/* ── 영문 디스플레이 세리프 (Fraunces — 패션 매거진 톤) ──
+   변수명은 기존 --font-cormorant 유지: 인라인 참조를 그대로 두고 폰트만 교체 */
+const fraunces = Fraunces({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300", "400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -26,15 +26,7 @@ const gowunBatang = Gowun_Batang({
   preload: false,
 });
 
-/* ── 영문 산세리프 ── */
-const jost = Jost({
-  variable: "--font-jost",
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500"],
-  display: "swap",
-});
-
-/* ── 한글 산세리프 ── */
+/* ── 한글 본문 (Noto Sans → 인라인 style에서 Pretendard로 재배선) ── */
 const notoSans = Noto_Sans_KR({
   variable: "--font-noto-sans",
   subsets: ["latin"],
@@ -106,7 +98,14 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${cormorant.variable} ${gowunBatang.variable} ${jost.variable} ${notoSans.variable} h-full`}
+      className={`${fraunces.variable} ${gowunBatang.variable} ${notoSans.variable} h-full`}
+      style={{
+        /* 라벨/산세리프(구 Jost) → 디스플레이 세리프(Fraunces)로 통일 */
+        ["--font-jost" as string]: "var(--font-cormorant)",
+        /* 한글 본문 → Pretendard (기본값 Noto Sans 탈피) */
+        ["--font-noto-sans" as string]:
+          '"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif',
+      } as React.CSSProperties}
     >
       <body className="h-full">{children}</body>
       <GoogleAnalytics gaId="G-01XNX2CRQD" />

@@ -27,17 +27,17 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
       {/* ── 에디토리얼 무드 헤더 ── */}
       <div style={{ marginBottom: "20px" }}>
 
-        {/* 대형 이탤릭 무드 이름 */}
+        {/* 무드 이름 — OnulFit 로고와 동일 서체(Georgia 이탤릭) */}
         <p
           style={{
-            fontFamily: "var(--font-cormorant), Georgia, serif",
+            fontFamily: "Georgia, 'Times New Roman', serif",
             fontStyle: "italic",
-            fontWeight: 300,
-            fontSize: "clamp(62px, 10vw, 92px)",
-            letterSpacing: "-0.03em",
-            lineHeight: 0.88,
+            fontWeight: 400,
+            fontSize: "clamp(36px, 8vw, 60px)",
+            letterSpacing: "0.01em",
+            lineHeight: 1.0,
             color: "var(--t-txt)",
-            marginBottom: "14px",
+            marginBottom: "10px",
             userSelect: "none",
           }}
         >
