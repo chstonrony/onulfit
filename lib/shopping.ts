@@ -29,12 +29,28 @@ function withAffiliate(url: string): string {
   return u.toString();
 }
 
+/* 검색 키워드 정규화 — 안전망.
+   품목에서 멀어진 수식어(성별어 등)가 붙으면 쇼핑몰 검색 결과가 0건이 되어
+   "링크 눌렀는데 아무것도 없는" 현상이 생긴다. 성별어를 떼고 공백을 정리해
+   품목 중심 키워드로 만들어 결과가 비지 않도록 한다.
+   (데이터 단계에서 이미 짧은 키워드를 쓰지만, LLM 생성분까지 보호) */
+const GENDER_WORDS = ["여성", "여자", "남성", "남자", "우먼", "women", "woman"];
+export function normalizeKeyword(keyword: string): string {
+  return keyword
+    .split(/\s+/)
+    .filter((w) => w && !GENDER_WORDS.includes(w))
+    .join(" ")
+    .trim();
+}
+
 export function getMusinsaUrl(keyword: string): string {
-  return withAffiliate(`https://www.musinsa.com/search/musinsa/goods?q=${encodeURIComponent(keyword)}&gender=female`);
+  const kw = encodeURIComponent(normalizeKeyword(keyword));
+  return withAffiliate(`https://www.musinsa.com/search/goods?keyword=${kw}&gender=female`);
 }
 
 export function getZigzagUrl(keyword: string): string {
-  return withAffiliate(`https://zigzag.kr/search?query=${encodeURIComponent(keyword)}`);
+  const kw = encodeURIComponent(normalizeKeyword(keyword));
+  return withAffiliate(`https://zigzag.kr/search?keyword=${kw}`);
 }
 
 /* ── W컨셉 제휴 (링크프라이스 승인 완료) ──
@@ -45,10 +61,12 @@ export function wconceptLink(targetUrl: string): string {
   return `https://bestmore.net/click.php?m=wconcept&a=${WCONCEPT_AID}&l=9999&l_cd1=3&l_cd2=0&tu=${encodeURIComponent(targetUrl)}`;
 }
 export function getWConceptUrl(keyword: string): string {
-  return wconceptLink(`https://www.wconcept.co.kr/Search?keyword=${encodeURIComponent(keyword)}`);
+  const kw = encodeURIComponent(normalizeKeyword(keyword));
+  return wconceptLink(`https://www.wconcept.co.kr/Search?keyword=${kw}`);
 }
 
 /** 29cm 검색 (제휴 후보 추가) */
 export function get29cmUrl(keyword: string): string {
-  return withAffiliate(`https://www.29cm.co.kr/search?keyword=${encodeURIComponent(keyword)}`);
+  const kw = encodeURIComponent(normalizeKeyword(keyword));
+  return withAffiliate(`https://www.29cm.co.kr/search?keyword=${kw}`);
 }
