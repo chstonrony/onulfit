@@ -107,6 +107,12 @@ export default function RootLayout({
           '"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif',
       } as React.CSSProperties}
     >
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+        />
+      </head>
       <body className="h-full">{children}</body>
       <GoogleAnalytics gaId="G-01XNX2CRQD" />
     </html>
