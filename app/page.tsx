@@ -274,7 +274,7 @@ export default function Home() {
           {isLoading ? (
             <LoadingState />
           ) : lastOutfit ? (
-            <OutfitCard outfit={lastOutfit} />
+            <OutfitCard outfit={lastOutfit} profile={profile} vars={vars} />
           ) : (
             <EmptyState onExample={handleSubmit} vars={vars} />
           )}

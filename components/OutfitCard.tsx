@@ -2,13 +2,17 @@ import { OutfitRecommendation } from "@/lib/types";
 import ItemCard from "./ItemCard";
 import ShareButtons from "./ShareButtons";
 import ConsultCTA from "./ConsultCTA";
+import CompletedLook from "./CompletedLook";
 import { getColorHex } from "@/lib/colors";
+import { Profile } from "@/lib/profile";
 
 interface OutfitCardProps {
   outfit: OutfitRecommendation;
+  profile?: Profile | null;
+  vars: Record<string, string>;
 }
 
-export default function OutfitCard({ outfit }: OutfitCardProps) {
+export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
   const LABEL: React.CSSProperties = {
     fontFamily: "var(--font-jost), sans-serif",
     fontWeight: 300,
@@ -104,6 +108,11 @@ export default function OutfitCard({ outfit }: OutfitCardProps) {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* W컨셉 완성 코디 (실사 상품 사진 + 가격 + 구매링크) */}
+      <div className="mt-8">
+        <CompletedLook color={profile?.color ?? ""} body={profile?.body ?? ""} vars={vars} />
       </div>
 
       {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
