@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import StoryCard from "./StoryCard";
+import ConsultCTA from "./ConsultCTA";
 import {
   BODY_QUESTIONS,
   COLOR_QUESTIONS,
@@ -501,6 +502,9 @@ function ResultView({
       <button onClick={onDone} style={ctaStyle(acc)}>
         코디 받으러 가기
       </button>
+
+      {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
+      <ConsultCTA />
 
       {/* 오프스크린 9:16 스토리 카드 (캡처용) */}
       <div style={{ position: "fixed", left: "-9999px", top: 0, pointerEvents: "none" }} aria-hidden>

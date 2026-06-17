@@ -1,6 +1,8 @@
 import { OutfitRecommendation } from "@/lib/types";
 import ItemCard from "./ItemCard";
 import ShareButtons from "./ShareButtons";
+import ConsultCTA from "./ConsultCTA";
+import { getColorHex } from "@/lib/colors";
 
 interface OutfitCardProps {
   outfit: OutfitRecommendation;
@@ -52,6 +54,16 @@ export default function OutfitCard({ outfit }: OutfitCardProps) {
         </p>
       </div>
 
+      {/* 오늘의 컬러 스토리 — 한눈에 보이는 비주얼 */}
+      <div className="mb-7">
+        <p style={LABEL} className="mb-3">오늘의 컬러</p>
+        <div className="flex gap-1.5" style={{ height: "54px", borderRadius: "14px", overflow: "hidden" }}>
+          {[outfit.items.top, outfit.items.bottom, outfit.items.outer, outfit.items.shoes, outfit.items.accessory].map((it, i) => (
+            <div key={i} title={it.color} style={{ flex: 1, backgroundColor: getColorHex(it.color) }} />
+          ))}
+        </div>
+      </div>
+
       {/* 아이템 그리드 */}
       <div className="space-y-4 mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -93,6 +105,9 @@ export default function OutfitCard({ outfit }: OutfitCardProps) {
           </div>
         </div>
       </div>
+
+      {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
+      <ConsultCTA />
 
       {/* 공유 버튼 */}
       <ShareButtons situation={outfit.situation} outfit={outfit.items.top.name} />
