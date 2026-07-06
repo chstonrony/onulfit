@@ -13,7 +13,7 @@ import MoodSelector from "@/components/MoodSelector";
 import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
-import OnulSeries from "@/components/series/OnulSeries";
+import ApplyCTA from "@/components/ApplyCTA";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
 
@@ -427,20 +427,26 @@ function WelcomeGuide({
           <img
             src="/hero-main.png"
             alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", height: "548px", objectFit: "cover", objectPosition: "center 26%", display: "block" }}
+            style={{ width: "100%", height: "548px", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.78) brightness(1.04)" }}
           />
-          {/* 사진 위 헤드라인 — 가운데 고딕, 가볍게 툭 */}
+          {/* 주황끼 중화 — 차분한 쿨뉴트럴 워시 (핀터레스트 무드) */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(150,152,158,0.14), rgba(150,152,158,0.20))", mixBlendMode: "saturation", pointerEvents: "none" }} />
+          {/* 사진 위 헤드라인 — 에디토리얼 세리프 (매거진 커버) */}
           <div style={{
             position: "absolute", inset: 0,
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             textAlign: "center", padding: "22px",
-            background: "radial-gradient(ellipse 85% 55% at 50% 50%, rgba(18,13,9,0.55), rgba(18,13,9,0.14) 58%, transparent 78%)",
+            background: "radial-gradient(ellipse 90% 62% at 50% 50%, rgba(20,20,24,0.50), rgba(20,20,24,0.12) 60%, transparent 80%)",
           }}>
-            <h1 style={{ fontFamily: sans, fontSize: "40px", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.015em", color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}>
+            <span style={{ fontFamily: "var(--font-cormorant), serif", fontStyle: "italic", fontSize: "15px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", marginBottom: "13px", textShadow: "0 1px 10px rgba(0,0,0,0.5)" }}>
+              Today&rsquo;s look
+            </span>
+            <span style={{ width: "32px", height: "1px", backgroundColor: "rgba(255,255,255,0.5)", marginBottom: "15px" }} />
+            <h1 style={{ fontFamily: "var(--font-gowun), 'Batang', serif", fontSize: "37px", fontWeight: 400, lineHeight: 1.3, letterSpacing: "0.01em", color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}>
               오늘 뭐 입지?
             </h1>
-            <p style={{ fontFamily: sans, fontSize: "23px", fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.01em", color: "#fff", margin: "7px 0 0", wordBreak: "keep-all", textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}>
-              ‘그 고민은, <span style={{ borderBottom: `2.5px solid ${acc}`, paddingBottom: "2px" }}>결</span>에게’
+            <p style={{ fontFamily: "var(--font-gowun), 'Batang', serif", fontSize: "18px", fontWeight: 400, lineHeight: 1.5, color: "rgba(255,255,255,0.92)", margin: "13px 0 0", wordBreak: "keep-all", textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}>
+              그 고민은, 결에게
             </p>
           </div>
         </div>
@@ -499,8 +505,8 @@ function WelcomeGuide({
       {/* 스타일 가이드 — 포인트 컬러 카드 (호버 시 반전) */}
       <GuideBanner vars={vars} />
 
-      {/* 오늘 시리즈 크로스링크 */}
-      <OnulSeries vars={vars} />
+      {/* 1:1 진단 신청 CTA (신청 폼 링크 설정 시에만 노출) */}
+      <ApplyCTA vars={vars} />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import { getWConceptUrl } from "@/lib/shopping";
 import CompletedLook from "./CompletedLook";
+import BeforeAfter from "./BeforeAfter";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -367,6 +368,9 @@ function ResultView({
           ))}
         </ul>
       </div>
+
+      {/* 체형별 비포/애프터 — 텍스트 가이드 전에 이미지로 먼저 설득 */}
+      <BeforeAfter body={body} vars={vars} />
 
       {/* 아이템별 가이드 (L1 핵심) */}
       <div style={cardStyle}>
