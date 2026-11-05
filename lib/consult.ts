@@ -20,3 +20,23 @@ export const KAKAO_CHANNEL_URL =
 /** 카카오 채널이 실제로 연결됐는지 (placeholder가 아닌지) */
 export const IS_CHANNEL_READY =
   !!process.env.NEXT_PUBLIC_KAKAO_CHANNEL_URL;
+
+/* ── 1:1 컨설팅 시범 운영 안내 (신청 페이지·개인정보처리방침이 함께 씀) ──
+   2026-11 결정: 사업자 등록 전 시범 운영. 가격·정확한 위치는 공개하지 않고 신청 후 개별 안내. */
+export const CONSULT_INFO = {
+  region: "경기 남양주 다산신도시",
+  place: "경기 남양주 다산신도시 · 개인 공간 (상세 위치는 일정 확정 후 안내)",
+  fee: "시범 기간 소정의 비용이 있어요. 금액은 신청 후 개별로 안내드려요.",
+  feeNote: "포트폴리오 사진·후기 게시에 동의하시면 할인해 드려요.",
+  cancel: "일정 변경·취소 규정은 일정 확정 시 함께 안내드려요.",
+} as const;
+
+/* ── 개인정보 수집·이용 안내 (신청서 동의 체크칸 + /privacy) ── */
+export const PRIVACY_VERSION = "2026-11-05";
+export const PRIVACY = {
+  items: "성함, 연락처(카톡 ID 또는 전화번호), 나이대, 거주 지역, 인스타 아이디(선택), 고민·원하는 변화·가능한 일정·하고 싶은 말(선택), 사진·후기 게시 동의 여부",
+  purpose: "1:1 컨설팅 신청 확인, 일정·장소·비용 안내 연락, 상담 진행",
+  retention: "신청일로부터 1년(상담을 진행한 경우 마지막 상담일로부터 1년) 보관 후 파기해요. 삭제를 요청하시면 바로 파기해요.",
+  refuse: "동의를 거부할 수 있어요. 다만 동의하지 않으면 신청서를 보낼 수 없어요.",
+  processor: "신청서는 Web3Forms(이메일 전송 서비스, 해외)를 거쳐 운영자 이메일로 전달돼요.",
+} as const;

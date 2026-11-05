@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
 import Link from "next/link";
-import { WEB3FORMS_KEY, IS_APPLY_READY } from "@/lib/consult";
+import { WEB3FORMS_KEY, IS_APPLY_READY, CONSULT_INFO, PRIVACY, PRIVACY_VERSION } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
 
 /* ── 1:1 진단 컨설팅 신청 페이지 ──
@@ -20,6 +20,14 @@ const SOFT = "#F7F4F0";
 const serif = "var(--font-cormorant), Georgia, serif";
 const gowun = "var(--font-gowun), 'Batang', serif";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+
+const STEPS = [
+  ["신청서 작성", "아래 신청서를 보내주세요."],
+  ["연락 드림", "적어주신 연락처로 일정·비용을 안내드려요."],
+  ["일정·장소 확정", "가능한 날짜를 맞추고, 상세 위치를 알려드려요."],
+  ["1:1 진단", "직접 만나 골격(체형)과 퍼스널컬러를 함께 봐요."],
+  ["결과 가이드", "나에게 맞는 색·핏·코디 방향을 정리해 드려요."],
+];
 
 const CONCERNS = [
   "퍼스널컬러를 모르겠다",
@@ -51,6 +59,7 @@ export default function ApplyPage() {
       원하는변화: fd.get("change"),
       가능한일정: fd.get("schedule"),
       "사진·후기 동의": fd.get("consent"),
+      "개인정보 수집·이용 동의": fd.get("privacy") ? `동의 (안내문 ${PRIVACY_VERSION})` : "미동의",
       하고싶은말: fd.get("message"),
     };
 
@@ -95,9 +104,51 @@ export default function ApplyPage() {
         </h1>
         <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 500, lineHeight: 1.75, color: SUB, margin: "12px 0 0", wordBreak: "keep-all" }}>
           퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요.
-          지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 특가).
+          지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 할인).
         </p>
-        <div style={{ height: "2px", background: INK, margin: "22px 0 0" }} />
+
+        {/* ── 시범 운영 안내 ── */}
+        <section style={{ marginTop: "26px", padding: "18px 18px 6px", background: CARD, border: `1px solid ${BDR}`, borderTop: `1px solid ${INK}`, borderRadius: "2px" }}>
+          <p className="ed-label" style={{ color: ACCENT, margin: 0 }}>Pilot · 시범 운영 중</p>
+          <p style={{ fontFamily: sans, fontSize: "17px", fontWeight: 800, letterSpacing: "-0.035em", lineHeight: 1.45, color: INK, margin: "8px 0 14px", wordBreak: "keep-all" }}>
+            내년 정식 오픈 전, 사례를 함께 만들어 갈 분을 모시고 있어요.
+          </p>
+          <dl style={{ margin: 0 }}>
+            {[
+              ["장소", CONSULT_INFO.place],
+              ["비용", `${CONSULT_INFO.fee} ${CONSULT_INFO.feeNote}`],
+              ["방식", "1:1 대면 진단 · 골격(체형) + 퍼스널컬러"],
+              ["변경·취소", CONSULT_INFO.cancel],
+            ].map(([k, v]) => (
+              <div key={k} style={{ display: "grid", gridTemplateColumns: "72px 1fr", gap: "10px", padding: "11px 0", borderTop: `1px solid ${BDR}` }}>
+                <dt style={{ fontFamily: sans, fontSize: "13px", fontWeight: 700, color: INK }}>{k}</dt>
+                <dd style={{ margin: 0, fontFamily: sans, fontSize: "13.5px", lineHeight: 1.65, color: SUB, wordBreak: "keep-all" }}>{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        {/* ── 진행 순서 ── */}
+        <section style={{ marginTop: "28px" }}>
+          <p style={{ display: "flex", alignItems: "baseline", gap: "10px", margin: "0 0 10px" }}>
+            <span className="ed-accent" style={{ fontSize: "24px", lineHeight: 1, color: ACCENT }}>How</span>
+            <span style={{ fontFamily: sans, fontSize: "17px", fontWeight: 800, letterSpacing: "-0.035em", color: INK }}>진행 순서</span>
+          </p>
+          <ol style={{ listStyle: "none", margin: 0, padding: 0, borderTop: `1px solid ${INK}` }}>
+            {STEPS.map(([t, d], i) => (
+              <li key={t} style={{ display: "grid", gridTemplateColumns: "34px 1fr", padding: "12px 0", borderBottom: `1px solid ${BDR}` }}>
+                <span style={{ fontFamily: "var(--font-grotesk), sans-serif", fontWeight: 800, fontSize: "12px", color: ACCENT, paddingTop: "3px" }}>{String(i + 1).padStart(2, "0")}</span>
+                <span>
+                  <span style={{ display: "block", fontFamily: sans, fontSize: "15px", fontWeight: 700, letterSpacing: "-0.025em", color: INK }}>{t}</span>
+                  <span style={{ display: "block", fontFamily: sans, fontSize: "13px", lineHeight: 1.6, color: SUB, wordBreak: "keep-all" }}>{d}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <div style={{ height: "1px", background: INK, margin: "30px 0 0" }} />
+        <p style={{ fontFamily: sans, fontSize: "17px", fontWeight: 800, letterSpacing: "-0.035em", color: INK, margin: "18px 0 0" }}>신청서</p>
 
         {!IS_APPLY_READY ? (
           <div style={{ marginTop: "28px", padding: "26px 22px", background: CARD, border: `1px solid ${BDR}`, borderRadius: "4px", fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, wordBreak: "keep-all" }}>
@@ -108,14 +159,14 @@ export default function ApplyPage() {
             <p style={{ fontFamily: serif, fontStyle: "italic", fontSize: "44px", lineHeight: 1, color: ACCENT, margin: 0 }}>Thank you</p>
             <p style={{ fontFamily: gowun, fontSize: "24px", color: INK, margin: "12px 0 8px", lineHeight: 1.4 }}>신청이 접수됐어요</p>
             <p style={{ fontFamily: sans, fontSize: "14px", color: SUB, lineHeight: 1.8, margin: 0, wordBreak: "keep-all" }}>
-              빠른 시일 내에 적어주신 연락처로 일정과 장소를 안내드릴게요.<br />당신의 결을 함께 찾는 시간, 곧 만나요.
+              빠른 시일 내에 적어주신 연락처로 일정·장소·비용을 안내드릴게요.<br />당신의 결을 함께 찾는 시간, 곧 만나요.
             </p>
             <Link href="/" className="ed-link" style={{ display: "inline-block", marginTop: "20px", fontFamily: sans, fontSize: "14px", fontWeight: 700, color: ACCENT }}>
               홈으로 돌아가기 →
             </Link>
           </div>
         ) : (
-          <form onSubmit={onSubmit} style={{ marginTop: "26px", display: "flex", flexDirection: "column", gap: "20px" }}>
+          <form onSubmit={onSubmit} style={{ marginTop: "16px", display: "flex", flexDirection: "column", gap: "20px" }}>
             <input type="checkbox" name="botcheck" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
 
             <Field label="성함" required>
@@ -131,7 +182,7 @@ export default function ApplyPage() {
               </select>
             </Field>
             <Field label="거주 지역 (세션 장소 안내용)">
-              <input name="region" placeholder="예) 서울 마포구" style={inputStyle} />
+              <input name="region" placeholder="예) 남양주 다산동, 구리시" style={inputStyle} />
             </Field>
             <Field label="인스타 아이디 (선택)">
               <input name="instagram" placeholder="@" style={inputStyle} />
@@ -154,7 +205,7 @@ export default function ApplyPage() {
               <input name="schedule" placeholder="예) 평일 오전, 주말 오후" style={inputStyle} />
             </Field>
 
-            <Field label="포트폴리오 사진·후기 게시에 동의하시나요? (모델 모집 조건)" required>
+            <Field label="포트폴리오 사진·후기 게시에 동의하시나요? (동의 시 할인)" required>
               <div style={{ display: "flex", gap: "16px", marginTop: "4px" }}>
                 <label style={chipLabel}><input type="radio" name="consent" value="예" required style={{ accentColor: ACCENT }} /> 예</label>
                 <label style={chipLabel}><input type="radio" name="consent" value="아니오" style={{ accentColor: ACCENT }} /> 아니오</label>
@@ -164,6 +215,33 @@ export default function ApplyPage() {
             <Field label="하고 싶은 말 (선택)">
               <textarea name="message" rows={3} style={{ ...inputStyle, height: "auto", padding: "12px 14px", resize: "vertical", lineHeight: 1.6 }} />
             </Field>
+
+            {/* ── 개인정보 수집·이용 동의 (필수) ── */}
+            <div style={{ border: `1px solid ${INK}`, borderRadius: "2px", background: CARD }}>
+              <label style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "14px 14px 12px", cursor: "pointer" }}>
+                <input type="checkbox" name="privacy" value="동의" required style={{ accentColor: ACCENT, width: "18px", height: "18px", marginTop: "2px", flexShrink: 0 }} />
+                <span style={{ fontFamily: sans, fontSize: "14.5px", fontWeight: 700, letterSpacing: "-0.025em", color: INK, lineHeight: 1.5 }}>
+                  <span style={{ color: ACCENT }}>[필수]</span> 개인정보 수집·이용에 동의합니다
+                </span>
+              </label>
+              <dl style={{ margin: 0, padding: "0 14px 12px" }}>
+                {[
+                  ["수집 항목", PRIVACY.items],
+                  ["이용 목적", PRIVACY.purpose],
+                  ["보유 기간", PRIVACY.retention],
+                  ["전달 방식", PRIVACY.processor],
+                  ["거부 권리", PRIVACY.refuse],
+                ].map(([k, v]) => (
+                  <div key={k} style={{ display: "grid", gridTemplateColumns: "64px 1fr", gap: "8px", padding: "7px 0", borderTop: `1px solid ${BDR}` }}>
+                    <dt style={{ fontFamily: sans, fontSize: "12px", fontWeight: 700, color: INK }}>{k}</dt>
+                    <dd style={{ margin: 0, fontFamily: sans, fontSize: "12px", lineHeight: 1.6, color: SUB, wordBreak: "keep-all" }}>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Link href="/privacy" target="_blank" className="ed-link" style={{ display: "inline-block", margin: "0 14px 14px", fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: ACCENT }}>
+                개인정보처리방침 전문 보기 →
+              </Link>
+            </div>
 
             {status === "error" && (
               <p style={{ fontFamily: sans, fontSize: "13px", color: "#C2502F", margin: 0 }}>
@@ -184,7 +262,7 @@ export default function ApplyPage() {
               {status === "sending" ? "보내는 중…" : "신청서 보내기"}
             </button>
             <p style={{ fontFamily: sans, fontSize: "11.5px", color: SUB, textAlign: "center", margin: 0, lineHeight: 1.7 }}>
-              제출하신 정보는 컨설팅 안내 목적으로만 사용돼요.
+              제출하신 정보는 컨설팅 안내 목적으로만 사용하고, 다른 곳에 제공하지 않아요.
             </p>
           </form>
         )}
