@@ -81,7 +81,7 @@ export default function ApplyPage() {
         </h1>
         <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, margin: "12px 0 0", wordBreak: "keep-all" }}>
           퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요.
-          7월, 포트폴리오 멤버를 먼저 모십니다(사진·후기 동의 시 특가).
+          지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 특가).
         </p>
         <div style={{ height: "2px", width: "46px", background: ACCENT, margin: "18px 0 0" }} />
 

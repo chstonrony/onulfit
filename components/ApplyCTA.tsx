@@ -55,7 +55,7 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
           wordBreak: "keep-all",
         }}
       >
-        퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요. 7월, 포트폴리오 멤버를 먼저 모십니다.
+        퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요. 지금은 포트폴리오 멤버를 먼저 모시고 있어요.
       </p>
       <a
         href="/apply"
