@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sendGAEvent } from "@next/third-parties/google";
 import { WEB3FORMS_KEY, IS_APPLY_READY } from "@/lib/consult";
 
 /* ── 1:1 진단 컨설팅 신청 페이지 ──
@@ -61,7 +62,15 @@ export default function ApplyPage() {
       });
       const data = await res.json();
       setStatus(data.success ? "done" : "error");
-      if (data.success) window.scrollTo({ top: 0, behavior: "smooth" });
+      if (data.success) {
+        // GA4 추천 이벤트 — 애널리틱스 관리 > 주요 이벤트에서 표시하면 전환으로 집계된다.
+        // 이름·연락처 같은 개인정보는 보내지 않는다(나이대만).
+        sendGAEvent("event", "generate_lead", {
+          form_name: "onulfit_apply",
+          age_group: fd.get("age") || "미선택",
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
     } catch {
       setStatus("error");
     }
