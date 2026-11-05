@@ -9,10 +9,10 @@ import { BlockButton } from "./Editorial";
    검색으로 가이드 글에 바로 들어온 사람을
    ① 무료 자가진단(홈 진단 오버레이 자동 오픈) ② 1:1 진단 신청으로 잇는다. */
 
-const INK = "#1B1714";
-const ACC = "#B44218";
-const PAPER = "#EDE8E2";
-const FILL = "#F0642F";
+const INK = "#1D1F16";
+const ACC = "#5A6122";
+const PAPER = "#ECEAE0";
+const FILL = "#BFC266";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
 export default function GuideCTA({ slug }: { slug: string }) {

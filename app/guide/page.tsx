@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://onulfit.com/guide" },
 };
 
-const INK = "#1B1714";
-const ACC = "#B44218";
-const SUB = "#6F665D";
-const PAPER = "#EDE8E2";
+const INK = "#1D1F16";
+const ACC = "#5A6122";
+const SUB = "#65665A";
+const PAPER = "#ECEAE0";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
 export default function GuidePage() {
@@ -73,7 +73,7 @@ export default function GuidePage() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "62px", padding: "0 18px",
               fontFamily: sans, fontSize: "16px", fontWeight: 700, letterSpacing: "-0.025em",
-              color: INK, backgroundColor: "#F0642F", borderRadius: "2px", textDecoration: "none",
+              color: INK, backgroundColor: "#BFC266", borderRadius: "2px", textDecoration: "none",
             }}
           >
             무료로 내 결 찾기 <span aria-hidden style={{ fontSize: "20px" }}>→</span>

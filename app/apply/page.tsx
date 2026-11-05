@@ -10,12 +10,12 @@ import { Wordmark } from "@/components/Editorial";
    인스타 bio 링크 → 이 페이지. 제출은 Web3Forms로 운영자 이메일에 도착.
    NEXT_PUBLIC_WEB3FORMS_KEY 가 없으면 "준비 중" 안내만 노출(빈 전송 방지). */
 
-const ACCENT = "#B44218";
-const INK = "#1B1714";
-const SUB = "#6F665D";
-const BDR = "#D9D1C7";
-const CARD = "#F7F4F0";
-const SOFT = "#F7F4F0";
+const ACCENT = "#5A6122";
+const INK = "#1D1F16";
+const SUB = "#65665A";
+const BDR = "#D6D3C3";
+const CARD = "#F6F5EE";
+const SOFT = "#F6F5EE";
 
 const serif = "var(--font-cormorant), Georgia, serif";
 const gowun = "var(--font-gowun), 'Batang', serif";
@@ -254,7 +254,7 @@ export default function ApplyPage() {
               disabled={status === "sending"}
               style={{
                 height: "60px", borderRadius: "2px", border: "none",
-                background: status === "sending" ? "#D9531E" : "#F0642F", color: INK,
+                background: status === "sending" ? "#A9AE4A" : "#BFC266", color: INK,
                 fontFamily: sans, fontWeight: 700, fontSize: "16px", letterSpacing: "-0.025em",
                 cursor: status === "sending" ? "default" : "pointer",
               }}

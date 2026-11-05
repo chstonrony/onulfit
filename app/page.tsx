@@ -166,7 +166,7 @@ export default function Home() {
       <div
         className={`
           flex flex-col flex-1 min-h-0
-          lg:flex-none lg:w-[460px] lg:min-w-[400px] lg:h-full lg:flex
+          lg:flex-none lg:w-[clamp(420px,calc((100svh-86px)*0.6),600px)] lg:h-full lg:flex
           ${mobileTab === "chat" ? "flex" : "hidden lg:flex"}
         `}
         style={{
@@ -176,36 +176,6 @@ export default function Home() {
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        {/* 데스크탑 전용 헤더 */}
-        <header
-          className="hidden lg:block flex-shrink-0 px-6 py-5"
-          style={{ borderBottom: "1px solid var(--t-txt)" }}
-        >
-          <div className="mb-5 flex items-center justify-between">
-            <Image
-              key={getLogoSrc(mood)}
-              src={getLogoSrc(mood)}
-              alt="OnulFit"
-              width={160}
-              height={48}
-              priority
-              unoptimized
-              style={{
-                width: "clamp(120px, 40vw, 160px)",
-                height: "auto",
-                display: "block",
-              }}
-            />
-            <TopNav />
-          </div>
-          <MoodSelector selected={mood} onChange={setMood} vars={vars} />
-        </header>
-
-        {/* 결 프로필 칩 — 진단 진입점 (데스크탑 전용 / 모바일은 히어로 아래로 이동) */}
-        <div className="hidden lg:block">
-          <ProfileChip profile={profile} vars={vars} onOpen={() => { track("diag_open", { where: "profile_chip" }); setShowDiag(true); }} />
-        </div>
-
         {/* 채팅 히스토리 */}
         <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
           {!hasMessages && (
@@ -265,6 +235,34 @@ export default function Home() {
         `}
         style={{ backgroundColor: "var(--t-bg)" }}
       >
+        {/* 데스크탑 헤더 — 모바일처럼 로고 · 메뉴 · 무드 탭을 한 줄로 (스크롤해도 위에 고정) */}
+        <header
+          className="hidden lg:block sticky top-0 z-20 flex-shrink-0"
+          style={{ backgroundColor: "var(--t-bg)", borderBottom: "1px solid var(--t-txt)" }}
+        >
+          <div className="px-12 pt-5 pb-3 max-w-[720px] mx-auto w-full flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <Image
+                key={getLogoSrc(mood)}
+                src={getLogoSrc(mood)}
+                alt="OnulFit"
+                width={160}
+                height={48}
+                priority
+                unoptimized
+                style={{ width: "128px", height: "auto", display: "block" }}
+              />
+              <TopNav />
+            </div>
+            <MoodSelector selected={mood} onChange={setMood} vars={vars} compact />
+          </div>
+        </header>
+
+        {/* 결 프로필 칩 — 진단 진입점 (데스크탑) */}
+        <div className="hidden lg:block max-w-[720px] mx-auto w-full lg:px-6 flex-shrink-0">
+          <ProfileChip profile={profile} vars={vars} onOpen={() => { track("diag_open", { where: "profile_chip" }); setShowDiag(true); }} />
+        </div>
+
         {/* 컬러 팔레트 */}
         <div
           className="px-6 lg:px-12 pt-8 lg:pt-10 pb-6 lg:pb-8 max-w-[720px] mx-auto w-full flex-shrink-0"
@@ -418,7 +416,7 @@ function ProfileChip({
   );
 }
 
-/* ── Welcome — 에디토리얼 홈 (오늘핏 로고 + 다홍 포인트 + 반듯한 블록) ── */
+/* ── Welcome — 에디토리얼 홈 (오늘핏 로고 + 올리브 포인트 + 반듯한 블록) ── */
 function WelcomeGuide({
   onExample,
   isLoading,

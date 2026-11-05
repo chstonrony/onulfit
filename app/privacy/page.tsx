@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://onulfit.com/privacy" },
 };
 
-const INK = "#1B1714";
-const ACC = "#B44218";
-const SUB = "#6F665D";
+const INK = "#1D1F16";
+const ACC = "#5A6122";
+const SUB = "#65665A";
 const BODY = "#2E2925";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
   ];
 
   return (
-    <main style={{ minHeight: "100dvh", background: "#EDE8E2", padding: "0 20px 72px", display: "flex", justifyContent: "center", ["--t-acc" as string]: ACC, ["--t-txt" as string]: INK }}>
+    <main style={{ minHeight: "100dvh", background: "#ECEAE0", padding: "0 20px 72px", display: "flex", justifyContent: "center", ["--t-acc" as string]: ACC, ["--t-txt" as string]: INK }}>
       <article style={{ width: "100%", maxWidth: "640px", paddingTop: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}`, marginBottom: "18px" }}>
           <Link href="/" className="ed-label ed-link" style={{ color: INK }}>← OnulFit</Link>
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
 
         <div style={{ marginTop: "26px", borderTop: `1px solid ${INK}` }}>
           {sections.map(([t, body]) => (
-            <section key={t} style={{ padding: "16px 0", borderBottom: `1px solid #D9D1C7` }}>
+            <section key={t} style={{ padding: "16px 0", borderBottom: `1px solid #D6D3C3` }}>
               <h2 style={{ fontFamily: sans, fontSize: "16px", fontWeight: 800, letterSpacing: "-0.03em", color: INK, margin: "0 0 6px" }}>{t}</h2>
               <p style={{ fontFamily: sans, fontSize: "14.5px", lineHeight: 1.8, color: BODY, margin: 0, wordBreak: "keep-all" }}>{body}</p>
             </section>

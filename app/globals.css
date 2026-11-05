@@ -2,15 +2,15 @@
 
 @theme inline {
   /* ── Palette (2026-11 에디토리얼 리뉴얼) ──
-     종이(paper) 바탕 + 잉크(ink) + 다홍 포인트(글자용 진한 톤 / 면용 밝은 톤) */
-  --color-cream:    #EDE8E2;
-  --color-sidebar:  #E6E0D9;
-  --color-sand:     #DCD3C8;
-  --color-snow:     #F7F4F0;
-  --color-border:   #D9D1C7;
-  --color-mocha:    #1B1714;
-  --color-subtext:  #6F665D;
-  --color-warm:     #B44218;
+     본(bone) 바탕 + 올리브 잉크 + 올리브 포인트(글자용 딥 올리브 / 면용 연올리브), 2026-11-06 다홍에서 교체 */
+  --color-cream:    #ECEAE0;
+  --color-sidebar:  #E4E2D5;
+  --color-sand:     #DAD8C9;
+  --color-snow:     #F6F5EE;
+  --color-border:   #D6D3C3;
+  --color-mocha:    #1D1F16;
+  --color-subtext:  #65665A;
+  --color-warm:     #5A6122;
 
   --font-heading: var(--font-gowun), sans-serif;
   --font-ko-serif: var(--font-gowun), sans-serif;
@@ -19,13 +19,13 @@
 }
 
 :root {
-  --ink: #1B1714;
-  --paper: #EDE8E2;
-  --paper-2: #F7F4F0;
-  --accent: #B44218;  /* 다홍(글자용, 종이 위 대비 4.6:1) */
-  --fill: #F0642F;    /* 밝은 다홍(면·버튼용, 위 글자는 잉크) */
-  --line: #D9D1C7;
-  --muted: #6F665D;
+  --ink: #1D1F16;
+  --paper: #ECEAE0;
+  --paper-2: #F6F5EE;
+  --accent: #5A6122;  /* 딥 올리브(글자용, 바탕 위 대비 5.5:1) */
+  --fill: #BFC266;    /* 연올리브(면·버튼용, 위 글자는 잉크 8.8:1) */
+  --line: #D6D3C3;
+  --muted: #65665A;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -69,7 +69,7 @@ input::placeholder {
   font-weight: 400;
   font-size: 14px;
   letter-spacing: -0.01em;
-  color: #9A9088;
+  color: #929282;
 }
 
 /* ── 타이포 규칙 (인라인 스타일 일괄 보정) ──────────────────
@@ -265,8 +265,8 @@ html .ed-reveal.is-in { opacity: 1; transform: none; }
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CFC5B9; border-radius: 0; }
+::-webkit-scrollbar-thumb { background: #C8C5B1; border-radius: 0; }
 
 /* 가이드 목록 — 줄 호버 시 종이색이 짙어지며 살짝 밀림 */
 html .guide-row { transition: background-color 0.4s var(--ease-out), padding 0.4s var(--ease-out); }
-.guide-row:hover { background-color: #E3DCD3; padding-left: 8px !important; padding-right: 8px !important; }
+.guide-row:hover { background-color: #E2E0D2; padding-left: 8px !important; padding-right: 8px !important; }

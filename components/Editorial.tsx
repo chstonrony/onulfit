@@ -116,7 +116,7 @@ export function SectionHead({
 }
 
 /** 흐르는 띠 문구 */
-export function Marquee({ items, bg = "var(--t-fill, #F0642F)", color = "var(--t-txt)" }: { items: string[]; bg?: string; color?: string }) {
+export function Marquee({ items, bg = "var(--t-fill, #BFC266)", color = "var(--t-txt)" }: { items: string[]; bg?: string; color?: string }) {
   const row = [...items, ...items, ...items];
   return (
     <div style={{ overflow: "hidden", background: bg, color, padding: "11px 0" }} aria-hidden>
@@ -164,7 +164,7 @@ export function BlockButton({
   style?: CSSProperties;
 }) {
   const [hover, setHover] = useState(false);
-  const bg = tone === "acc" ? "var(--t-fill, #F0642F)" : tone === "ink" ? "var(--t-txt)" : "var(--t-bg)";
+  const bg = tone === "acc" ? "var(--t-fill, #BFC266)" : tone === "ink" ? "var(--t-txt)" : "var(--t-bg)";
   const fg = tone === "acc" ? "var(--t-txt)" : tone === "ink" ? "var(--t-bg)" : "var(--t-txt)";
   const inner = (
     <>

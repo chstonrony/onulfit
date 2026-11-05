@@ -32,38 +32,38 @@ export interface Theme {
 
 export const THEMES: Record<MoodKey, Theme> = {
 
-  /* ── EVERYDAY: 종이 바탕 + 잉크 + 다홍 (2026-11 기본 테마) ──
-     --t-acc 는 글자·작은 버튼용 진한 다홍, --t-fill 은 면·큰 버튼용 밝은 다홍(위 글자는 잉크) */
+  /* ── EVERYDAY: 본(bone) 바탕 + 올리브 잉크 + 올리브 (2026-11-06 다홍 → 올리브, 첫 화면 복도 영상과 맞춤) ──
+     --t-acc 는 글자·작은 버튼용 딥 올리브, --t-fill 은 면·큰 버튼용 연올리브(위 글자는 잉크) */
   everyday: {
     key: "everyday",
     name: "Everyday",
-    dot: "#F0642F",
+    dot: "#A9AE4A",
     palette: [
       { name: "베이지",   hex: "#C9B99A" },
-      { name: "모카",    hex: "#7A5C4E" },
-      { name: "카키",    hex: "#8A8A68" },
+      { name: "올리브",  hex: "#6B6E3A" },
+      { name: "세이지",  hex: "#A7AB8E" },
       { name: "크림",    hex: "#F8F3EC" },
       { name: "그레이지", hex: "#B0AAA2" },
       { name: "오트밀",  hex: "#D2C6AE" },
     ],
     vars: {
-      "--t-bg":   "#EDE8E2",
-      "--t-point": "#B44218",
-      "--t-side": "#EDE8E2",
-      "--t-bdr":  "#D9D1C7",
-      "--t-bu":   "#E2DAD0",
-      "--t-bai":  "#F7F4F0",
-      "--t-baib": "#D9D1C7",
-      "--t-card": "#F7F4F0",
-      "--t-rsec": "#E6E0D9",
-      "--t-acc":  "#B44218",
-      "--t-fill": "#F0642F",
-      "--t-txt":  "#1B1714",
-      "--t-sub":  "#6F665D",
-      "--t-inp":  "#F7F4F0",
-      "--t-sk1":  "rgba(217,209,199,0.50)",
-      "--t-sk2":  "rgba(217,209,199,0.90)",
-      "--t-warm": "#CFC5B9",
+      "--t-bg":   "#ECEAE0",
+      "--t-point": "#5A6122",
+      "--t-side": "#ECEAE0",
+      "--t-bdr":  "#D6D3C3",
+      "--t-bu":   "#E1DFD1",
+      "--t-bai":  "#F6F5EE",
+      "--t-baib": "#D6D3C3",
+      "--t-card": "#F6F5EE",
+      "--t-rsec": "#E4E2D5",
+      "--t-acc":  "#5A6122",
+      "--t-fill": "#BFC266",
+      "--t-txt":  "#1D1F16",
+      "--t-sub":  "#65665A",
+      "--t-inp":  "#F6F5EE",
+      "--t-sk1":  "rgba(214,211,195,0.50)",
+      "--t-sk2":  "rgba(214,211,195,0.90)",
+      "--t-warm": "#C8C5B1",
     },
   },
 

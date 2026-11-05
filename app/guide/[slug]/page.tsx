@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import { ARTICLES, getArticle } from "@/lib/articles";
 import GuideCTA from "@/components/GuideCTA";
 
-const INK = "#1B1714";
-const ACC = "#B44218";
-const SUB = "#6F665D";
+const INK = "#1D1F16";
+const ACC = "#5A6122";
+const SUB = "#65665A";
 const BODY = "#2E2925";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
@@ -57,7 +57,7 @@ export default async function ArticlePage({ params }: Props) {
   };
 
   return (
-    <main style={{ minHeight: "100dvh", background: "#EDE8E2", padding: "0 20px 72px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <main style={{ minHeight: "100dvh", background: "#ECEAE0", padding: "0 20px 72px", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article style={{ width: "100%", maxWidth: "640px", paddingTop: "16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}` }}>

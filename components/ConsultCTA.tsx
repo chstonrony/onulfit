@@ -17,7 +17,7 @@ export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | 
       style={{
         marginTop: "32px",
         padding: "22px 20px 22px",
-        backgroundColor: "var(--t-fill, #F0642F)",
+        backgroundColor: "var(--t-fill, #BFC266)",
         color: "var(--t-txt)",
         borderRadius: "2px",
       }}

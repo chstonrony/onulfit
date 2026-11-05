@@ -12,11 +12,11 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 
 const W = 360;
 const H = 640;
-const BG = "#EDE8E2";
-const INK = "#1B1714";
-const GOLD = "#B44218";
-const SUB = "#6F665D";
-const LINE = "#D9D1C7";
+const BG = "#ECEAE0";
+const INK = "#1D1F16";
+const GOLD = "#5A6122";
+const SUB = "#65665A";
+const LINE = "#D6D3C3";
 
 interface Props {
   body: BodyType;

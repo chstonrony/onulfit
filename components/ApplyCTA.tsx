@@ -20,7 +20,7 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
         marginTop: "44px",
         marginBottom: "10px",
         padding: "22px 20px 24px",
-        backgroundColor: "var(--t-fill, #F0642F)",
+        backgroundColor: "var(--t-fill, #BFC266)",
         color: "var(--t-txt)",
       }}
     >
