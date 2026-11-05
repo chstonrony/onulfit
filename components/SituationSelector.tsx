@@ -179,7 +179,7 @@ function SituationRow({
       className="flex items-center text-left w-full"
       style={{
         padding: "16px 10px",
-        background: on ? vars["--t-acc"] : "transparent",
+        background: on ? (vars["--t-fill"] ?? vars["--t-acc"]) : "transparent",
         border: "none",
         borderBottom: `1px solid ${vars["--t-txt"]}`,
         borderRadius: 0,
@@ -195,7 +195,7 @@ function SituationRow({
           fontWeight: 700,
           fontSize: "12px",
           letterSpacing: "0.02em",
-          color: on ? vars["--t-bg"] : vars["--t-acc"],
+          color: on ? vars["--t-txt"] : vars["--t-acc"],
           minWidth: "22px",
           flexShrink: 0,
         }}
@@ -209,7 +209,7 @@ function SituationRow({
           fontWeight: 700,
           fontSize: "17px",
           letterSpacing: "-0.035em",
-          color: on ? vars["--t-bg"] : vars["--t-txt"],
+          color: vars["--t-txt"],
           flex: 1,
           transform: on ? "translateX(4px)" : "none",
           transition: "transform 0.45s var(--ease-out)",
@@ -228,7 +228,7 @@ function SituationRow({
           fontSize: "11px",
           letterSpacing: "0.06em",
           textTransform: "uppercase",
-          color: on ? vars["--t-bg"] : vars["--t-sub"],
+          color: on ? vars["--t-txt"] : vars["--t-sub"],
           flexShrink: 0,
         }}
       >
@@ -240,7 +240,7 @@ function SituationRow({
         style={{
           fontFamily: "var(--font-grotesk), sans-serif",
           fontSize: "18px",
-          color: on ? vars["--t-bg"] : vars["--t-txt"],
+          color: vars["--t-txt"],
           transform: on ? "translateX(3px)" : "none",
           transition: "transform 0.45s var(--ease-out)",
           flexShrink: 0,

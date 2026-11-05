@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode, type CSSProperties } from "react";
 
 /* ── 에디토리얼 공용 조각 (2026-11 리뉴얼) ──
-   레퍼런스: 큰 그로테스크 워드마크 + 굵은 가로줄 + 대문자 라벨 그리드.
+   오늘핏 원래 로고(결 심볼·이탤릭 세리프) 톤 + 다홍 포인트 + 반듯한 블록.
    색은 테마 변수(--t-*)를 따르므로 무드를 바꿔도 함께 바뀐다. */
 
 /** 스크롤로 화면에 들어올 때 아래에서 떠오르며 나타남 */
@@ -27,21 +27,49 @@ export function Reveal({ children, delay = 0, style }: { children: ReactNode; de
   );
 }
 
-/** 화면 폭을 꽉 채우는 대형 워드마크 (컨테이너 폭 기준으로 글자 크기 자동) */
-export function Wordmark({ text = "ONULFIT", color = "var(--t-acc)", size = 25.4, mark = true }: { text?: string; color?: string; size?: number; mark?: boolean }) {
+/** 오늘핏 원래 로고(결 심볼 + 이탤릭 OnulFit + AI STYLIST)를 색만 바꿀 수 있게 인라인 SVG로.
+    public/onulfit_logo_light.svg와 같은 도형·서체, 오른쪽 빈 여백만 잘라냄. */
+export function BrandLogo({ color = "var(--t-txt)", sub = "AI STYLIST", style }: { color?: string; sub?: string; style?: CSSProperties }) {
+  return (
+    <svg viewBox="8 8 206 58" role="img" aria-label="OnulFit" style={{ display: "block", width: "100%", height: "auto", color, ...style }}>
+      <circle cx="36" cy="36" r="26" stroke="currentColor" strokeWidth="1.2" fill="none" />
+      <path d="M36 14 C36 14 36 12 36 11" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M36 11 C36 11 31 11 29.5 13.5 C28 16 30.5 18.5 36 18.5 C41.5 18.5 44.5 21 43.5 24.5 C42.5 28 36 30 29 34.5 C25.5 37 24 39.5 25 42 C26 44.5 30 46 36 46 C42 46 46 44.5 47 42" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+      <circle cx="36" cy="11" r="1.8" fill="currentColor" />
+      <line x1="78" y1="22" x2="78" y2="50" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
+      <text x="92" y="46" fontFamily="Georgia, 'Times New Roman', serif" fontStyle="italic" fontSize="32" fill="currentColor" letterSpacing="1.5">
+        OnulFit
+      </text>
+      <text x="93" y="60" fontFamily="'Helvetica Neue', Arial, sans-serif" fontWeight="300" fontSize="9" fill="currentColor" opacity="0.6" letterSpacing="5">
+        {sub}
+      </text>
+    </svg>
+  );
+}
+
+/** 결 심볼만 (작은 장식용) */
+export function GyeolSymbol({ size = 22, color = "currentColor" }: { size?: number; color?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="8 8 56 56" aria-hidden style={{ display: "inline-block", flexShrink: 0, color }}>
+      <circle cx="36" cy="36" r="26" stroke="currentColor" strokeWidth="2" fill="none" />
+      <path d="M36 11 C36 11 31 11 29.5 13.5 C28 16 30.5 18.5 36 18.5 C41.5 18.5 44.5 21 43.5 24.5 C42.5 28 36 30 29 34.5 C25.5 37 24 39.5 25 42 C26 44.5 30 46 36 46 C42 46 46 44.5 47 42" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <circle cx="36" cy="11" r="2.4" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** 페이지 제목용 큰 이탤릭 세리프 (로고 서체 톤과 맞춤, 컨테이너 폭 기준 크기) */
+export function Wordmark({ text, color = "var(--t-txt)", size = 24 }: { text: string; color?: string; size?: number }) {
   return (
     <div style={{ containerType: "inline-size", width: "100%" }}>
-      <p className="ed-wordmark" style={{ fontSize: `${size}cqw`, color, margin: 0, display: "flex", alignItems: "flex-end" }}>
+      <p className="ed-wordmark" style={{ fontSize: `${size}cqw`, color, margin: 0 }}>
         {text}
-        {mark && (
-          <span style={{ fontSize: "0.12em", fontWeight: 700, letterSpacing: 0, marginLeft: "0.25em", marginBottom: "0.1em" }}>®</span>
-        )}
       </p>
     </div>
   );
 }
 
-/** 섹션 머리 — 굵은 줄 + (번호) 영문 라벨 + 한글 제목 */
+/** 섹션 머리 — No.번호(이탤릭) + 영문 라벨 + 굵은 한글 제목 */
 export function SectionHead({
   no,
   en,
@@ -57,10 +85,10 @@ export function SectionHead({
 }) {
   return (
     <div style={{ marginBottom: "18px" }}>
-      <div style={{ height: "2px", background: "var(--t-txt)" }} />
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0 0" }}>
-        <span className="ed-label" style={{ color: "var(--t-txt)" }}>
-          <span style={{ color: "var(--t-acc)" }}>({no})</span>&nbsp;&nbsp;{en}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "10px" }}>
+        <span style={{ display: "inline-flex", alignItems: "baseline", gap: "10px" }}>
+          <span className="ed-accent" style={{ fontSize: "26px", lineHeight: 1, color: "var(--t-acc)" }}>No.{no}</span>
+          <span className="ed-label" style={{ color: "var(--t-sub)" }}>{en}</span>
         </span>
         {right}
       </div>
@@ -70,9 +98,9 @@ export function SectionHead({
           fontWeight: 800,
           fontSize: "clamp(25px, 7vw, 30px)",
           letterSpacing: "-0.045em",
-          lineHeight: 1.18,
+          lineHeight: 1.22,
           color: "var(--t-txt)",
-          margin: "14px 0 0",
+          margin: "10px 0 0",
           wordBreak: "keep-all",
         }}
       >
@@ -88,7 +116,7 @@ export function SectionHead({
 }
 
 /** 흐르는 띠 문구 */
-export function Marquee({ items, bg = "var(--t-acc)", color = "var(--t-bg)" }: { items: string[]; bg?: string; color?: string }) {
+export function Marquee({ items, bg = "var(--t-fill, #F0642F)", color = "var(--t-txt)" }: { items: string[]; bg?: string; color?: string }) {
   const row = [...items, ...items, ...items];
   return (
     <div style={{ overflow: "hidden", background: bg, color, padding: "11px 0" }} aria-hidden>
@@ -99,17 +127,17 @@ export function Marquee({ items, bg = "var(--t-acc)", color = "var(--t-bg)" }: {
               <span
                 key={`${k}-${i}`}
                 style={{
-                  fontFamily: "var(--font-grotesk), var(--font-noto-sans), sans-serif",
-                  fontWeight: 800,
-                  fontSize: "15px",
+                  fontFamily: "var(--font-cormorant), var(--font-noto-sans), serif",
+                  fontStyle: "italic",
+                  fontWeight: 400,
+                  fontSize: "21px",
                   letterSpacing: "-0.01em",
-                  textTransform: "uppercase",
                   whiteSpace: "nowrap",
                   padding: "0 14px",
                 }}
               >
                 {t}
-                <span style={{ marginLeft: "28px", opacity: 0.7 }}>✦</span>
+                <span style={{ marginLeft: "28px", fontStyle: "normal", fontSize: "13px", opacity: 0.8 }}>●</span>
               </span>
             ))}
           </div>
@@ -136,8 +164,8 @@ export function BlockButton({
   style?: CSSProperties;
 }) {
   const [hover, setHover] = useState(false);
-  const bg = tone === "acc" ? "var(--t-acc)" : tone === "ink" ? "var(--t-txt)" : "var(--t-bg)";
-  const fg = tone === "paper" ? "var(--t-acc)" : "var(--t-bg)";
+  const bg = tone === "acc" ? "var(--t-fill, #F0642F)" : tone === "ink" ? "var(--t-txt)" : "var(--t-bg)";
+  const fg = tone === "acc" ? "var(--t-txt)" : tone === "ink" ? "var(--t-bg)" : "var(--t-txt)";
   const inner = (
     <>
       <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px", textAlign: "left" }}>

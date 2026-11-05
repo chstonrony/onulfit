@@ -165,8 +165,8 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
                 <span className="ed-label" style={{ color: acc }}>Free · 1 min</span>
                 <span className="ed-label" style={{ color: sub }}>10 questions</span>
               </div>
-              <Wordmark text="SELF CHECK" mark={false} size={17.2} />
-              <div style={{ height: "4px", background: acc, marginTop: "10px" }} />
+              <Wordmark text="Self-check" size={24} />
+              <div style={{ height: "1px", background: txt, marginTop: "12px" }} />
             </div>
             <p style={{ fontFamily: serif, fontSize: "24px", lineHeight: 1.4, color: txt, wordBreak: "keep-all", marginBottom: "8px" }}>
               {GYEOL.diagIntro}
@@ -177,7 +177,7 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
             <div style={{ marginBottom: "22px" }}>
               <SelfCheckGuide />
             </div>
-            <button onClick={() => { track("diag_start"); setStep("body"); }} style={ctaStyle(acc)}>
+            <button onClick={() => { track("diag_start"); setStep("body"); }} style={ctaStyle()}>
               시작하기 · 약 1분
             </button>
           </div>
@@ -445,7 +445,7 @@ function ResultView({
     { key: "accessory", label: "액세서리" },
   ];
 
-  const cardStyle: React.CSSProperties = { border: `1px solid ${bdr}`, borderTop: `2px solid ${txt}`, borderRadius: "2px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-card)" };
+  const cardStyle: React.CSSProperties = { border: `1px solid ${bdr}`, borderTop: `1px solid ${txt}`, borderRadius: "2px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-card)" };
   const kicker = (t: string) => (
     <p className="ed-label" style={{ color: acc, marginBottom: "10px" }}>{t}</p>
   );
@@ -619,7 +619,7 @@ function ResultView({
         {saving ? "이미지 만드는 중…" : "📸 내 결 카드 저장 · 공유하기"}
       </button>
 
-      <button onClick={onDone} style={ctaStyle(acc)}>
+      <button onClick={onDone} style={ctaStyle()}>
         코디 받으러 가기
       </button>
 
@@ -785,7 +785,7 @@ function TagRow({ label, items, color, bdr, sans }: { label: string; items: stri
   );
 }
 
-function ctaStyle(acc: string): React.CSSProperties {
+function ctaStyle(): React.CSSProperties {
   return {
     width: "100%",
     padding: "16px",
@@ -794,8 +794,8 @@ function ctaStyle(acc: string): React.CSSProperties {
     fontSize: "16px",
     fontWeight: 700,
     letterSpacing: "-0.025em",
-    color: "#fff",
-    backgroundColor: acc,
+    color: "var(--t-txt, #1B1714)",
+    backgroundColor: "var(--t-fill, #F0642F)",
     border: "none",
     borderRadius: "2px",
     cursor: "pointer",

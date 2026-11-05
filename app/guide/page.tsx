@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const INK = "#1B1714";
-const ACC = "#C23B22";
+const ACC = "#B44218";
 const SUB = "#6F665D";
 const PAPER = "#EDE8E2";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
@@ -30,8 +30,8 @@ export default function GuidePage() {
             <span className="ed-label" style={{ color: ACC }}>Style guide</span>
             <span className="ed-label" style={{ color: SUB }}>{ARTICLES.length} articles</span>
           </div>
-          <Wordmark text="GUIDE" mark={false} size={33} />
-          <div style={{ height: "4px", background: ACC, margin: "10px 0 22px" }} />
+          <Wordmark text="Style guide" size={22} />
+          <div style={{ height: "1px", background: INK, margin: "14px 0 22px" }} />
           <h1 style={{ fontFamily: sans, fontSize: "clamp(28px, 7.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.055em", color: INK, lineHeight: 1.15, margin: "0 0 12px", wordBreak: "keep-all" }}>
             내 체형에 맞는 옷, 이제 헤매지 마세요
           </h1>
@@ -40,7 +40,7 @@ export default function GuidePage() {
           </p>
         </header>
 
-        <div style={{ borderTop: `2px solid ${INK}` }}>
+        <div style={{ borderTop: `1px solid ${INK}` }}>
           {ARTICLES.map((a, i) => (
             <Link
               key={a.slug}
@@ -73,7 +73,7 @@ export default function GuidePage() {
             style={{
               display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "62px", padding: "0 18px",
               fontFamily: sans, fontSize: "16px", fontWeight: 700, letterSpacing: "-0.025em",
-              color: PAPER, backgroundColor: ACC, borderRadius: "2px", textDecoration: "none",
+              color: INK, backgroundColor: "#F0642F", borderRadius: "2px", textDecoration: "none",
             }}
           >
             무료로 내 결 찾기 <span aria-hidden style={{ fontSize: "20px" }}>→</span>

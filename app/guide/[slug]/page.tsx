@@ -5,7 +5,7 @@ import { ARTICLES, getArticle } from "@/lib/articles";
 import GuideCTA from "@/components/GuideCTA";
 
 const INK = "#1B1714";
-const ACC = "#C23B22";
+const ACC = "#B44218";
 const SUB = "#6F665D";
 const BODY = "#2E2925";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
@@ -72,7 +72,7 @@ export default async function ArticlePage({ params }: Props) {
           <h1 style={{ fontFamily: sans, fontSize: "clamp(29px, 7.5vw, 42px)", fontWeight: 800, letterSpacing: "-0.055em", color: INK, lineHeight: 1.16, marginBottom: "14px", wordBreak: "keep-all" }}>
             {a.title}
           </h1>
-          <p style={{ fontFamily: sans, fontSize: "16px", fontWeight: 500, color: SUB, lineHeight: 1.6, wordBreak: "keep-all", paddingBottom: "18px", borderBottom: `4px solid ${ACC}` }}>
+          <p style={{ fontFamily: sans, fontSize: "16px", fontWeight: 500, color: SUB, lineHeight: 1.6, wordBreak: "keep-all", paddingBottom: "18px", borderBottom: `1px solid ${INK}` }}>
             {a.subtitle}
           </p>
         </header>
@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: Props) {
         <div>
           {a.content.split("\n\n").map((p, i) =>
             p.startsWith("## ") ? (
-              <h2 key={i} style={{ fontFamily: sans, fontSize: "23px", fontWeight: 800, letterSpacing: "-0.045em", color: INK, lineHeight: 1.3, margin: "40px 0 14px", paddingTop: "10px", borderTop: `2px solid ${INK}`, wordBreak: "keep-all" }}>
+              <h2 key={i} style={{ fontFamily: sans, fontSize: "23px", fontWeight: 800, letterSpacing: "-0.045em", color: INK, lineHeight: 1.3, margin: "40px 0 14px", paddingTop: "10px", borderTop: `1px solid ${INK}`, wordBreak: "keep-all" }}>
                 {p.slice(3)}
               </h2>
             ) : p.startsWith("- ") ? (
@@ -103,9 +103,9 @@ export default async function ArticlePage({ params }: Props) {
         <GuideCTA slug={a.slug} />
 
         {/* 관련 글 */}
-        <div style={{ borderTop: `2px solid ${INK}`, paddingTop: "10px" }}>
+        <div style={{ borderTop: `1px solid ${INK}`, paddingTop: "10px" }}>
           <p className="ed-label" style={{ color: INK, marginBottom: "4px" }}>
-            <span style={{ color: ACC }}>(+)</span>&nbsp;&nbsp;함께 읽으면 좋은 글
+            함께 읽으면 좋은 글
           </p>
           <div style={{ display: "flex", flexDirection: "column" }}>
             {related.map((r) => (

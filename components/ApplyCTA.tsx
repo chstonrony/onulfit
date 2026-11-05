@@ -20,12 +20,12 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
         marginTop: "44px",
         marginBottom: "10px",
         padding: "22px 20px 24px",
-        backgroundColor: "var(--t-acc)",
-        color: "var(--t-bg)",
+        backgroundColor: "var(--t-fill, #F0642F)",
+        color: "var(--t-txt)",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span className="ed-label">(05)&nbsp;&nbsp;Consulting</span>
+        <span className="ed-label">No.05 · Consulting</span>
         <span className="ed-label">1:1 · Offline</span>
       </div>
       <p className="ed-accent" style={{ fontSize: "44px", lineHeight: 1, margin: "26px 0 0" }}>
@@ -39,7 +39,7 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
       </p>
       <BlockButton
         href="/apply"
-        tone="paper"
+        tone="ink"
         onClick={() => track("consult_click", { where: "home", method: "apply" })}
       >
         1:1 진단 신청하기

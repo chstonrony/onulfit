@@ -14,7 +14,7 @@ const W = 360;
 const H = 640;
 const BG = "#EDE8E2";
 const INK = "#1B1714";
-const GOLD = "#C23B22";
+const GOLD = "#B44218";
 const SUB = "#6F665D";
 const LINE = "#D9D1C7";
 

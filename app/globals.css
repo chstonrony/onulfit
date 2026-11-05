@@ -2,7 +2,7 @@
 
 @theme inline {
   /* ── Palette (2026-11 에디토리얼 리뉴얼) ──
-     종이(paper) 바탕 + 잉크(ink) + 버밀리언 포인트 하나 */
+     종이(paper) 바탕 + 잉크(ink) + 다홍 포인트(글자용 진한 톤 / 면용 밝은 톤) */
   --color-cream:    #EDE8E2;
   --color-sidebar:  #E6E0D9;
   --color-sand:     #DCD3C8;
@@ -10,7 +10,7 @@
   --color-border:   #D9D1C7;
   --color-mocha:    #1B1714;
   --color-subtext:  #6F665D;
-  --color-warm:     #C23B22;
+  --color-warm:     #B44218;
 
   --font-heading: var(--font-gowun), sans-serif;
   --font-ko-serif: var(--font-gowun), sans-serif;
@@ -22,7 +22,8 @@
   --ink: #1B1714;
   --paper: #EDE8E2;
   --paper-2: #F7F4F0;
-  --red: #C23B22;
+  --accent: #B44218;  /* 다홍(글자용, 종이 위 대비 4.6:1) */
+  --fill: #F0642F;    /* 밝은 다홍(면·버튼용, 위 글자는 잉크) */
   --line: #D9D1C7;
   --muted: #6F665D;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -48,8 +49,8 @@ body {
 }
 
 ::selection {
-  background: var(--red);
-  color: var(--paper);
+  background: var(--fill);
+  color: var(--ink);
 }
 
 :lang(ko) {
@@ -93,11 +94,11 @@ input::placeholder {
 
 /* ── 에디토리얼 유틸리티 ── */
 .ed-wordmark {
-  font-family: var(--font-grotesk), sans-serif;
-  font-weight: 900;
-  line-height: 0.82;
-  letter-spacing: -0.065em;
-  text-transform: uppercase;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.025em;
   white-space: nowrap;
 }
 .ed-label {

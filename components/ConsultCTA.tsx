@@ -17,8 +17,8 @@ export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | 
       style={{
         marginTop: "32px",
         padding: "22px 20px 22px",
-        backgroundColor: "var(--t-acc)",
-        color: "var(--t-bg)",
+        backgroundColor: "var(--t-fill, #F0642F)",
+        color: "var(--t-txt)",
         borderRadius: "2px",
       }}
     >
@@ -37,7 +37,7 @@ export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | 
       </p>
 
       {IS_APPLY_READY && (
-        <BlockButton href="/apply" tone="paper" onClick={() => track("consult_click", { where, method: "apply" })}>
+        <BlockButton href="/apply" tone="ink" onClick={() => track("consult_click", { where, method: "apply" })}>
           1:1 진단 신청하기
         </BlockButton>
       )}
@@ -51,8 +51,8 @@ export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | 
           className="ed-link"
           style={
             IS_APPLY_READY
-              ? { display: "inline-block", marginTop: "14px", fontFamily: sans, fontSize: "13.5px", fontWeight: 600, color: "var(--t-bg)" }
-              : { display: "flex", alignItems: "center", justifyContent: "center", height: "56px", background: "var(--t-bg)", color: "var(--t-acc)", fontFamily: sans, fontWeight: 700, fontSize: "15px", borderRadius: "2px" }
+              ? { display: "inline-block", marginTop: "14px", fontFamily: sans, fontSize: "13.5px", fontWeight: 600, color: "var(--t-txt)" }
+              : { display: "flex", alignItems: "center", justifyContent: "center", height: "56px", background: "var(--t-txt)", color: "var(--t-bg)", fontFamily: sans, fontWeight: 700, fontSize: "15px", borderRadius: "2px" }
           }
         >
           카카오톡으로 먼저 물어보기 →

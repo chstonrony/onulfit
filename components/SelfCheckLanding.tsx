@@ -52,8 +52,8 @@ export default function SelfCheckLanding() {
           <span className="ed-label" style={{ color: "var(--t-acc)" }}>Free self-check</span>
           <span className="ed-label" style={{ color: "var(--t-sub)" }}>Body · Color</span>
         </div>
-        <Wordmark text="SELF CHECK" mark={false} size={17.2} />
-        <div style={{ height: "4px", background: "var(--t-acc)", margin: "10px 0 20px" }} />
+        <Wordmark text="Self-check" size={24} />
+        <div style={{ height: "1px", background: "var(--t-txt)", margin: "14px 0 20px" }} />
 
         <h1 style={{ fontFamily: sans, fontSize: "clamp(30px, 8.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.055em", lineHeight: 1.12, color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
           무료 체형·퍼스널컬러 자가진단
@@ -63,7 +63,7 @@ export default function SelfCheckLanding() {
         </p>
 
         {/* 한 줄 요약 */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "2px solid var(--t-txt)", borderBottom: "1px solid var(--t-txt)", marginBottom: "18px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "1px solid var(--t-txt)", borderBottom: "1px solid var(--t-txt)", marginBottom: "18px" }}>
           {[
             ["1분", "걸리는 시간"],
             ["10문항", "골격 5 · 컬러 5"],
@@ -128,9 +128,9 @@ export default function SelfCheckLanding() {
         <ConsultCTA where="self_check" />
 
         {/* 더 읽기 */}
-        <section style={{ marginTop: "44px", borderTop: "2px solid var(--t-txt)", paddingTop: "10px" }}>
+        <section style={{ marginTop: "44px", borderTop: "1px solid var(--t-txt)", paddingTop: "10px" }}>
           <p className="ed-label" style={{ color: "var(--t-txt)", margin: "0 0 4px" }}>
-            <span style={{ color: "var(--t-acc)" }}>(03)</span>&nbsp;&nbsp;Read more
+            <span className="ed-accent" style={{ fontSize: "22px", textTransform: "none", color: "var(--t-acc)" }}>No.03</span>&nbsp;&nbsp;Read more
           </p>
           <p style={{ fontFamily: sans, fontSize: "13px", color: "var(--t-sub)", margin: "0 0 6px" }}>자가진단 방법을 글로 자세히 보고 싶다면</p>
           <div style={{ display: "flex", flexDirection: "column" }}>

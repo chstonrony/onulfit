@@ -10,8 +10,7 @@ import { Wordmark } from "@/components/Editorial";
    인스타 bio 링크 → 이 페이지. 제출은 Web3Forms로 운영자 이메일에 도착.
    NEXT_PUBLIC_WEB3FORMS_KEY 가 없으면 "준비 중" 안내만 노출(빈 전송 방지). */
 
-const ACCENT = "#C23B22";
-const POINT = "#9E2E19";
+const ACCENT = "#B44218";
 const INK = "#1B1714";
 const SUB = "#6F665D";
 const BDR = "#D9D1C7";
@@ -89,11 +88,8 @@ export default function ApplyPage() {
           <span className="ed-label" style={{ color: ACCENT }}>1:1 Consulting</span>
           <span className="ed-label" style={{ color: SUB }}>Body · Color · Fit</span>
         </div>
-        <Wordmark text={"1:1\u2002STYLING"} mark={false} size={15.6} color={ACCENT} />
-        <div style={{ height: "4px", background: ACCENT, margin: "10px 0 22px" }} />
-        <p className="ed-accent" style={{ fontSize: "34px", lineHeight: 1, color: ACCENT, margin: "0 0 8px" }}>
-          1:1 Consulting
-        </p>
+        <Wordmark text="1:1 Styling" size={23} />
+        <div style={{ height: "1px", background: INK, margin: "14px 0 22px" }} />
         <h1 style={{ fontFamily: sans, fontSize: "clamp(29px, 8vw, 38px)", fontWeight: 800, letterSpacing: "-0.055em", lineHeight: 1.15, color: INK, margin: 0, wordBreak: "keep-all" }}>
           오늘핏 스타일 컨설팅 신청
         </h1>
@@ -180,7 +176,7 @@ export default function ApplyPage() {
               disabled={status === "sending"}
               style={{
                 height: "60px", borderRadius: "2px", border: "none",
-                background: status === "sending" ? POINT : ACCENT, color: "#EDE8E2",
+                background: status === "sending" ? "#D9531E" : "#F0642F", color: INK,
                 fontFamily: sans, fontWeight: 700, fontSize: "16px", letterSpacing: "-0.025em",
                 cursor: status === "sending" ? "default" : "pointer",
               }}

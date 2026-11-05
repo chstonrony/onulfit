@@ -49,7 +49,7 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
             letterSpacing: "0.06em",
             textTransform: "uppercase",
             color: "var(--t-txt)",
-            borderTop: "2px solid var(--t-txt)",
+            borderTop: "1px solid var(--t-txt)",
             paddingTop: "8px",
           }}
         >

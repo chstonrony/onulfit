@@ -32,11 +32,12 @@ export interface Theme {
 
 export const THEMES: Record<MoodKey, Theme> = {
 
-  /* ── EVERYDAY: 종이 바탕 + 잉크 + 버밀리언 (2026-11 기본 테마) ── */
+  /* ── EVERYDAY: 종이 바탕 + 잉크 + 다홍 (2026-11 기본 테마) ──
+     --t-acc 는 글자·작은 버튼용 진한 다홍, --t-fill 은 면·큰 버튼용 밝은 다홍(위 글자는 잉크) */
   everyday: {
     key: "everyday",
     name: "Everyday",
-    dot: "#C23B22",
+    dot: "#F0642F",
     palette: [
       { name: "베이지",   hex: "#C9B99A" },
       { name: "모카",    hex: "#7A5C4E" },
@@ -47,7 +48,7 @@ export const THEMES: Record<MoodKey, Theme> = {
     ],
     vars: {
       "--t-bg":   "#EDE8E2",
-      "--t-point": "#C23B22",
+      "--t-point": "#B44218",
       "--t-side": "#EDE8E2",
       "--t-bdr":  "#D9D1C7",
       "--t-bu":   "#E2DAD0",
@@ -55,7 +56,8 @@ export const THEMES: Record<MoodKey, Theme> = {
       "--t-baib": "#D9D1C7",
       "--t-card": "#F7F4F0",
       "--t-rsec": "#E6E0D9",
-      "--t-acc":  "#C23B22",
+      "--t-acc":  "#B44218",
+      "--t-fill": "#F0642F",
       "--t-txt":  "#1B1714",
       "--t-sub":  "#6F665D",
       "--t-inp":  "#F7F4F0",

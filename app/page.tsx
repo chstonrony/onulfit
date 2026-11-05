@@ -15,7 +15,7 @@ import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
 import SelfCheckGuide from "@/components/SelfCheckGuide";
-import { Reveal, Wordmark, SectionHead, Marquee, BlockButton } from "@/components/Editorial";
+import { Reveal, BrandLogo, GyeolSymbol, SectionHead, Marquee, BlockButton } from "@/components/Editorial";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
 
@@ -417,7 +417,7 @@ function ProfileChip({
   );
 }
 
-/* ── Welcome — 에디토리얼 홈 (레퍼런스: 대형 워드마크 + 굵은 줄 + 라벨 그리드) ── */
+/* ── Welcome — 에디토리얼 홈 (오늘핏 로고 + 다홍 포인트 + 반듯한 블록) ── */
 function WelcomeGuide({
   onExample,
   isLoading,
@@ -437,14 +437,9 @@ function WelcomeGuide({
   return (
     <div className="pt-1 pb-4">
 
-      {/* ── 01 워드마크 ── */}
-      <div style={{ animation: "cardEnter 900ms var(--ease-out) both" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
-          <span className="ed-label" style={{ color: "var(--t-acc)" }}>Personal styling</span>
-          <span className="ed-label" style={{ color: "var(--t-sub)" }}>Body · Color · Fit</span>
-        </div>
-        <Wordmark />
-        <div style={{ height: "4px", background: "var(--t-acc)", marginTop: "12px" }} />
+      {/* ── 01 오늘핏 로고 (원래 로고를 크게) ── */}
+      <div style={{ animation: "cardEnter 900ms var(--ease-out) both", padding: "6px 0 16px", borderBottom: "1px solid var(--t-txt)" }}>
+        <BrandLogo style={{ maxWidth: "420px" }} />
       </div>
 
       {/* ── 헤드라인 + 메인 CTA (모바일 첫 화면 안) ── */}
@@ -488,21 +483,18 @@ function WelcomeGuide({
           </span>
         </figure>
         <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 0" }}>
-          <span className="ed-label" style={{ color: "var(--t-txt)" }}>(01) Today&rsquo;s look</span>
+          <span className="ed-label" style={{ color: "var(--t-txt)" }}>No.01 Today&rsquo;s look</span>
           <span className="ed-label" style={{ color: "var(--t-sub)" }}>Head to toe</span>
         </div>
       </Reveal>
 
-      {/* ── 라벨 그리드 (레퍼런스의 OUTFIT / WHY) ── */}
-      <Reveal style={{ marginTop: "26px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "34% 1fr", gap: "12px", paddingTop: "12px", borderTop: "1px solid var(--t-txt)" }}>
-          <span className="ed-label" style={{ color: "var(--t-acc)" }}>OnulFit</span>
-          <div>
-            <span className="ed-label" style={{ color: "var(--t-acc)" }}>Why</span>
-            <p style={{ fontFamily: sans, fontWeight: 600, fontSize: "17px", letterSpacing: "-0.03em", lineHeight: 1.5, color: "var(--t-txt)", margin: "6px 0 0", wordBreak: "keep-all" }}>
-              체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 결과에 맞는 코디까지 바로 알려드려요.
-            </p>
-          </div>
+      {/* ── 결의 한마디 (결 심볼 + 인용) ── */}
+      <Reveal style={{ marginTop: "30px" }}>
+        <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+          <span style={{ paddingTop: "4px" }}><GyeolSymbol size={34} color="var(--t-acc)" /></span>
+          <p style={{ fontFamily: sans, fontWeight: 700, fontSize: "19px", letterSpacing: "-0.04em", lineHeight: 1.55, color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
+            체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. <span style={{ color: "var(--t-acc)" }}>결과에 맞는 코디까지 바로 알려드려요.</span>
+          </p>
         </div>
       </Reveal>
 
@@ -557,15 +549,18 @@ function GuideBanner() {
         display: "block",
         textDecoration: "none",
         padding: "18px 16px 20px",
-        borderTop: "2px solid var(--t-txt)",
-        borderBottom: "2px solid var(--t-txt)",
+        borderTop: "1px solid var(--t-txt)",
+        borderBottom: "1px solid var(--t-txt)",
         background: active ? "var(--t-txt)" : "transparent",
         color: active ? "var(--t-bg)" : "var(--t-txt)",
         transition: "background-color 0.4s var(--ease-out), color 0.4s var(--ease-out)",
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span className="ed-label" style={{ color: active ? "var(--t-bg)" : "var(--t-acc)" }}>(04)&nbsp;&nbsp;Style guide</span>
+        <span style={{ display: "inline-flex", alignItems: "baseline", gap: "10px" }}>
+          <span className="ed-accent" style={{ fontSize: "26px", lineHeight: 1, color: active ? "var(--t-bg)" : "var(--t-acc)" }}>No.04</span>
+          <span className="ed-label">Style guide</span>
+        </span>
         <span className="ed-label">5 articles</span>
       </div>
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px", marginTop: "14px" }}>
@@ -589,7 +584,7 @@ function EmptyState({
   return (
     <div className="flex flex-col">
       <div className="mb-10" style={{ animation: "cardEnter 700ms var(--ease-out) both" }}>
-        <div style={{ height: "2px", backgroundColor: "var(--t-txt)", marginBottom: "10px" }} />
+        <div style={{ height: "1px", backgroundColor: "var(--t-txt)", marginBottom: "10px" }} />
         <span className="ed-label" style={{ color: "var(--t-acc)" }}>Head-to-toe · curated for you</span>
         <p
           style={{

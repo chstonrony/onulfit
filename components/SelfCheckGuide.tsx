@@ -60,7 +60,7 @@ function Group({
       style={{
         backgroundColor: "var(--t-card)",
         border: "1px solid var(--t-bdr)",
-        borderTop: "2px solid var(--t-txt)",
+        borderTop: "1px solid var(--t-txt)",
         borderRadius: "2px",
         padding: compact ? "12px 12px 14px" : "14px 16px 10px",
       }}

@@ -10,8 +10,9 @@ import { BlockButton } from "./Editorial";
    ① 무료 자가진단(홈 진단 오버레이 자동 오픈) ② 1:1 진단 신청으로 잇는다. */
 
 const INK = "#1B1714";
-const ACC = "#C23B22";
+const ACC = "#B44218";
 const PAPER = "#EDE8E2";
+const FILL = "#F0642F";
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
 export default function GuideCTA({ slug }: { slug: string }) {
@@ -32,7 +33,7 @@ export default function GuideCTA({ slug }: { slug: string }) {
 
       {/* 1:1 상담 신청 */}
       {IS_APPLY_READY && (
-        <div style={{ padding: "22px 20px", background: ACC, color: PAPER, borderRadius: "2px" }}>
+        <div style={{ padding: "22px 20px", background: FILL, color: INK, borderRadius: "2px" }}>
           <span className="ed-label">Consulting · 1:1</span>
           <p className="ed-accent" style={{ fontSize: "36px", lineHeight: 1, margin: "18px 0 0" }}>
             1:1 Consulting
@@ -43,7 +44,7 @@ export default function GuideCTA({ slug }: { slug: string }) {
           <p style={{ fontFamily: sans, fontSize: "14px", fontWeight: 500, opacity: 0.9, lineHeight: 1.7, margin: "0 0 18px", wordBreak: "keep-all" }}>
             골격과 퍼스널컬러를 1:1로 진단하고, 지금 가진 옷으로 어떻게 입으면 되는지까지 정리해 드려요.
           </p>
-          <BlockButton href="/apply" tone="paper" onClick={() => track("consult_click", { where: "guide", method: "apply", slug })}>
+          <BlockButton href="/apply" tone="ink" onClick={() => track("consult_click", { where: "guide", method: "apply", slug })}>
             1:1 진단 신청하기
           </BlockButton>
         </div>
