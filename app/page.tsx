@@ -16,6 +16,7 @@ import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
+import { track } from "@/lib/track";
 
 /* 무드별 로고 파일 매핑 */
 function getLogoSrc(mood: MoodKey): string {
@@ -196,13 +197,13 @@ export default function Home() {
 
         {/* 결 프로필 칩 — 진단 진입점 (데스크탑 전용 / 모바일은 히어로 아래로 이동) */}
         <div className="hidden lg:block">
-          <ProfileChip profile={profile} vars={vars} onOpen={() => setShowDiag(true)} />
+          <ProfileChip profile={profile} vars={vars} onOpen={() => { track("diag_open", { where: "profile_chip" }); setShowDiag(true); }} />
         </div>
 
         {/* 채팅 히스토리 */}
         <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
           {!hasMessages && (
-            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => setShowDiag(true)} profile={profile} />
+            <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => { track("diag_open", { where: "home" }); setShowDiag(true); }} profile={profile} />
           )}
 
           {messages.map((msg) => (
@@ -427,7 +428,7 @@ function WelcomeGuide({
           <img
             src="/hero-main.png"
             alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", height: "548px", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.78) brightness(1.04)" }}
+            style={{ width: "100%", height: "clamp(380px, 58vh, 548px)", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.78) brightness(1.04)" }}
           />
           {/* 주황끼 중화 — 차분한 쿨뉴트럴 워시 (핀터레스트 무드) */}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(150,152,158,0.14), rgba(150,152,158,0.20))", mixBlendMode: "saturation", pointerEvents: "none" }} />
@@ -449,24 +450,31 @@ function WelcomeGuide({
               그 고민은, 결에게
             </p>
           </div>
+
+          {/* 메인 CTA — 사진 위 하단: 모바일 첫 화면에서 스크롤 없이 보이게 */}
+          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "150px", background: "linear-gradient(180deg, transparent, rgba(20,20,24,0.45))", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: "16px", right: "16px", bottom: "16px" }}>
+            <button
+              onClick={onDiagnose}
+              style={{
+                width: "100%", height: "54px",
+                fontFamily: sans, fontSize: "14.5px", fontWeight: 600, letterSpacing: "0.01em",
+                color: "#fff", backgroundColor: acc, border: "none", borderRadius: "14px", cursor: "pointer",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
+              }}
+            >
+              {hasProfile ? "내 결 다시 진단하기 →" : "무료 체형·퍼스널컬러 자가진단 →"}
+            </button>
+            <p style={{ fontFamily: sans, fontSize: "11.5px", color: "rgba(255,255,255,0.92)", textAlign: "center", margin: "8px 0 0", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
+              사진 없이 1분 · 골격 5문항 + 컬러 5문항
+            </p>
+          </div>
         </div>
 
         {/* 서브카피 */}
-        <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.75, color: "var(--t-txt)", opacity: 0.72, margin: "24px 2px 20px", wordBreak: "keep-all" }}>
-          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 딱 1분이면 돼요.
+        <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.75, color: "var(--t-txt)", opacity: 0.72, margin: "20px 2px 4px", wordBreak: "keep-all" }}>
+          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 결과에 맞는 코디까지 바로 알려드려요.
         </p>
-
-        {/* CTA — 테라코타 포인트 */}
-        <button
-          onClick={onDiagnose}
-          style={{
-            width: "100%", height: "54px",
-            fontFamily: sans, fontSize: "14px", fontWeight: 500, letterSpacing: "0.02em",
-            color: "#fff", backgroundColor: acc, border: "none", borderRadius: "14px", cursor: "pointer",
-          }}
-        >
-          무료로 내 결 찾기 →
-        </button>
 
         {/* 모바일 전용 — 내 결(프로필) 칩: 진단 완료 시에만 표시 (CTA와 중복 방지) */}
         {hasProfile && (

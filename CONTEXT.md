@@ -34,6 +34,15 @@
 
 ## 세션 로그
 
+### 2026-11-05 세션 13 — 리뉴얼 1단계: 검색 유입 → 자가진단 → 상담 신청 길 정비 [배포]
+- **배경**: 4개월 방치 중에도 네이버 검색(가이드 글)으로 월 ~150명 유입, 11/2 첫 실제 신청 1건. 사업을 1:1 진단 중심으로 본격화하기로 → 리뉴얼 3단계 중 1단계.
+- **발견**: 가이드 상세 CTA가 `/`로만 가서 자가진단이 안 열렸음(목록 페이지만 `/?diag=1`). 가이드 글에 상담 신청 CTA 없음. 모바일 홈 자가진단 버튼이 첫 화면 밖. Vercel에 `ANTHROPIC_API_KEY` 없음 → **AI 코디 채팅은 프로덕션에서 데모 데이터(mockData)로 동작 중**.
+- **수정**: `components/GuideCTA.tsx` 신설(무료 자가진단 `/?diag=1` + 1:1 신청 카드). `ConsultCTA`는 주 버튼 `/apply` + 보조 카카오 링크(`where` 프롭). 홈 히어로 높이 `clamp(380px,58vh,548px)` + 자가진단 버튼을 사진 하단 위로. 가이드 5편 title/seoTitle/seoDescription을 네이버 실제 검색어(스트레이트 체형·체형 자가진단·무슨 톤인지 아는 법 등)에 맞춤(slug 유지).
+- **GA4 이벤트** `lib/track.ts`: diag_open(where), diag_start, diag_complete(body,color), consult_click(where,method), generate_lead(신청 성공, `app/apply`). 개인정보 미전송.
+- 검증: 빌드 통과, 로컬(가짜 키로 빌드)에서 가이드→진단 자동 오픈→결과 화면 신청·카톡 버튼, dataLayer 이벤트 순서 확인.
+- **다음(2단계, 대표님 결정 필요)**: 상담 가격·장소 공개 범위·진행 구성·실사 사진·AI 채팅 유지 여부 → 홈을 "1:1 진단 스튜디오"로 재구성. 블로그 초안은 `onulfit-kit/2026-11-05_블로그작업/`.
+- ※ 린트 기존 오류 2건(app/apply `<a href="/">`)은 이번 범위 밖.
+
 ### 2026-06-15 세션 12 — 모바일 입력창 가시성 버그 + 카카오톡 공유 [배포 완료]
 - **입력창 버그 수정**(커밋 df14631): 모바일 좌측 컬럼에 높이 제약 없어 내부 스크롤 미작동 → 입력창("오늘의 상황을 알려주세요")이 콘텐츠 뒤 화면 밖(1676px)으로 밀림. `flex-1 min-h-0`(모바일)/`lg:flex-none` 추가 → 입력창 하단 고정·항상 노출. 입력창 래퍼에 탭바(64px) 여백 확보
 - **카카오톡 공유**(커밋 위): components/KakaoInit.tsx 신설 — `NEXT_PUBLIC_KAKAO_JS_KEY` 있으면 Kakao JS SDK(2.7.4) 로드+init. ShareButtons.handleKakao: 키 있으면 sendDefault 피드 카드(og-image.png·title·desc·코디추천받기 버튼), 없으면 navigator.share(모바일 카톡 포함)→링크복사 폴백. 기존 빈 app_key sharer URL(작동 안 함) 제거. layout에 <KakaoInit/> 마운트

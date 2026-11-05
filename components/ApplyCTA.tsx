@@ -1,4 +1,7 @@
+"use client";
+
 import { IS_APPLY_READY } from "@/lib/consult";
+import { track } from "@/lib/track";
 
 /* ── 홈 1:1 진단 신청 CTA ──
    인스타 bio 링크가 도착하는 홈에서, 무료 진단을 넘어 "1:1 오프라인 컨설팅 신청"으로 잇는 깔때기.
@@ -59,6 +62,7 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
       </p>
       <a
         href="/apply"
+        onClick={() => track("consult_click", { where: "home", method: "apply" })}
         style={{
           display: "flex",
           alignItems: "center",

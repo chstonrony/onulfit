@@ -116,7 +116,7 @@ export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
       </div>
 
       {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
-      <ConsultCTA />
+      <ConsultCTA where="outfit" />
 
       {/* 공유 버튼 */}
       <ShareButtons situation={outfit.situation} outfit={outfit.items.top.name} />

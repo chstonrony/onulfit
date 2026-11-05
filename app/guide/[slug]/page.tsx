@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ARTICLES, getArticle } from "@/lib/articles";
+import GuideCTA from "@/components/GuideCTA";
 
 const BASE_URL = "https://onulfit.com";
 
@@ -91,19 +92,8 @@ export default async function ArticlePage({ params }: Props) {
           )}
         </div>
 
-        {/* CTA */}
-        <div style={{ margin: "40px 0 32px" }}>
-          <Link
-            href="/"
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center", height: "52px",
-              fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "14px", fontWeight: 500,
-              color: "#fff", backgroundColor: "#2C2825", borderRadius: "12px", textDecoration: "none",
-            }}
-          >
-            내 체형·컬러 무료로 진단받기 →
-          </Link>
-        </div>
+        {/* CTA — 무료 자가진단(바로 열림) + 1:1 상담 신청 */}
+        <GuideCTA slug={a.slug} />
 
         {/* 관련 글 */}
         <div style={{ borderTop: "1px solid #ECE6DD", paddingTop: "24px" }}>

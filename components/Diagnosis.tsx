@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import StoryCard from "./StoryCard";
 import ConsultCTA from "./ConsultCTA";
+import { track } from "@/lib/track";
 import {
   BODY_QUESTIONS,
   COLOR_QUESTIONS,
@@ -96,6 +97,7 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
       const profile = saveProfile(body, color);
       setResult({ body, color });
       setStep("result");
+      track("diag_complete", { body, color });
       onComplete(profile);
     }
   }
@@ -140,7 +142,7 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
             <p style={{ fontFamily: serif, fontSize: "22px", lineHeight: 1.6, color: txt, wordBreak: "keep-all", marginBottom: "28px" }}>
               {GYEOL.diagIntro}
             </p>
-            <button onClick={() => setStep("body")} style={ctaStyle(acc)}>
+            <button onClick={() => { track("diag_start"); setStep("body"); }} style={ctaStyle(acc)}>
               시작하기
             </button>
           </div>
@@ -508,7 +510,7 @@ function ResultView({
       </button>
 
       {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
-      <ConsultCTA />
+      <ConsultCTA where="diagnosis" />
 
       {/* 오프스크린 9:16 스토리 카드 (캡처용) */}
       <div style={{ position: "fixed", left: "-9999px", top: 0, pointerEvents: "none" }} aria-hidden>

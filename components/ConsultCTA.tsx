@@ -1,10 +1,14 @@
-import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY } from "@/lib/consult";
+"use client";
 
-/* ── 1:1 진단 컨설팅 예약 CTA ──
+import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, IS_APPLY_READY } from "@/lib/consult";
+import { track } from "@/lib/track";
+
+/* ── 1:1 진단 컨설팅 CTA ──
    무료 진단/코디 결과 끝에 붙어, "정확한 1:1 진단"으로 연결하는 깔때기.
-   카카오 채널 URL(NEXT_PUBLIC_KAKAO_CHANNEL_URL)이 설정되기 전엔 렌더하지 않는다(빈 링크 방지). */
-export default function ConsultCTA() {
-  if (!IS_CHANNEL_READY) return null;
+   주 버튼 = 신청서(/apply, 신청 건수가 GA에 잡힘), 보조 = 카카오톡 문의.
+   둘 다 설정 전이면 렌더하지 않는다(빈 링크 방지). */
+export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" }) {
+  if (!IS_APPLY_READY && !IS_CHANNEL_READY) return null;
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   return (
     <div
@@ -52,28 +56,66 @@ export default function ConsultCTA() {
       >
         화면 속 진단을 넘어, 퍼스널컬러·체형을 직접 봐드려요. 나에게 맞는 색과 핏을 평생 쓰는 가이드로 정리해 드립니다.
       </p>
-      <a
-        href={KAKAO_CHANNEL_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "7px",
-          height: "48px",
-          borderRadius: "12px",
-          backgroundColor: "var(--t-acc)",
-          color: "var(--t-bg)",
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: "14px",
-          letterSpacing: "0.02em",
-          textDecoration: "none",
-        }}
-      >
-        카카오톡으로 1:1 진단 예약하기
-      </a>
+
+      {IS_APPLY_READY && (
+        <a
+          href="/apply"
+          onClick={() => track("consult_click", { where, method: "apply" })}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "48px",
+            borderRadius: "12px",
+            backgroundColor: "var(--t-acc)",
+            color: "var(--t-bg)",
+            fontFamily: sans,
+            fontWeight: 600,
+            fontSize: "14px",
+            letterSpacing: "0.02em",
+            textDecoration: "none",
+          }}
+        >
+          1:1 진단 신청하기 →
+        </a>
+      )}
+
+      {IS_CHANNEL_READY && (
+        <a
+          href={KAKAO_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track("consult_click", { where, method: "kakao" })}
+          style={
+            IS_APPLY_READY
+              ? {
+                  display: "block",
+                  marginTop: "12px",
+                  textAlign: "center",
+                  fontFamily: sans,
+                  fontSize: "13px",
+                  color: "var(--t-sub)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: "3px",
+                }
+              : {
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  height: "48px",
+                  borderRadius: "12px",
+                  backgroundColor: "var(--t-acc)",
+                  color: "var(--t-bg)",
+                  fontFamily: sans,
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  textDecoration: "none",
+                }
+          }
+        >
+          카카오톡으로 먼저 물어보기
+        </a>
+      )}
     </div>
   );
 }
