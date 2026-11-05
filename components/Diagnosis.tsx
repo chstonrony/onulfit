@@ -5,6 +5,7 @@ import { toPng } from "html-to-image";
 import StoryCard from "./StoryCard";
 import ConsultCTA from "./ConsultCTA";
 import { track } from "@/lib/track";
+import SelfCheckGuide from "./SelfCheckGuide";
 import {
   BODY_QUESTIONS,
   COLOR_QUESTIONS,
@@ -12,6 +13,7 @@ import {
   COLOR_META,
   scoreBody,
   scoreColor,
+  bodyTally,
   saveProfile,
   type BodyType,
   type ColorType,
@@ -86,12 +88,31 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
     }
   }
 
+  /** 이전 문항으로 (마지막 답 하나를 지운다) */
+  function goBack() {
+    if (step === "body") {
+      if (qIdx === 0) { setStep("intro"); return; }
+      setBodyAns(bodyAns.slice(0, -1));
+      setQIdx(qIdx - 1);
+    } else if (step === "color") {
+      if (qIdx === 0) {
+        setBodyAns(bodyAns.slice(0, -1));
+        setQIdx(BODY_QUESTIONS.length - 1);
+        setStep("body");
+        return;
+      }
+      setColorAns(colorAns.slice(0, -1));
+      setQIdx(qIdx - 1);
+    }
+  }
+
   function pickColor(v: "warm" | "cool" | "light" | "deep") {
     const next = [...colorAns, v];
     if (qIdx + 1 < COLOR_QUESTIONS.length) {
       setColorAns(next);
       setQIdx(qIdx + 1);
     } else {
+      setColorAns(next);
       const body = scoreBody(bodyAns);
       const color = scoreColor(next);
       const profile = saveProfile(body, color);
@@ -139,20 +160,31 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
         {step === "intro" && (
           <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
             <div style={{ marginBottom: "20px" }}><GyeolMark color={acc} size={46} /></div>
-            <p style={{ fontFamily: serif, fontSize: "22px", lineHeight: 1.6, color: txt, wordBreak: "keep-all", marginBottom: "28px" }}>
+            <p style={{ fontFamily: serif, fontSize: "20px", lineHeight: 1.6, color: txt, wordBreak: "keep-all", marginBottom: "8px" }}>
               {GYEOL.diagIntro}
             </p>
+            <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: sub, wordBreak: "keep-all", marginBottom: "18px" }}>
+              이렇게 10가지를 살펴봐요. 거울 하나와 밝은 곳이면 충분해요.
+            </p>
+            <div style={{ marginBottom: "22px" }}>
+              <SelfCheckGuide />
+            </div>
             <button onClick={() => { track("diag_start"); setStep("body"); }} style={ctaStyle(acc)}>
-              시작하기
+              시작하기 · 약 1분
             </button>
           </div>
         )}
 
+        {(step === "body" || step === "color") && (
+          <Progress step={step} qIdx={qIdx} acc={acc} bdr={bdr} sub={sub} onBack={goBack} />
+        )}
+
         {step === "body" && (
           <QuestionView
-            kicker={`골격 ${qIdx + 1} / ${BODY_QUESTIONS.length}`}
+            kicker={`골격 ${qIdx + 1} / ${BODY_QUESTIONS.length} · ${BODY_QUESTIONS[qIdx].short}`}
             intro={qIdx === 0 ? GYEOL.bodyIntro : undefined}
             question={BODY_QUESTIONS[qIdx].prompt}
+            hint={BODY_QUESTIONS[qIdx].hint}
             kind="body"
             options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickBody(o.value as BodyType) }))}
             vars={vars}
@@ -161,9 +193,10 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
 
         {step === "color" && (
           <QuestionView
-            kicker={`컬러 ${qIdx + 1} / ${COLOR_QUESTIONS.length}`}
+            kicker={`컬러 ${qIdx + 1} / ${COLOR_QUESTIONS.length} · ${COLOR_QUESTIONS[qIdx].short}`}
             intro={qIdx === 0 ? GYEOL.colorIntro : undefined}
             question={COLOR_QUESTIONS[qIdx].prompt}
+            hint={COLOR_QUESTIONS[qIdx].hint}
             kind="color"
             options={COLOR_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickColor(o.value as "warm" | "cool" | "light" | "deep") }))}
             vars={vars}
@@ -171,8 +204,63 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
         )}
 
         {step === "result" && result && (
-          <ResultView body={result.body} color={result.color} vars={vars} onDone={onClose} />
+          <ResultView body={result.body} color={result.color} bodyAns={bodyAns} colorAns={colorAns} vars={vars} onDone={onClose} />
         )}
+      </div>
+    </div>
+  );
+}
+
+/* 진행 막대 — 골격 5칸 + 컬러 5칸, 이전 버튼 */
+function Progress({
+  step,
+  qIdx,
+  acc,
+  bdr,
+  sub,
+  onBack,
+}: {
+  step: "body" | "color";
+  qIdx: number;
+  acc: string;
+  bdr: string;
+  sub: string;
+  onBack: () => void;
+}) {
+  const done = step === "body" ? qIdx : BODY_QUESTIONS.length + qIdx;
+  const total = BODY_QUESTIONS.length + COLOR_QUESTIONS.length;
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  return (
+    <div style={{ marginBottom: "22px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+        <button
+          onClick={onBack}
+          style={{ background: "none", border: "none", padding: "4px 0", cursor: "pointer", fontFamily: sans, fontSize: "12.5px", color: sub }}
+        >
+          ← 이전
+        </button>
+        <span style={{ fontFamily: sans, fontSize: "12px", color: sub }}>
+          {done + 1} / {total}
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: "3px" }} aria-hidden>
+        {Array.from({ length: total }).map((_, i) => (
+          <span
+            key={i}
+            style={{
+              flex: 1,
+              height: "4px",
+              borderRadius: "2px",
+              backgroundColor: i <= done ? acc : bdr,
+              opacity: i === done ? 1 : i < done ? 0.75 : 1,
+              marginLeft: i === BODY_QUESTIONS.length ? "6px" : 0,
+            }}
+          />
+        ))}
+      </div>
+      <div style={{ display: "flex", marginTop: "5px", fontFamily: sans, fontSize: "10.5px", color: sub }}>
+        <span style={{ flex: BODY_QUESTIONS.length }}>골격</span>
+        <span style={{ flex: COLOR_QUESTIONS.length, paddingLeft: "6px" }}>퍼스널컬러</span>
       </div>
     </div>
   );
@@ -182,6 +270,7 @@ function QuestionView({
   kicker,
   intro,
   question,
+  hint,
   kind,
   options,
   vars,
@@ -189,6 +278,7 @@ function QuestionView({
   kicker: string;
   intro?: string;
   question: string;
+  hint?: string;
   kind: "body" | "color";
   options: { label: string; value: string; onClick: () => void }[];
   vars: Record<string, string>;
@@ -210,9 +300,14 @@ function QuestionView({
           {intro}
         </p>
       )}
-      <p style={{ fontFamily: serif, fontSize: "20px", lineHeight: 1.55, color: txt, marginBottom: "28px", wordBreak: "keep-all" }}>
+      <p style={{ fontFamily: serif, fontSize: "20px", lineHeight: 1.55, color: txt, marginBottom: hint ? "10px" : "28px", wordBreak: "keep-all" }}>
         {question}
       </p>
+      {hint && (
+        <p style={{ display: "inline-block", fontFamily: sans, fontSize: "12.5px", lineHeight: 1.55, color: txt, opacity: 0.8, backgroundColor: "var(--t-side)", border: `1px dashed ${bdr}`, borderRadius: "10px", padding: "7px 11px", marginBottom: "22px", wordBreak: "keep-all" }}>
+          👀 {hint}
+        </p>
+      )}
       <div className="flex flex-col gap-3">
         {options.map((o, i) => (
           <button
@@ -286,11 +381,15 @@ function OptionVisual({ kind, value, acc }: { kind: "body" | "color"; value: str
 function ResultView({
   body,
   color,
+  bodyAns,
+  colorAns,
   vars,
   onDone,
 }: {
   body: BodyType;
   color: ColorType;
+  bodyAns: BodyType[];
+  colorAns: ("warm" | "cool" | "light" | "deep")[];
   vars: Record<string, string>;
   onDone: () => void;
 }) {
@@ -356,8 +455,11 @@ function ResultView({
       )}
       {!cross && <div style={{ height: "14px" }} />}
 
+      {/* 한눈에 요약 — 골격 + 컬러 + 답 분포 + 바로가기 */}
+      <ResultSummary body={body} color={color} bodyAns={bodyAns} colorAns={colorAns} vars={vars} />
+
       {/* 골격 카드 + 핵심 원칙 */}
-      <div style={cardStyle}>
+      <div id="res-body" style={{ ...cardStyle, scrollMarginTop: "16px" }}>
         {kicker("BODY · 골격")}
         <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{bm.label} 체형</p>
         <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{bm.tagline}</p>
@@ -410,7 +512,7 @@ function ResultView({
       </div>
 
       {/* 컬러 카드 (상세) */}
-      <div style={{ ...cardStyle, marginBottom: "24px" }}>
+      <div id="res-color" style={{ ...cardStyle, marginBottom: "24px", scrollMarginTop: "16px" }}>
         {kicker("COLOR · 퍼스널컬러")}
         <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{cm.label}</p>
         <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{cg.tip}</p>
@@ -432,7 +534,9 @@ function ResultView({
       </div>
 
       {/* 완성 코디 — 결이 큐레이션한 룩 (상품 조합) */}
-      <CompletedLook color={color} body={body} vars={vars} />
+      <div id="res-look" style={{ scrollMarginTop: "16px" }}>
+        <CompletedLook color={color} body={body} vars={vars} />
+      </div>
 
       {/* 쇼핑 — W컨셉 제휴 (내 컬러로 골라보기) */}
       <div style={cardStyle}>
@@ -510,12 +614,138 @@ function ResultView({
       </button>
 
       {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
-      <ConsultCTA where="diagnosis" />
+      <div id="res-consult" style={{ scrollMarginTop: "16px" }}>
+        <ConsultCTA where="diagnosis" />
+      </div>
 
       {/* 오프스크린 9:16 스토리 카드 (캡처용) */}
       <div style={{ position: "fixed", left: "-9999px", top: 0, pointerEvents: "none" }} aria-hidden>
         <StoryCard ref={storyRef} body={body} color={color} />
       </div>
+    </div>
+  );
+}
+
+/* ── 결과 한눈에 요약 ──
+   골격·컬러 결과를 나란히, 내 답이 어떻게 나뉘었는지 막대로.
+   답이 갈렸으면(믹스 골격 / 웜쿨 반반) 1:1 진단을 권한다. */
+function ResultSummary({
+  body,
+  color,
+  bodyAns,
+  colorAns,
+  vars,
+}: {
+  body: BodyType;
+  color: ColorType;
+  bodyAns: BodyType[];
+  colorAns: ("warm" | "cool" | "light" | "deep")[];
+  vars: Record<string, string>;
+}) {
+  const txt = vars["--t-txt"];
+  const sub = vars["--t-sub"];
+  const acc = vars["--t-acc"];
+  const bdr = vars["--t-bdr"];
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  const serif = "var(--font-gowun), 'Batang', serif";
+  const bm = BODY_META[body];
+  const cm = COLOR_META[color];
+
+  const tally = bodyTally(bodyAns);
+  const order: BodyType[] = ["straight", "wave", "natural"];
+  const runnerUp = order.filter((t) => t !== body).sort((a, b) => tally[b] - tally[a])[0];
+  const bodyMixed = tally[body] - tally[runnerUp] <= 1 && tally[runnerUp] > 0;
+
+  const warm = colorAns.filter((a) => a === "warm").length;
+  const cool = colorAns.filter((a) => a === "cool").length;
+  const colorMixed = warm === cool;
+
+  const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  const half: React.CSSProperties = { flex: 1, minWidth: 0, padding: "14px 14px 12px", backgroundColor: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "12px" };
+  const label: React.CSSProperties = { fontFamily: sans, fontSize: "11px", color: sub, margin: "0 0 4px" };
+  const big: React.CSSProperties = { fontFamily: serif, fontSize: "21px", color: txt, margin: "0 0 4px", lineHeight: 1.3 };
+  const small: React.CSSProperties = { fontFamily: sans, fontSize: "11.5px", color: sub, lineHeight: 1.5, margin: 0, wordBreak: "keep-all" };
+
+  return (
+    <div style={{ border: `1px solid ${acc}`, borderRadius: "16px", padding: "16px", marginBottom: "16px", backgroundColor: "var(--t-side)" }}>
+      <p style={{ fontFamily: sans, fontSize: "12px", fontWeight: 600, color: acc, margin: "0 0 10px", letterSpacing: "0.02em" }}>한눈에 보는 내 결과</p>
+
+      {/* 골격 | 컬러 */}
+      <div style={{ display: "flex", gap: "8px" }}>
+        <div style={half}>
+          <p style={label}>골격</p>
+          <p style={big}>{bm.label}</p>
+          <p style={small}>{bm.tagline}</p>
+        </div>
+        <div style={half}>
+          <p style={label}>퍼스널컬러</p>
+          <p style={big}>{cm.label}</p>
+          <div style={{ display: "flex", gap: "4px", margin: "4px 0 6px" }}>
+            {cm.swatch.map((c) => (
+              <span key={c} style={{ width: "18px", height: "18px", borderRadius: "50%", backgroundColor: c, border: "1px solid rgba(0,0,0,0.1)" }} />
+            ))}
+          </div>
+          <p style={small}>{cm.tagline}</p>
+        </div>
+      </div>
+
+      {/* 답 분포 */}
+      <div style={{ marginTop: "14px" }}>
+        <p style={{ ...label, marginBottom: "6px" }}>내 답은 이렇게 나뉘었어요</p>
+        {order.map((t) => (
+          <Bar key={t} name={BODY_META[t].label} n={tally[t]} total={bodyAns.length} on={t === body} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        ))}
+        <div style={{ height: "6px" }} />
+        <Bar name="웜톤" n={warm} total={warm + cool} on={warm >= cool} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        <Bar name="쿨톤" n={cool} total={warm + cool} on={cool > warm} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+      </div>
+
+      {/* 답이 갈렸을 때 */}
+      {(bodyMixed || colorMixed) && (
+        <div style={{ marginTop: "12px", padding: "11px 12px", backgroundColor: "var(--t-card)", border: `1px dashed ${acc}`, borderRadius: "10px" }}>
+          <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, lineHeight: 1.6, margin: 0, wordBreak: "keep-all" }}>
+            {bodyMixed && <>골격은 <b>{BODY_META[runnerUp].label}</b> 특징도 함께 보여요. 두 타입이 섞인 경우가 흔해요. </>}
+            {colorMixed && <>웜톤과 쿨톤 답이 반반이에요. 조명·화장에 따라 셀프 진단은 흔들릴 수 있어요. </>}
+            정확히 알고 싶다면{" "}
+            <a href="/apply" onClick={() => track("consult_click", { where: "diagnosis_mixed", method: "apply" })} style={{ color: acc, fontWeight: 600 }}>
+              1:1로 직접 봐드릴게요 →
+            </a>
+          </p>
+        </div>
+      )}
+
+      {/* 바로가기 */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "14px" }}>
+        {[
+          ["res-body", "골격 코디 가이드"],
+          ["res-color", "내 컬러 팔레트"],
+          ["res-look", "추천 코디"],
+          ["res-consult", "1:1 진단"],
+        ].map(([id, t]) => (
+          <button
+            key={id}
+            onClick={() => jump(id)}
+            style={{ fontFamily: sans, fontSize: "12px", color: txt, background: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "999px", padding: "6px 12px", cursor: "pointer" }}
+          >
+            {t} ↓
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Bar({ name, n, total, on, acc, bdr, txt, sub }: { name: string; n: number; total: number; on: boolean; acc: string; bdr: string; txt: string; sub: string }) {
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  const pct = total ? Math.round((n / total) * 100) : 0;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+      <span style={{ width: "54px", flexShrink: 0, fontFamily: sans, fontSize: "12px", color: on ? txt : sub, fontWeight: on ? 600 : 400 }}>{name}</span>
+      <span style={{ flex: 1, height: "8px", borderRadius: "4px", backgroundColor: bdr, overflow: "hidden" }}>
+        <span style={{ display: "block", width: `${pct}%`, height: "100%", backgroundColor: acc, opacity: on ? 1 : 0.45, borderRadius: "4px" }} />
+      </span>
+      <span style={{ width: "28px", textAlign: "right", fontFamily: sans, fontSize: "11.5px", color: sub }}>{n}/{total}</span>
     </div>
   );
 }

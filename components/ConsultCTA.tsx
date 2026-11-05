@@ -7,7 +7,7 @@ import { track } from "@/lib/track";
    무료 진단/코디 결과 끝에 붙어, "정확한 1:1 진단"으로 연결하는 깔때기.
    주 버튼 = 신청서(/apply, 신청 건수가 GA에 잡힘), 보조 = 카카오톡 문의.
    둘 다 설정 전이면 렌더하지 않는다(빈 링크 방지). */
-export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" }) {
+export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | "self_check" }) {
   if (!IS_APPLY_READY && !IS_CHANNEL_READY) return null;
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   return (

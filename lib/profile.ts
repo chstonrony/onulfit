@@ -139,6 +139,10 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
 /* ── 자가진단 설문 ────────────────────────────────────── */
 export interface DiagQuestion {
   id: string;
+  /** 한눈에 보기용 짧은 이름 (예: "손목") */
+  short: string;
+  /** 어떻게 확인하는지 한 줄 */
+  hint: string;
   prompt: string;
   options: { label: string; value: BodyType | "warm" | "cool" | "light" | "deep" }[];
 }
@@ -147,6 +151,8 @@ export interface DiagQuestion {
 export const BODY_QUESTIONS: DiagQuestion[] = [
   {
     id: "wrist",
+    short: "손목",
+    hint: "반대 손으로 손목을 가볍게 감싸 쥐어보세요",
     prompt: "손목을 반대 손으로 감싸 쥐었을 때, 만져지는 느낌은?",
     options: [
       { label: "납작하고 단단하다", value: "straight" },
@@ -156,6 +162,8 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "gain",
+    short: "살 붙는 곳",
+    hint: "살이 찔 때 어디부터 변했는지 떠올려보세요",
     prompt: "살이 찌면 주로 어디부터 변하나요?",
     options: [
       { label: "상체·얼굴부터, 탄탄하게", value: "straight" },
@@ -165,6 +173,8 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "upper",
+    short: "상체 두께",
+    hint: "거울에 옆모습을 비춰 가슴~등 두께를 보세요",
     prompt: "옆에서 본 상체(가슴~등) 두께는?",
     options: [
       { label: "두껍고 입체적이다", value: "straight" },
@@ -174,6 +184,8 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "collar",
+    short: "쇄골·어깨",
+    hint: "거울 앞에서 쇄골과 어깨뼈가 보이는 정도",
     prompt: "쇄골과 어깨를 보면?",
     options: [
       { label: "쇄골이 잘 안 보이고 어깨가 둥글다", value: "straight" },
@@ -183,6 +195,8 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "compliment",
+    short: "어울렸던 옷",
+    hint: "‘잘 어울린다’는 말을 들었던 옷을 떠올려보세요",
     prompt: "\"잘 어울린다\"는 말을 들었던 옷은?",
     options: [
       { label: "심플하고 고급스러운 정장 느낌", value: "straight" },
@@ -196,6 +210,8 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
 export const COLOR_QUESTIONS: DiagQuestion[] = [
   {
     id: "vein",
+    short: "핏줄 색",
+    hint: "밝은 곳에서 손목 안쪽 핏줄 색을 보세요",
     prompt: "손목 안쪽 핏줄 색에 가까운 것은?",
     options: [
       { label: "초록빛이 돈다", value: "warm" },
@@ -204,6 +220,8 @@ export const COLOR_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "metal",
+    short: "금·은",
+    hint: "금색·은색 액세서리를 얼굴 가까이 대보세요",
     prompt: "얼굴에 대보면 더 화사해지는 액세서리는?",
     options: [
       { label: "골드(금색)", value: "warm" },
@@ -212,6 +230,8 @@ export const COLOR_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "white",
+    short: "흰옷",
+    hint: "아이보리와 새하얀 옷 중 얼굴이 맑아 보이는 쪽",
     prompt: "흰옷을 입으면?",
     options: [
       { label: "아이보리·크림색이 더 잘 받는다", value: "warm" },
@@ -220,6 +240,8 @@ export const COLOR_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "face",
+    short: "화사한 색",
+    hint: "입었을 때 얼굴이 환해졌던 색 계열",
     prompt: "얼굴이 유독 화사해 보이는 색 계열은?",
     options: [
       { label: "코랄·카멜·올리브", value: "warm" },
@@ -228,6 +250,8 @@ export const COLOR_QUESTIONS: DiagQuestion[] = [
   },
   {
     id: "depth",
+    short: "밝기",
+    hint: "밝은 색과 깊은 색 중 칭찬받은 쪽",
     prompt: "어울린다는 말을 더 많이 들은 쪽은?",
     options: [
       { label: "밝고 맑은 색", value: "light" },
@@ -235,6 +259,13 @@ export const COLOR_QUESTIONS: DiagQuestion[] = [
     ],
   },
 ];
+
+/** 골격 답안 → 타입별 개수 */
+export function bodyTally(answers: BodyType[]): Record<BodyType, number> {
+  const tally: Record<BodyType, number> = { straight: 0, wave: 0, natural: 0 };
+  answers.forEach((a) => { tally[a] += 1; });
+  return tally;
+}
 
 /** 골격 답안 → BodyType (최다 득표, 동점 시 우선순위 straight>wave>natural) */
 export function scoreBody(answers: BodyType[]): BodyType {

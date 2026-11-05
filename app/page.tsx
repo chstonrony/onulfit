@@ -14,6 +14,7 @@ import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
+import SelfCheckGuide from "@/components/SelfCheckGuide";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
 import { track } from "@/lib/track";
@@ -475,6 +476,19 @@ function WelcomeGuide({
         <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.75, color: "var(--t-txt)", opacity: 0.72, margin: "20px 2px 4px", wordBreak: "keep-all" }}>
           체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 결과에 맞는 코디까지 바로 알려드려요.
         </p>
+
+        {/* 자가진단에서 살펴보는 10가지 — 한눈에 */}
+        <div style={{ marginTop: "18px" }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "10px" }}>
+            <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 600, color: "var(--t-txt)", margin: 0 }}>
+              자가진단에서 살펴보는 10가지
+            </p>
+            <Link href="/self-check" style={{ fontFamily: sans, fontSize: "12px", color: acc, textDecoration: "none" }}>
+              자세히 →
+            </Link>
+          </div>
+          <SelfCheckGuide variant="compact" />
+        </div>
 
         {/* 모바일 전용 — 내 결(프로필) 칩: 진단 완료 시에만 표시 (CTA와 중복 방지) */}
         {hasProfile && (
