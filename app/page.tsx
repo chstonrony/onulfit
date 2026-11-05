@@ -15,7 +15,8 @@ import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
 import SelfCheckGuide from "@/components/SelfCheckGuide";
-import { Reveal, BrandLogo, GyeolSymbol, SectionHead, Marquee, BlockButton } from "@/components/Editorial";
+import { Reveal, GyeolSymbol, SectionHead, Marquee } from "@/components/Editorial";
+import CorridorHero from "@/components/CorridorHero";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
 
@@ -437,24 +438,12 @@ function WelcomeGuide({
   return (
     <div className="pt-1 pb-4">
 
-      {/* ── 01 오늘핏 로고 (원래 로고를 크게) ── */}
-      <div style={{ animation: "cardEnter 900ms var(--ease-out) both", padding: "6px 0 16px", borderBottom: "1px solid var(--t-txt)" }}>
-        <BrandLogo style={{ maxWidth: "420px" }} />
+      {/* ── 01 첫 화면: 올리브 문 복도 (채팅 열의 여백을 넘어 가장자리까지) ── */}
+      <div className="-mx-5 lg:-mx-6 -mt-6 lg:-mt-7">
+        <CorridorHero onStart={onDiagnose} videoSrc="/hero/corridor.mp4" posterSrc="/hero/corridor-poster.jpg" endSrc="/hero/corridor-end.jpg" />
       </div>
 
-      {/* ── 헤드라인 + 메인 CTA (모바일 첫 화면 안) ── */}
-      <div style={{ animation: "cardEnter 900ms var(--ease-out) 120ms both" }}>
-        <h1 style={{ fontFamily: sans, fontWeight: 800, fontSize: "clamp(38px, 11vw, 46px)", letterSpacing: "-0.055em", lineHeight: 1.08, color: "var(--t-txt)", margin: "22px 0 0", wordBreak: "keep-all" }}>
-          오늘 뭐 입지?
-        </h1>
-        <p style={{ fontFamily: sans, fontWeight: 500, fontSize: "19px", letterSpacing: "-0.03em", lineHeight: 1.4, color: "var(--t-sub)", margin: "6px 0 20px" }}>
-          그 고민은, <span style={{ color: "var(--t-acc)", fontWeight: 700 }}>결에게</span>
-        </p>
-
-        <BlockButton onClick={onDiagnose} sub="사진 없이 1분 · 골격 5문항 + 컬러 5문항">
-          {hasProfile ? "내 결 다시 진단하기" : "무료 체형·퍼스널컬러 자가진단"}
-        </BlockButton>
-
+      <div>
         {hasProfile && (
           <button
             onClick={onDiagnose}
@@ -468,25 +457,6 @@ function WelcomeGuide({
           </button>
         )}
       </div>
-
-      {/* ── 사진 — 에디토리얼 캡션 ── */}
-      <Reveal style={{ marginTop: "28px" }}>
-        <figure className="ed-zoom" style={{ margin: 0, position: "relative", backgroundColor: vars["--t-bdr"] }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-main.png"
-            alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.82) contrast(1.04)" }}
-          />
-          <span className="ed-accent" style={{ position: "absolute", left: "16px", bottom: "12px", fontSize: "34px", lineHeight: 1, color: "#fff", textShadow: "0 2px 18px rgba(0,0,0,0.35)" }}>
-            Today&rsquo;s look
-          </span>
-        </figure>
-        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 0" }}>
-          <span className="ed-label" style={{ color: "var(--t-txt)" }}>No.01 Today&rsquo;s look</span>
-          <span className="ed-label" style={{ color: "var(--t-sub)" }}>Head to toe</span>
-        </div>
-      </Reveal>
 
       {/* ── 결의 한마디 (결 심볼 + 인용) ── */}
       <Reveal style={{ marginTop: "30px" }}>

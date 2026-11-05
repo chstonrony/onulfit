@@ -1,0 +1,157 @@
+/* ── 메인 첫 화면: 올리브 문 복도 (2026-11-05 시안 v4 → 적용) ──
+   단위: 130px ≈ 1m. 장면 상태는 .stage 의 CSS 변수로만 움직인다.
+   --o 끝 문 열림(0~1, 실제로는 46%까지만 올라감) · --a/--x 첫 문구 등장/퇴장 · --b 마지막 문구 · --s 셔츠 흔들림 각도
+   제목 폰트는 --hero-font / --hero-weight 두 값만 바꾸면 된다. */
+
+.stage {
+  --o: 0; --a: 0; --x: 1; --b: 0; --s: 0deg;
+  --hero-font: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
+  --hero-weight: 700;
+  position: relative;
+  height: clamp(540px, calc(100svh - 228px), 820px);
+  overflow: hidden;
+  color: #fff;
+  background: #16150f;
+  perspective: 600px;
+  perspective-origin: 50% 28%;
+  isolation: isolate;
+}
+
+.world { position: absolute; left: 50%; top: 28%; width: 0; height: 0; transform-style: preserve-3d; }
+.world > div { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+
+.noise {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* 벽: 아래 300px = 올리브 롤업 문 줄, 위 150px = 흰 벽 */
+.wall {
+  width: 3000px; height: 450px; transform-origin: 0 50%;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0) 0 150px, rgba(0,0,0,.10) 150px 156px, rgba(0,0,0,0) 156px),
+    repeating-linear-gradient(90deg, #dcd6cf 0 34px, rgba(0,0,0,0) 34px 260px),
+    linear-gradient(180deg, #e6e1db 0 150px, rgba(0,0,0,0) 150px),
+    linear-gradient(180deg, rgba(0,0,0,0) 0 158px, #5C5823 158px 166px, rgba(0,0,0,0) 166px 438px, rgba(0,0,0,.35) 438px 450px),
+    repeating-linear-gradient(180deg, #B9B45A 0 6px, #A7A24A 6px 12px, #7F7A33 12px 14px, #B0AB52 14px 15px);
+}
+.wall::after { content: ""; position: absolute; inset: 0; opacity: .35; mix-blend-mode: multiply; background: inherit; }
+.wall .n { position: absolute; inset: 0; opacity: .28; mix-blend-mode: multiply; }
+.wallL { transform: translate3d(-160px, -250px, 480px) rotateY(90deg); }
+.wallR { transform: translate3d(160px, -250px, 480px) rotateY(90deg); }
+
+.floor {
+  width: 320px; height: 3000px; transform-origin: 50% 0;
+  transform: translate3d(-160px, 200px, 480px) rotateX(90deg) scaleY(-1);
+  background:
+    linear-gradient(90deg, rgba(167,162,74,.26), rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(167,162,74,.26)),
+    repeating-linear-gradient(180deg, rgba(255,255,255,0) 0 258px, rgba(255,255,255,.10) 258px 260px),
+    linear-gradient(180deg, #96918c, #7d7773);
+}
+.floor .n { position: absolute; inset: 0; opacity: .22; mix-blend-mode: multiply; }
+.ceil {
+  width: 320px; height: 3000px; transform-origin: 50% 0;
+  transform: translate3d(-160px, -250px, 480px) rotateX(90deg) scaleY(-1);
+  background:
+    repeating-linear-gradient(180deg, rgba(0,0,0,0) 0 230px, #fff7ec 230px 240px, rgba(0,0,0,0) 240px 520px),
+    linear-gradient(90deg, #3b3633, #4b4541 50%, #3b3633);
+}
+/* 복도는 어둡게, 문이 열리면 조금 밝아짐 */
+.wall, .floor, .ceil { filter: brightness(calc(.5 + var(--o) * .14)) saturate(.9); }
+
+/* 끝 문 앞 바닥으로 번지는 흰 빛 */
+.spill {
+  width: 320px; height: 520px; transform-origin: 50% 0;
+  transform: translate3d(-160px, 199px, -2520px) rotateX(90deg);
+  background: radial-gradient(70% 100% at 50% 0%, rgba(255,255,250,.95), rgba(246,244,232,.45) 45%, rgba(0,0,0,0) 80%);
+  opacity: var(--o);
+}
+
+/* 끝 벽과 문 */
+.end { width: 320px; height: 450px; transform: translate3d(-160px, -250px, -2520px); background: #e6e1db; filter: brightness(calc(.46 + var(--o) * .1)); }
+.frame {
+  position: absolute; left: 45px; bottom: 0; width: 230px; height: 300px; overflow: hidden;
+  background: #110c0a; box-shadow: 0 0 0 7px #d4cdc5;
+  filter: brightness(calc(1 / (.46 + var(--o) * .1)));
+}
+.inside {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% -4%, rgba(255,255,252,.95) 0%, rgba(236,235,226,.55) 38%, rgba(0,0,0,0) 72%),
+    radial-gradient(60% 40% at 50% 100%, rgba(255,255,250,.35), rgba(0,0,0,0) 70%),
+    linear-gradient(180deg, #5d5b4b, #2c2b22);
+}
+.inside svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.shirt { filter: blur(1.5px); }
+.sway { transform-origin: 122px 37px; transform: rotate(var(--s)); }
+.roll {
+  position: absolute; inset: 0;
+  transform: translateY(calc(var(--o) * -46%));
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0) 0 286px, #5C5823 286px 292px, rgba(0,0,0,0) 292px),
+    repeating-linear-gradient(180deg, #B9B45A 0 6px, #A7A24A 6px 12px, #7F7A33 12px 14px, #B0AB52 14px 15px);
+}
+.roll .n { position: absolute; inset: 0; opacity: .28; mix-blend-mode: multiply; }
+.roll::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px;
+  background: #FFFDF4; box-shadow: 0 0 18px 7px rgba(255,252,238,.85);
+  opacity: calc(min(1, var(--o) * 6));
+}
+
+/* 영상이 들어오면 3D 장면 대신 사용 */
+.video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 72%; background: #16150f; }
+
+/* 화면 위 효과 */
+.bloom {
+  position: absolute; left: 50%; top: 30%; width: 520px; height: 520px; transform: translate(-50%, -30%); pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255,255,250,.55), rgba(255,255,250,0));
+  opacity: calc(var(--o) * .5); mix-blend-mode: screen;
+}
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(110% 85% at 50% 40%, rgba(0,0,0,0) 40%, rgba(0,0,0,.55) 100%); }
+.grain {
+  position: absolute; inset: -50%; pointer-events: none; opacity: .14; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.veil { position: absolute; left: 0; right: 0; bottom: 0; height: 48%; pointer-events: none; background: linear-gradient(180deg, rgba(14,10,8,0), rgba(14,10,8,.72)); }
+
+/* 문구 */
+.copy { position: absolute; z-index: 5; left: 22px; right: 22px; bottom: 30px; text-shadow: 0 1px 2px rgba(0,0,0,.18), 0 2px 22px rgba(0,0,0,.28); }
+.pill { text-shadow: none; }
+.eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--font-grotesk), "Inter Tight", sans-serif;
+  font-weight: 500; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase;
+}
+.title {
+  margin: 0;
+  font-family: var(--hero-font); font-weight: var(--hero-weight);
+  font-size: clamp(42px, 12.5vw, 56px); line-height: 1.04; letter-spacing: -.055em;
+  word-break: keep-all;
+}
+.lead { margin: 12px 0 0; font-size: 14.5px; font-weight: 400; line-height: 1.6; color: rgba(255,255,255,.86); letter-spacing: -.02em; }
+.pill {
+  display: inline-flex; align-items: center; gap: 12px; height: 52px; padding: 0 26px; margin-top: 20px;
+  border: 1.5px solid currentColor; border-radius: 999px; background: transparent; color: inherit; cursor: pointer;
+  font-family: var(--font-noto-sans), sans-serif; font-weight: 500; font-size: 15.5px; letter-spacing: -.02em;
+  transition: background .2s ease, color .2s ease;
+}
+.pill i { font-style: normal; font-family: var(--font-grotesk), sans-serif; font-weight: 300; font-size: 19px; }
+.A { opacity: calc(var(--a) * var(--x)); transform: translateY(calc((1 - var(--a)) * 14px)); }
+.A .pill:hover { background: #fff; color: #1B1714; }
+.B { opacity: var(--b); transform: translateY(calc((1 - var(--b)) * 14px)); }
+.B .eyebrow { color: #DDE0A6; }
+.B .pill { background: #fff; border-color: #fff; color: #1B1714; }
+.B .pill:hover { background: #DDE0A6; border-color: #DDE0A6; }
+.note { display: block; margin-top: 10px; font-size: 12px; color: rgba(255,255,255,.62); letter-spacing: -.01em; }
+.off { pointer-events: none; }
+
+/* 데스크톱: 왼쪽 460px 열 안에서 버튼까지 한 화면에 들어오게
+   (열 머리 + 입력창을 뺀 높이에 맞추고, 제목은 한 줄로, 소실점은 조금 위로) */
+@media (min-width: 1024px) {
+  .stage { height: clamp(440px, calc(100svh - 360px), 640px); perspective-origin: 50% 22%; }
+  .world { top: 22%; }
+  .bloom { top: 24%; }
+  .copy { left: 24px; right: 24px; bottom: 24px; }
+  .title { font-size: 46px; }
+  .title br { display: none; }
+  .pill { margin-top: 16px; }
+}
