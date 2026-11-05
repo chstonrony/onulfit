@@ -2,85 +2,48 @@
 
 import { IS_APPLY_READY } from "@/lib/consult";
 import { track } from "@/lib/track";
+import { BlockButton } from "./Editorial";
 
 /* ── 홈 1:1 진단 신청 CTA ──
-   인스타 bio 링크가 도착하는 홈에서, 무료 진단을 넘어 "1:1 오프라인 컨설팅 신청"으로 잇는 깔때기.
-   신청 폼 링크(NEXT_PUBLIC_APPLY_URL)가 설정되기 전엔 렌더하지 않는다(빈 링크 방지). */
+   무료 진단을 넘어 "1:1 오프라인 컨설팅 신청"으로 잇는 깔때기.
+   신청 폼이 준비되기 전엔 렌더하지 않는다(빈 링크 방지).
+   디자인: 포인트 컬러 풀블록 — 홈에서 가장 강한 면. */
 export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
   if (!IS_APPLY_READY) return null;
+  void vars;
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
-  const acc = vars["--t-acc"];
 
   return (
-    <div
+    <section
+      className="-mx-5 lg:-mx-6"
       style={{
-        margin: "26px 0 14px",
-        padding: "26px 22px",
-        backgroundColor: "var(--t-card)",
-        border: `1px solid ${acc}`,
-        borderRadius: "18px",
-        textAlign: "center",
+        marginTop: "44px",
+        marginBottom: "10px",
+        padding: "22px 20px 24px",
+        backgroundColor: "var(--t-acc)",
+        color: "var(--t-bg)",
       }}
     >
-      <p
-        style={{
-          fontFamily: "var(--font-cormorant), Georgia, serif",
-          fontStyle: "italic",
-          fontSize: "14px",
-          letterSpacing: "0.04em",
-          color: acc,
-          margin: 0,
-        }}
-      >
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span className="ed-label">(05)&nbsp;&nbsp;Consulting</span>
+        <span className="ed-label">1:1 · Offline</span>
+      </div>
+      <p className="ed-accent" style={{ fontSize: "44px", lineHeight: 1, margin: "26px 0 0" }}>
         1:1 Consulting
       </p>
-      <p
-        style={{
-          fontFamily: "var(--font-gowun), 'Batang', serif",
-          fontSize: "21px",
-          fontWeight: 400,
-          color: "var(--t-txt)",
-          margin: "9px 0 9px",
-          lineHeight: 1.5,
-          wordBreak: "keep-all",
-        }}
-      >
+      <h2 style={{ fontFamily: sans, fontWeight: 800, fontSize: "clamp(27px, 7.5vw, 32px)", letterSpacing: "-0.05em", lineHeight: 1.18, margin: "12px 0 12px", wordBreak: "keep-all" }}>
         화면 진단을 넘어,<br />직접 봐드릴게요
-      </p>
-      <p
-        style={{
-          fontFamily: sans,
-          fontSize: "13.5px",
-          color: "var(--t-sub)",
-          lineHeight: 1.75,
-          margin: "0 auto 18px",
-          maxWidth: "320px",
-          wordBreak: "keep-all",
-        }}
-      >
+      </h2>
+      <p style={{ fontFamily: sans, fontWeight: 500, fontSize: "14.5px", lineHeight: 1.7, opacity: 0.9, margin: "0 0 22px", maxWidth: "360px", wordBreak: "keep-all" }}>
         퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요. 지금은 포트폴리오 멤버를 먼저 모시고 있어요.
       </p>
-      <a
+      <BlockButton
         href="/apply"
+        tone="paper"
         onClick={() => track("consult_click", { where: "home", method: "apply" })}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "7px",
-          height: "50px",
-          borderRadius: "13px",
-          backgroundColor: acc,
-          color: "var(--t-bg)",
-          fontFamily: sans,
-          fontWeight: 600,
-          fontSize: "14px",
-          letterSpacing: "0.02em",
-          textDecoration: "none",
-        }}
       >
-        1:1 진단 신청하기 →
-      </a>
-    </div>
+        1:1 진단 신청하기
+      </BlockButton>
+    </section>
   );
 }

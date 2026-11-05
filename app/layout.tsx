@@ -1,40 +1,31 @@
 import type { Metadata, Viewport } from "next";
-import {
-  Fraunces,
-  Gowun_Batang,
-  Noto_Sans_KR,
-} from "next/font/google";
+import { Inter_Tight, Instrument_Serif } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import KakaoInit from "@/components/KakaoInit";
 import "./globals.css";
 
-/* ── 영문 디스플레이 세리프 (Fraunces — 패션 매거진 톤) ──
-   변수명은 기존 --font-cormorant 유지: 인라인 참조를 그대로 두고 폰트만 교체 */
-const fraunces = Fraunces({
+/* ── 타이포그래피 시스템 (2026-11 리뉴얼) ──────────────────────
+   · 그로테스크(영문 워드마크·라벨): Inter Tight — 크고 촘촘한 에디토리얼 헤드라인
+   · 액센트 세리프(영문 이탤릭 한마디): Instrument Serif — 감성 포인트
+   · 한글(제목·본문 전부): Pretendard — 제목은 굵고 촘촘하게(globals.css)
+   기존 인라인 스타일이 쓰는 변수명(--font-cormorant/-jost/-gowun/-noto-sans)은
+   그대로 두고, 가리키는 폰트만 바꾼다. ─────────────────────────── */
+const grotesk = Inter_Tight({
+  variable: "--font-grotesk",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const accentSerif = Instrument_Serif({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400"],
   style: ["normal", "italic"],
   display: "swap",
 });
 
-/* ── 한글 세리프 ── */
-const gowunBatang = Gowun_Batang({
-  variable: "--font-gowun",
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-  preload: false,
-});
-
-/* ── 한글 본문 (Noto Sans → 인라인 style에서 Pretendard로 재배선) ── */
-const notoSans = Noto_Sans_KR({
-  variable: "--font-noto-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  display: "swap",
-  preload: false,
-});
+const PRETENDARD = '"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
 
 /* ── 메타데이터 ── */
 export const metadata: Metadata = {
@@ -96,8 +87,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF8F5" },
-    { media: "(prefers-color-scheme: dark)", color: "#2C2825" },
+    { media: "(prefers-color-scheme: light)", color: "#EDE8E2" },
+    { media: "(prefers-color-scheme: dark)", color: "#1B1714" },
   ],
 };
 
@@ -109,19 +100,19 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${fraunces.variable} ${gowunBatang.variable} ${notoSans.variable} h-full`}
+      className={`${grotesk.variable} ${accentSerif.variable} h-full`}
       style={{
-        /* 라벨/산세리프(구 Jost) → 디스플레이 세리프(Fraunces)로 통일 */
-        ["--font-jost" as string]: "var(--font-cormorant)",
-        /* 한글 본문 → Pretendard (기본값 Noto Sans 탈피) */
-        ["--font-noto-sans" as string]:
-          '"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", sans-serif',
+        /* 라벨·숫자 → 그로테스크(영문) + Pretendard(한글) */
+        ["--font-jost" as string]: `var(--font-grotesk), ${PRETENDARD}`,
+        /* 한글 제목(구 고운바탕) → Pretendard. 굵기·자간은 globals.css에서 */
+        ["--font-gowun" as string]: PRETENDARD,
+        ["--font-noto-sans" as string]: PRETENDARD,
       } as React.CSSProperties}
     >
       <head>
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
         {/* 검색엔진용 구조화 데이터 — 한글 브랜드명 '오늘핏' 인식 */}
         <script

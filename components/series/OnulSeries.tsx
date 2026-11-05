@@ -63,12 +63,12 @@ export default function OnulSeries({ vars }: Props) {
               padding: "9px 12px",
               background: "var(--t-card)",
               border: "1px solid var(--t-bdr)",
-              borderRadius: "11px",
+              borderRadius: "4px",
             }}>
               <span style={{
                 fontFamily: "var(--font-jost), sans-serif", fontSize: "8px",
                 letterSpacing: "0.06em", padding: "2px 6px",
-                color: vars["--t-sub"], border: `1px solid var(--t-bdr)`, borderRadius: "8px",
+                color: vars["--t-sub"], border: `1px solid var(--t-bdr)`, borderRadius: "3px",
                 flexShrink: 0,
               }}>
                 {s.tag}

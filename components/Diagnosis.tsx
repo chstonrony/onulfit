@@ -6,6 +6,7 @@ import StoryCard from "./StoryCard";
 import ConsultCTA from "./ConsultCTA";
 import { track } from "@/lib/track";
 import SelfCheckGuide from "./SelfCheckGuide";
+import { Wordmark } from "./Editorial";
 import {
   BODY_QUESTIONS,
   COLOR_QUESTIONS,
@@ -140,10 +141,10 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
     >
       {/* 헤더 */}
       <div
-        className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-        style={{ borderBottom: `1px solid ${bdr}` }}
+        className="flex items-center justify-between px-5 py-3 flex-shrink-0"
+        style={{ borderBottom: `1px solid ${txt}`, position: "sticky", top: 0, zIndex: 2, backgroundColor: "var(--t-bg)" }}
       >
-        <span style={{ display: "flex", alignItems: "center", gap: "7px", fontFamily: sans, fontSize: "13px", fontWeight: 500, color: txt, letterSpacing: "0.02em" }}>
+        <span className="ed-label" style={{ display: "flex", alignItems: "center", gap: "8px", color: txt }}>
           <GyeolMark color={txt} size={18} />
           결의 진단
         </span>
@@ -156,11 +157,18 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
         </button>
       </div>
 
-      <div className="flex-1 px-6 py-8 max-w-[560px] mx-auto w-full">
+      <div className="flex-1 px-5 py-7 max-w-[560px] mx-auto w-full">
         {step === "intro" && (
           <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-            <div style={{ marginBottom: "20px" }}><GyeolMark color={acc} size={46} /></div>
-            <p style={{ fontFamily: serif, fontSize: "20px", lineHeight: 1.6, color: txt, wordBreak: "keep-all", marginBottom: "8px" }}>
+            <div style={{ marginBottom: "22px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                <span className="ed-label" style={{ color: acc }}>Free · 1 min</span>
+                <span className="ed-label" style={{ color: sub }}>10 questions</span>
+              </div>
+              <Wordmark text="SELF CHECK" mark={false} size={17.2} />
+              <div style={{ height: "4px", background: acc, marginTop: "10px" }} />
+            </div>
+            <p style={{ fontFamily: serif, fontSize: "24px", lineHeight: 1.4, color: txt, wordBreak: "keep-all", marginBottom: "8px" }}>
               {GYEOL.diagIntro}
             </p>
             <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: sub, wordBreak: "keep-all", marginBottom: "18px" }}>
@@ -249,8 +257,8 @@ function Progress({
             key={i}
             style={{
               flex: 1,
-              height: "4px",
-              borderRadius: "2px",
+              height: "3px",
+              borderRadius: 0,
               backgroundColor: i <= done ? acc : bdr,
               opacity: i === done ? 1 : i < done ? 0.75 : 1,
               marginLeft: i === BODY_QUESTIONS.length ? "6px" : 0,
@@ -292,7 +300,7 @@ function QuestionView({
 
   return (
     <div key={question} style={{ animation: "cardEnter 400ms cubic-bezier(0.16,1,0.3,1) both" }}>
-      <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "14px" }}>
+      <p className="ed-label" style={{ color: acc, marginBottom: "14px" }}>
         {kicker}
       </p>
       {intro && (
@@ -300,11 +308,11 @@ function QuestionView({
           {intro}
         </p>
       )}
-      <p style={{ fontFamily: serif, fontSize: "20px", lineHeight: 1.55, color: txt, marginBottom: hint ? "10px" : "28px", wordBreak: "keep-all" }}>
+      <p style={{ fontFamily: serif, fontSize: "25px", lineHeight: 1.35, color: txt, marginBottom: hint ? "12px" : "28px", wordBreak: "keep-all" }}>
         {question}
       </p>
       {hint && (
-        <p style={{ display: "inline-block", fontFamily: sans, fontSize: "12.5px", lineHeight: 1.55, color: txt, opacity: 0.8, backgroundColor: "var(--t-side)", border: `1px dashed ${bdr}`, borderRadius: "10px", padding: "7px 11px", marginBottom: "22px", wordBreak: "keep-all" }}>
+        <p style={{ display: "inline-block", fontFamily: sans, fontSize: "12.5px", lineHeight: 1.55, color: txt, opacity: 0.8, backgroundColor: "var(--t-card)", border: `1px dashed ${bdr}`, borderRadius: "2px", padding: "8px 12px", marginBottom: "22px", wordBreak: "keep-all" }}>
           👀 {hint}
         </p>
       )}
@@ -321,19 +329,21 @@ function QuestionView({
               textAlign: "left",
               padding: "14px 16px",
               fontFamily: sans,
-              fontSize: "14px",
-              lineHeight: 1.5,
+              fontSize: "15px",
+              fontWeight: 600,
+              letterSpacing: "-0.025em",
+              lineHeight: 1.45,
               color: txt,
-              backgroundColor: "var(--t-side)",
+              backgroundColor: "var(--t-card)",
               border: `1px solid ${bdr}`,
-              borderRadius: "12px",
+              borderRadius: "2px",
               cursor: "pointer",
               transition: "border-color 0.18s, transform 0.1s",
               wordBreak: "keep-all",
             }}
             onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.99)"; }}
             onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = acc; }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = txt; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
             <span style={{ flexShrink: 0, width: "52px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -435,14 +445,14 @@ function ResultView({
     { key: "accessory", label: "액세서리" },
   ];
 
-  const cardStyle: React.CSSProperties = { border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" };
+  const cardStyle: React.CSSProperties = { border: `1px solid ${bdr}`, borderTop: `2px solid ${txt}`, borderRadius: "2px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-card)" };
   const kicker = (t: string) => (
-    <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>{t}</p>
+    <p className="ed-label" style={{ color: acc, marginBottom: "10px" }}>{t}</p>
   );
 
   return (
     <div style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-      <p style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: serif, fontSize: "20px", color: txt, marginBottom: "6px" }}>
+      <p style={{ display: "flex", alignItems: "center", gap: "10px", fontFamily: serif, fontSize: "27px", lineHeight: 1.3, color: txt, marginBottom: "8px", wordBreak: "keep-all" }}>
         <GyeolMark color={acc} size={20} />
         {GYEOL.resultLead}
       </p>
@@ -506,7 +516,7 @@ function ResultView({
         <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "6px" }}>결의 코디 공식</p>
         <div className="flex flex-col gap-1.5">
           {bg.formulas.map((f, i) => (
-            <p key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.9, lineHeight: 1.5, wordBreak: "keep-all", padding: "6px 10px", border: `1px solid ${bdr}`, borderRadius: "8px" }}>{f}</p>
+            <p key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.9, lineHeight: 1.5, wordBreak: "keep-all", padding: "6px 10px", border: `1px solid ${bdr}`, borderRadius: "3px" }}>{f}</p>
           ))}
         </div>
       </div>
@@ -519,7 +529,7 @@ function ResultView({
         <p style={{ fontFamily: sans, fontSize: "11px", color: txt, opacity: 0.6, marginBottom: "6px" }}>베스트 컬러</p>
         <div className="flex flex-wrap gap-1.5 mb-3">
           {cg.bestColors.map((c) => (
-            <span key={c} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all" }}>
+            <span key={c} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "2px", wordBreak: "keep-all" }}>
               <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(c), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0 }} />
               {c}
             </span>
@@ -557,7 +567,7 @@ function ResultView({
                   display: "inline-flex", alignItems: "center", gap: "7px",
                   fontFamily: sans, fontSize: "13px", color: txt,
                   padding: "9px 14px 9px 10px",
-                  border: `1px solid ${acc}`, borderRadius: "999px",
+                  border: `1px solid ${acc}`, borderRadius: "2px",
                   textDecoration: "none", wordBreak: "keep-all",
                 }}
               >
@@ -577,7 +587,7 @@ function ResultView({
       <Lookboard vars={vars} chips={lookboardChips(body, color)} boardUrl={CURATED_BOARDS.byBody[body] || CURATED_BOARDS.trend} />
 
       {cross && (
-        <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.85, lineHeight: 1.7, marginBottom: "18px", wordBreak: "keep-all", padding: "12px 14px", border: `1px solid ${acc}`, borderRadius: "10px", backgroundColor: "var(--t-bai)" }}>
+        <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.85, lineHeight: 1.7, marginBottom: "18px", wordBreak: "keep-all", padding: "12px 14px", border: `1px solid ${acc}`, borderRadius: "4px", backgroundColor: "var(--t-bai)" }}>
           <span style={{ color: acc, fontWeight: 600 }}>시그니처 룩 · </span>{cross.signature}
         </p>
       )}
@@ -601,7 +611,7 @@ function ResultView({
           color: acc,
           background: "transparent",
           border: `1px solid ${acc}`,
-          borderRadius: "12px",
+          borderRadius: "4px",
           cursor: saving ? "default" : "pointer",
           opacity: saving ? 0.6 : 1,
         }}
@@ -662,14 +672,14 @@ function ResultSummary({
 
   const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-  const half: React.CSSProperties = { flex: 1, minWidth: 0, padding: "14px 14px 12px", backgroundColor: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "12px" };
+  const half: React.CSSProperties = { flex: 1, minWidth: 0, padding: "14px 14px 12px", backgroundColor: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "4px" };
   const label: React.CSSProperties = { fontFamily: sans, fontSize: "11px", color: sub, margin: "0 0 4px" };
   const big: React.CSSProperties = { fontFamily: serif, fontSize: "21px", color: txt, margin: "0 0 4px", lineHeight: 1.3 };
   const small: React.CSSProperties = { fontFamily: sans, fontSize: "11.5px", color: sub, lineHeight: 1.5, margin: 0, wordBreak: "keep-all" };
 
   return (
-    <div style={{ border: `1px solid ${acc}`, borderRadius: "16px", padding: "16px", marginBottom: "16px", backgroundColor: "var(--t-side)" }}>
-      <p style={{ fontFamily: sans, fontSize: "12px", fontWeight: 600, color: acc, margin: "0 0 10px", letterSpacing: "0.02em" }}>한눈에 보는 내 결과</p>
+    <div style={{ border: `2px solid ${acc}`, borderRadius: "2px", padding: "16px", marginBottom: "16px", backgroundColor: "var(--t-card)" }}>
+      <p className="ed-label" style={{ color: acc, margin: "0 0 12px" }}>한눈에 보는 내 결과</p>
 
       {/* 골격 | 컬러 */}
       <div style={{ display: "flex", gap: "8px" }}>
@@ -703,7 +713,7 @@ function ResultSummary({
 
       {/* 답이 갈렸을 때 */}
       {(bodyMixed || colorMixed) && (
-        <div style={{ marginTop: "12px", padding: "11px 12px", backgroundColor: "var(--t-card)", border: `1px dashed ${acc}`, borderRadius: "10px" }}>
+        <div style={{ marginTop: "12px", padding: "11px 12px", backgroundColor: "var(--t-card)", border: `1px dashed ${acc}`, borderRadius: "4px" }}>
           <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, lineHeight: 1.6, margin: 0, wordBreak: "keep-all" }}>
             {bodyMixed && <>골격은 <b>{BODY_META[runnerUp].label}</b> 특징도 함께 보여요. 두 타입이 섞인 경우가 흔해요. </>}
             {colorMixed && <>웜톤과 쿨톤 답이 반반이에요. 조명·화장에 따라 셀프 진단은 흔들릴 수 있어요. </>}
@@ -726,7 +736,7 @@ function ResultSummary({
           <button
             key={id}
             onClick={() => jump(id)}
-            style={{ fontFamily: sans, fontSize: "12px", color: txt, background: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "999px", padding: "6px 12px", cursor: "pointer" }}
+            style={{ fontFamily: sans, fontSize: "12px", color: txt, background: "var(--t-card)", border: `1px solid ${bdr}`, borderRadius: "2px", padding: "6px 12px", cursor: "pointer" }}
           >
             {t} ↓
           </button>
@@ -742,8 +752,8 @@ function Bar({ name, n, total, on, acc, bdr, txt, sub }: { name: string; n: numb
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
       <span style={{ width: "54px", flexShrink: 0, fontFamily: sans, fontSize: "12px", color: on ? txt : sub, fontWeight: on ? 600 : 400 }}>{name}</span>
-      <span style={{ flex: 1, height: "8px", borderRadius: "4px", backgroundColor: bdr, overflow: "hidden" }}>
-        <span style={{ display: "block", width: `${pct}%`, height: "100%", backgroundColor: acc, opacity: on ? 1 : 0.45, borderRadius: "4px" }} />
+      <span style={{ flex: 1, height: "8px", borderRadius: 0, backgroundColor: bdr, overflow: "hidden" }}>
+        <span style={{ display: "block", width: `${pct}%`, height: "100%", backgroundColor: acc, opacity: on ? 1 : 0.45, borderRadius: 0 }} />
       </span>
       <span style={{ width: "28px", textAlign: "right", fontFamily: sans, fontSize: "11.5px", color: sub }}>{n}/{total}</span>
     </div>
@@ -765,7 +775,7 @@ function TagRow({ label, items, color, bdr, sans }: { label: string; items: stri
       <p style={{ fontFamily: sans, fontSize: "11px", color, opacity: 0.6, marginBottom: "6px" }}>{label}</p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((it) => (
-          <span key={it} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "999px", wordBreak: "keep-all", opacity: 0.7 }}>
+          <span key={it} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "2px", wordBreak: "keep-all", opacity: 0.7 }}>
             <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(it), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0, opacity: 0.6 }} />
             {it}
           </span>
@@ -780,13 +790,14 @@ function ctaStyle(acc: string): React.CSSProperties {
     width: "100%",
     padding: "16px",
     fontFamily: "var(--font-noto-sans), sans-serif",
-    fontSize: "14px",
-    fontWeight: 500,
-    letterSpacing: "0.04em",
+    minHeight: "58px",
+    fontSize: "16px",
+    fontWeight: 700,
+    letterSpacing: "-0.025em",
     color: "#fff",
     backgroundColor: acc,
     border: "none",
-    borderRadius: "12px",
+    borderRadius: "2px",
     cursor: "pointer",
   };
 }

@@ -61,7 +61,7 @@ export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
       {/* 오늘의 컬러 스토리 — 한눈에 보이는 비주얼 */}
       <div className="mb-7">
         <p style={LABEL} className="mb-3">오늘의 컬러</p>
-        <div className="flex gap-1.5" style={{ height: "54px", borderRadius: "14px", overflow: "hidden" }}>
+        <div className="flex gap-1.5" style={{ height: "54px", borderRadius: "4px", overflow: "hidden" }}>
           {[outfit.items.top, outfit.items.bottom, outfit.items.outer, outfit.items.shoes, outfit.items.accessory].map((it, i) => (
             <div key={i} title={it.color} style={{ flex: 1, backgroundColor: getColorHex(it.color) }} />
           ))}

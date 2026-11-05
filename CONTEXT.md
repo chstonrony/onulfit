@@ -34,6 +34,17 @@
 
 ## 세션 로그
 
+### 2026-11-05 세션 15 — 에디토리얼 디자인 리뉴얼(폰트·색·타이포 전면 교체) [커밋, 배포 전]
+- **레퍼런스**: Awwwards SOTD "OUTFIT"(++hellohello) — 종이 바탕 + 포인트 컬러 하나, 화면 폭을 채우는 대형 그로테스크 워드마크, 굵은 가로줄, 대문자 라벨 그리드, 각진 모서리. 대상 20~40대. **내용(문구)은 그대로, 디자인만 교체.**
+- **폰트**(layout.tsx): Inter Tight(영문 워드마크·라벨, `--font-grotesk`) + Instrument Serif(영문 이탤릭 포인트, `--font-cormorant`) + Pretendard 다이내믹 서브셋(한글 전부). 고운바탕·Fraunces·Noto Sans KR 제거. 기존 변수명(`--font-gowun/-jost/-noto-sans`)은 유지하고 가리키는 폰트만 바꿈.
+- **globals.css**: 팔레트(종이 #EDE8E2 · 잉크 #1B1714 · 버밀리언 #C23B22), 폰트 변수별 굵기·자간 일괄 보정(`[style*="--font-gowun"]` 등 — 인라인 스타일이 많아 선택자로 보정), 유틸 `.ed-wordmark/.ed-label/.ed-accent/.ed-link/.ed-zoom/.ed-reveal/.ed-marquee`.
+- **lib/themes.ts**: everyday(기본) 테마를 새 팔레트로. 다른 무드 4종은 그대로.
+- **components/Editorial.tsx 신설**: Reveal(스크롤 등장), Wordmark(컨테이너 폭 맞춤 대형 글자), SectionHead((번호) 라벨+굵은 제목), Marquee(흐르는 띠), BlockButton(각진 주 버튼).
+- **홈**: 상단 Guide·1:1 진단 링크, ONULFIT 워드마크+굵은 줄, 헤드라인·자가진단 버튼(첫 화면), 4:5 사진+캡션, OnulFit/Why 라벨 그리드, 흐르는 띠, (02)~(05) 섹션, 상황 목록은 가로줄 리스트(호버 시 빨간 띠), 1:1 신청은 빨간 풀블록.
+- **자가진단·결과, /self-check, /guide, /guide/[slug], /apply**: 같은 체계로(SELF CHECK·GUIDE·1:1 STYLING 워드마크, 각진 카드·버튼, 굵은 한글 제목). ConsultCTA·GuideCTA·ApplyCTA는 빨간 블록.
+- 일괄 치환: 옛 팔레트 hex → 새 팔레트, 모서리 10~22px → 4px(대부분 2px로 손봄).
+- 로컬 빌드·모바일 375/데스크탑 1440 화면 확인. 로고 SVG·OG 이미지·나머지 무드 테마는 아직 옛 색(후속).
+
 ### 2026-11-05 세션 14 — 자가진단 한눈에 보이게 + 사이트 점검 [커밋, 배포 전]
 - **요청**: 무료 체형·퍼스널컬러 자가진단과 "무엇을 살펴보는지"를 한눈에 보이게.
 - **문항 메타**: `lib/profile.ts` DiagQuestion에 `short`(손목·핏줄 색 등 짧은 이름)·`hint`(거울 앞 확인 방법) 추가, `bodyTally()` 추가.

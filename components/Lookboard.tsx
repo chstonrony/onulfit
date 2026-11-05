@@ -36,7 +36,7 @@ export default function Lookboard({ vars, chips, boardUrl }: Props) {
   }, [boardUrl]);
 
   return (
-    <div style={{ border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
+    <div style={{ border: `1px solid ${bdr}`, borderRadius: "4px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
       <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>
         LOOKBOOK · 비주얼 레퍼런스
       </p>
@@ -71,7 +71,7 @@ export default function Lookboard({ vars, chips, boardUrl }: Props) {
               color: txt,
               padding: "8px 14px",
               border: `1px solid ${bdr}`,
-              borderRadius: "999px",
+              borderRadius: "2px",
               textDecoration: "none",
               wordBreak: "keep-all",
               display: "inline-flex",

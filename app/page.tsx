@@ -15,8 +15,8 @@ import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
 import SelfCheckGuide from "@/components/SelfCheckGuide";
+import { Reveal, Wordmark, SectionHead, Marquee, BlockButton } from "@/components/Editorial";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
-import { GYEOL } from "@/lib/gyeol";
 import { track } from "@/lib/track";
 
 /* 무드별 로고 파일 매핑 */
@@ -137,22 +137,25 @@ export default function Home() {
           모바일 전용 헤더 (lg 이상에서 숨김)
       ══════════════════════════════════════════ */}
       <header
-        className="lg:hidden flex-shrink-0 flex flex-col gap-2.5 px-5 py-3"
+        className="lg:hidden flex-shrink-0 flex flex-col gap-2 px-5 pt-3 pb-2"
         style={{
           backgroundColor: "var(--t-side)",
-          borderBottom: "1px solid var(--t-bdr)",
+          borderBottom: "1px solid var(--t-txt)",
         }}
       >
-        <Image
-          key={getLogoSrc(mood)}
-          src={getLogoSrc(mood)}
-          alt="OnulFit"
-          width={140}
-          height={42}
-          priority
-          unoptimized
-          style={{ width: "132px", height: "auto", display: "block" }}
-        />
+        <div className="flex items-center justify-between">
+          <Image
+            key={getLogoSrc(mood)}
+            src={getLogoSrc(mood)}
+            alt="OnulFit"
+            width={140}
+            height={42}
+            priority
+            unoptimized
+            style={{ width: "112px", height: "auto", display: "block" }}
+          />
+          <TopNav />
+        </div>
         <MoodSelector selected={mood} onChange={setMood} vars={vars} compact />
       </header>
 
@@ -174,10 +177,10 @@ export default function Home() {
       >
         {/* 데스크탑 전용 헤더 */}
         <header
-          className="hidden lg:block flex-shrink-0 px-9 py-6"
-          style={{ borderBottom: "1px solid var(--t-bdr)" }}
+          className="hidden lg:block flex-shrink-0 px-6 py-5"
+          style={{ borderBottom: "1px solid var(--t-txt)" }}
         >
-          <div className="mb-5">
+          <div className="mb-5 flex items-center justify-between">
             <Image
               key={getLogoSrc(mood)}
               src={getLogoSrc(mood)}
@@ -192,6 +195,7 @@ export default function Home() {
                 display: "block",
               }}
             />
+            <TopNav />
           </div>
           <MoodSelector selected={mood} onChange={setMood} vars={vars} />
         </header>
@@ -218,7 +222,7 @@ export default function Home() {
                 style={{
                   backgroundColor: "var(--t-bai)",
                   border: "1px solid var(--t-baib)",
-                  borderRadius: "20px 20px 20px 5px",
+                  borderRadius: "2px",
                 }}
               >
                 <div className="flex items-center gap-1.5">
@@ -290,7 +294,7 @@ export default function Home() {
         className="lg:hidden fixed bottom-0 left-0 right-0 flex flex-shrink-0"
         style={{
           backgroundColor: "var(--t-side)",
-          borderTop: "1px solid var(--t-bdr)",
+          borderTop: "1px solid var(--t-txt)",
           paddingBottom: "env(safe-area-inset-bottom)",
           zIndex: 50,
         }}
@@ -320,16 +324,16 @@ export default function Home() {
                 border: "none",
                 cursor: "pointer",
                 color: isActive ? "var(--t-acc)" : "var(--t-sub)",
-                opacity: isActive ? 1 : 0.5,
+                opacity: isActive ? 1 : 0.55,
                 transition: "all 0.2s ease",
               }}
             >
               {icon}
               <span style={{
                 fontFamily: "var(--font-noto-sans), sans-serif",
-                fontWeight: isActive ? 500 : 400,
-                fontSize: "11px",
-                letterSpacing: "0.03em",
+                fontWeight: isActive ? 700 : 500,
+                fontSize: "11.5px",
+                letterSpacing: "-0.01em",
               }}>
                 {label}
               </span>
@@ -354,48 +358,66 @@ export default function Home() {
   );
 }
 
-/* ── 결 프로필 칩 (진단 진입점) ── */
+/* ── 상단 링크 — 가이드 · 1:1 진단 (어느 화면에서든 상담으로 한 번에) ── */
+function TopNav() {
+  return (
+    <nav className="flex items-center gap-4">
+      <Link href="/guide" className="ed-label ed-link" style={{ color: "var(--t-txt)" }}>
+        Guide
+      </Link>
+      <Link
+        href="/apply"
+        onClick={() => track("consult_click", { where: "header", method: "apply" })}
+        className="ed-label ed-link"
+        style={{ color: "var(--t-acc)" }}
+      >
+        1:1 진단
+      </Link>
+    </nav>
+  );
+}
+
+/* ── 결 프로필 칩 (진단 진입점, 데스크탑) ── */
 function ProfileChip({
   profile,
-  vars,
   onOpen,
 }: {
   profile: Profile | null;
   vars: Record<string, string>;
   onOpen: () => void;
 }) {
-  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
   const hasProfile = !!profile;
-  const labelText = hasProfile
-    ? `내 결 · ${BODY_META[profile!.body].label} · ${COLOR_META[profile!.color].label}`
-    : `결에게 골격·퍼스널컬러 진단받기`;
-
   return (
     <div className="flex-shrink-0 px-5 lg:px-6 pt-4">
       <button
         onClick={onOpen}
         className="w-full flex items-center justify-between gap-2"
         style={{
-          padding: "11px 14px",
-          backgroundColor: hasProfile ? "var(--t-bai)" : "var(--t-side)",
-          border: `1px solid ${hasProfile ? "var(--t-acc)" : "var(--t-bdr)"}`,
-          borderRadius: "12px",
+          padding: "12px 0",
+          background: "transparent",
+          border: "none",
+          borderTop: "1px solid var(--t-txt)",
+          borderBottom: "1px solid var(--t-txt)",
           cursor: "pointer",
           textAlign: "left",
         }}
       >
-        <span style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: hasProfile ? 500 : 400, color: hasProfile ? "var(--t-txt)" : "var(--t-sub)", wordBreak: "keep-all" }}>
-          {labelText}
+        <span className="ed-label" style={{ color: "var(--t-txt)" }}>
+          {hasProfile ? (
+            <>내 결 · {BODY_META[profile!.body].label} × {COLOR_META[profile!.color].label}</>
+          ) : (
+            "골격·퍼스널컬러 진단받기"
+          )}
         </span>
-        <span style={{ fontFamily: sans, fontSize: "11px", color: "var(--t-acc)", flexShrink: 0 }}>
-          {hasProfile ? "다시 진단 ✎" : "시작 →"}
+        <span className="ed-label" style={{ color: "var(--t-acc)", flexShrink: 0 }}>
+          {hasProfile ? "다시 진단 ↺" : "시작 →"}
         </span>
       </button>
     </div>
   );
 }
 
-/* ── Welcome Guide ── */
+/* ── Welcome — 에디토리얼 홈 (레퍼런스: 대형 워드마크 + 굵은 줄 + 라벨 그리드) ── */
 function WelcomeGuide({
   onExample,
   isLoading,
@@ -409,202 +431,154 @@ function WelcomeGuide({
   onDiagnose: () => void;
   profile: Profile | null;
 }) {
-  const serif = "var(--font-gowun), 'Batang', serif";
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
-  const point = vars["--t-point"] ?? vars["--t-acc"];
-  const acc = vars["--t-acc"];
   const hasProfile = !!profile;
-  const profileLabel = hasProfile
-    ? `내 결 · ${BODY_META[profile!.body].label} · ${COLOR_META[profile!.color].label}`
-    : `결에게 골격·퍼스널컬러 진단받기`;
+
   return (
-    <div className="py-2">
+    <div className="pt-1 pb-4">
 
-      {/* ── 히어로 — 클린 에디토리얼 (인스타 피드 감성) ── */}
-      <div className="bubble-enter" style={{ marginBottom: "30px" }}>
-
-        {/* 풀블리드 이미지 + 미니멀 오버레이 */}
-        <div style={{ position: "relative", width: "100%", borderRadius: "22px", overflow: "hidden", backgroundColor: vars["--t-bdr"] }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/hero-main.png"
-            alt="오늘핏 — 오늘의 룩"
-            style={{ width: "100%", height: "clamp(380px, 58vh, 548px)", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.78) brightness(1.04)" }}
-          />
-          {/* 주황끼 중화 — 차분한 쿨뉴트럴 워시 (핀터레스트 무드) */}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(150,152,158,0.14), rgba(150,152,158,0.20))", mixBlendMode: "saturation", pointerEvents: "none" }} />
-          {/* 사진 위 헤드라인 — 에디토리얼 세리프 (매거진 커버) */}
-          <div style={{
-            position: "absolute", inset: 0,
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            textAlign: "center", padding: "22px",
-            background: "radial-gradient(ellipse 90% 62% at 50% 50%, rgba(20,20,24,0.50), rgba(20,20,24,0.12) 60%, transparent 80%)",
-          }}>
-            <span style={{ fontFamily: "var(--font-cormorant), serif", fontStyle: "italic", fontSize: "15px", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", marginBottom: "13px", textShadow: "0 1px 10px rgba(0,0,0,0.5)" }}>
-              Today&rsquo;s look
-            </span>
-            <span style={{ width: "32px", height: "1px", backgroundColor: "rgba(255,255,255,0.5)", marginBottom: "15px" }} />
-            <h1 style={{ fontFamily: "var(--font-gowun), 'Batang', serif", fontSize: "37px", fontWeight: 400, lineHeight: 1.3, letterSpacing: "0.01em", color: "#fff", margin: 0, wordBreak: "keep-all", textShadow: "0 2px 22px rgba(0,0,0,0.5)" }}>
-              오늘 뭐 입지?
-            </h1>
-            <p style={{ fontFamily: "var(--font-gowun), 'Batang', serif", fontSize: "18px", fontWeight: 400, lineHeight: 1.5, color: "rgba(255,255,255,0.92)", margin: "13px 0 0", wordBreak: "keep-all", textShadow: "0 2px 16px rgba(0,0,0,0.55)" }}>
-              그 고민은, 결에게
-            </p>
-          </div>
-
-          {/* 메인 CTA — 사진 위 하단: 모바일 첫 화면에서 스크롤 없이 보이게 */}
-          <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "150px", background: "linear-gradient(180deg, transparent, rgba(20,20,24,0.45))", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", left: "16px", right: "16px", bottom: "16px" }}>
-            <button
-              onClick={onDiagnose}
-              style={{
-                width: "100%", height: "54px",
-                fontFamily: sans, fontSize: "14.5px", fontWeight: 600, letterSpacing: "0.01em",
-                color: "#fff", backgroundColor: acc, border: "none", borderRadius: "14px", cursor: "pointer",
-                boxShadow: "0 6px 20px rgba(0,0,0,0.22)",
-              }}
-            >
-              {hasProfile ? "내 결 다시 진단하기 →" : "무료 체형·퍼스널컬러 자가진단 →"}
-            </button>
-            <p style={{ fontFamily: sans, fontSize: "11.5px", color: "rgba(255,255,255,0.92)", textAlign: "center", margin: "8px 0 0", textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}>
-              사진 없이 1분 · 골격 5문항 + 컬러 5문항
-            </p>
-          </div>
+      {/* ── 01 워드마크 ── */}
+      <div style={{ animation: "cardEnter 900ms var(--ease-out) both" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
+          <span className="ed-label" style={{ color: "var(--t-acc)" }}>Personal styling</span>
+          <span className="ed-label" style={{ color: "var(--t-sub)" }}>Body · Color · Fit</span>
         </div>
+        <Wordmark />
+        <div style={{ height: "4px", background: "var(--t-acc)", marginTop: "12px" }} />
+      </div>
 
-        {/* 서브카피 */}
-        <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.75, color: "var(--t-txt)", opacity: 0.72, margin: "20px 2px 4px", wordBreak: "keep-all" }}>
-          체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 결과에 맞는 코디까지 바로 알려드려요.
+      {/* ── 헤드라인 + 메인 CTA (모바일 첫 화면 안) ── */}
+      <div style={{ animation: "cardEnter 900ms var(--ease-out) 120ms both" }}>
+        <h1 style={{ fontFamily: sans, fontWeight: 800, fontSize: "clamp(38px, 11vw, 46px)", letterSpacing: "-0.055em", lineHeight: 1.08, color: "var(--t-txt)", margin: "22px 0 0", wordBreak: "keep-all" }}>
+          오늘 뭐 입지?
+        </h1>
+        <p style={{ fontFamily: sans, fontWeight: 500, fontSize: "19px", letterSpacing: "-0.03em", lineHeight: 1.4, color: "var(--t-sub)", margin: "6px 0 20px" }}>
+          그 고민은, <span style={{ color: "var(--t-acc)", fontWeight: 700 }}>결에게</span>
         </p>
 
-        {/* 자가진단에서 살펴보는 10가지 — 한눈에 */}
-        <div style={{ marginTop: "18px" }}>
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "10px" }}>
-            <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 600, color: "var(--t-txt)", margin: 0 }}>
-              자가진단에서 살펴보는 10가지
-            </p>
-            <Link href="/self-check" style={{ fontFamily: sans, fontSize: "12px", color: acc, textDecoration: "none" }}>
-              자세히 →
-            </Link>
-          </div>
-          <SelfCheckGuide variant="compact" />
-        </div>
+        <BlockButton onClick={onDiagnose} sub="사진 없이 1분 · 골격 5문항 + 컬러 5문항">
+          {hasProfile ? "내 결 다시 진단하기" : "무료 체형·퍼스널컬러 자가진단"}
+        </BlockButton>
 
-        {/* 모바일 전용 — 내 결(프로필) 칩: 진단 완료 시에만 표시 (CTA와 중복 방지) */}
         {hasProfile && (
           <button
             onClick={onDiagnose}
-            className="lg:hidden"
-            style={{
-              width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-              marginTop: "12px", padding: "12px 15px",
-              backgroundColor: "var(--t-card)",
-              border: `1px solid ${acc}`,
-              borderRadius: "14px", cursor: "pointer", textAlign: "left",
-            }}
+            className="lg:hidden w-full flex items-center justify-between"
+            style={{ marginTop: "8px", padding: "12px 0", background: "transparent", border: "none", borderBottom: "1px solid var(--t-txt)", cursor: "pointer" }}
           >
-            <span style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 500, color: "var(--t-txt)", wordBreak: "keep-all" }}>
-              {profileLabel}
+            <span className="ed-label" style={{ color: "var(--t-txt)" }}>
+              내 결 · {BODY_META[profile!.body].label} × {COLOR_META[profile!.color].label}
             </span>
-            <span style={{ fontFamily: sans, fontSize: "11px", color: acc, flexShrink: 0 }}>
-              다시 진단 ✎
-            </span>
+            <span className="ed-label" style={{ color: "var(--t-acc)" }}>다시 진단 ↺</span>
           </button>
         )}
       </div>
 
-      {/* ── 상황별 코디 ── */}
-      <div style={{ marginBottom: "14px" }}>
-        <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: point, marginBottom: "6px" }}>
-          BY SITUATION
-        </p>
-        <p style={{ fontFamily: sans, fontSize: "18px", fontWeight: 600, letterSpacing: "-0.01em", color: "var(--t-txt)", margin: 0, wordBreak: "keep-all" }}>
-          오늘, 어떤 자리예요?
-        </p>
+      {/* ── 사진 — 에디토리얼 캡션 ── */}
+      <Reveal style={{ marginTop: "28px" }}>
+        <figure className="ed-zoom" style={{ margin: 0, position: "relative", backgroundColor: vars["--t-bdr"] }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/hero-main.png"
+            alt="오늘핏 — 오늘의 룩"
+            style={{ width: "100%", aspectRatio: "4 / 5", objectFit: "cover", objectPosition: "center 26%", display: "block", filter: "saturate(0.82) contrast(1.04)" }}
+          />
+          <span className="ed-accent" style={{ position: "absolute", left: "16px", bottom: "12px", fontSize: "34px", lineHeight: 1, color: "#fff", textShadow: "0 2px 18px rgba(0,0,0,0.35)" }}>
+            Today&rsquo;s look
+          </span>
+        </figure>
+        <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 0 0" }}>
+          <span className="ed-label" style={{ color: "var(--t-txt)" }}>(01) Today&rsquo;s look</span>
+          <span className="ed-label" style={{ color: "var(--t-sub)" }}>Head to toe</span>
+        </div>
+      </Reveal>
+
+      {/* ── 라벨 그리드 (레퍼런스의 OUTFIT / WHY) ── */}
+      <Reveal style={{ marginTop: "26px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "34% 1fr", gap: "12px", paddingTop: "12px", borderTop: "1px solid var(--t-txt)" }}>
+          <span className="ed-label" style={{ color: "var(--t-acc)" }}>OnulFit</span>
+          <div>
+            <span className="ed-label" style={{ color: "var(--t-acc)" }}>Why</span>
+            <p style={{ fontFamily: sans, fontWeight: 600, fontSize: "17px", letterSpacing: "-0.03em", lineHeight: 1.5, color: "var(--t-txt)", margin: "6px 0 0", wordBreak: "keep-all" }}>
+              체형과 퍼스널컬러를 알면, 오늘 뭘 입을지 더는 헤매지 않아요. 결과에 맞는 코디까지 바로 알려드려요.
+            </p>
+          </div>
+        </div>
+      </Reveal>
+
+      {/* ── 흐르는 띠 ── */}
+      <div className="-mx-5 lg:-mx-6" style={{ marginTop: "34px", marginBottom: "34px" }}>
+        <Marquee items={["Free self-check", "골격 진단", "Personal color", "퍼스널컬러", "1:1 Styling", "오늘의 코디"]} />
       </div>
-      <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
 
-      {/* 스타일 가이드 — 포인트 컬러 카드 (호버 시 반전) */}
-      <GuideBanner vars={vars} />
+      {/* ── 02 자가진단에서 살펴보는 10가지 ── */}
+      <Reveal>
+        <SectionHead
+          no="02"
+          en="Self-check"
+          title={<>자가진단에서<br />살펴보는 10가지</>}
+          right={
+            <Link href="/self-check" className="ed-label ed-link" style={{ color: "var(--t-acc)" }}>
+              자세히 →
+            </Link>
+          }
+        />
+        <SelfCheckGuide variant="compact" />
+      </Reveal>
 
-      {/* 1:1 진단 신청 CTA (신청 폼 링크 설정 시에만 노출) */}
-      <ApplyCTA vars={vars} />
+      {/* ── 03 상황별 코디 ── */}
+      <Reveal style={{ marginTop: "44px" }}>
+        <SectionHead no="03" en="By situation" title="오늘, 어떤 자리예요?" />
+        <SituationSelector onSelect={onExample} isLoading={isLoading} vars={vars} />
+      </Reveal>
+
+      {/* ── 04 스타일 가이드 ── */}
+      <Reveal style={{ marginTop: "44px" }}>
+        <GuideBanner />
+      </Reveal>
+
+      {/* ── 05 1:1 진단 ── */}
+      <Reveal>
+        <ApplyCTA vars={vars} />
+      </Reveal>
     </div>
   );
 }
 
-/* ── 스타일 가이드 배너 (포인트 컬러 + 호버 반전) ── */
-function GuideBanner({ vars }: { vars: Record<string, string> }) {
+/* ── 스타일 가이드 배너 — 굵은 줄 사이 큰 링크, 호버 시 잉크로 반전 ── */
+function GuideBanner() {
   const [active, setActive] = useState(false);
-  const [pressed, setPressed] = useState(false);
-  const point = vars["--t-point"] ?? vars["--t-acc"];
-
   return (
-    <Link href="/guide" style={{ textDecoration: "none", display: "block" }}>
-      <div
-        onMouseEnter={() => setActive(true)}
-        onMouseLeave={() => { setActive(false); setPressed(false); }}
-        onMouseDown={() => setPressed(true)}
-        onMouseUp={() => setPressed(false)}
-        onTouchStart={() => { setActive(true); setPressed(true); }}
-        onTouchEnd={() => { setActive(false); setPressed(false); }}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "14px",
-          marginTop: "22px",
-          padding: "16px 18px",
-          border: `1px solid ${point}`,
-          borderRadius: "14px",
-          background: active ? point : `${point}1A`,
-          transform: pressed ? "scale(0.985)" : active ? "translateY(-2px)" : "none",
-          boxShadow: active && !pressed ? `0 8px 22px ${point}38` : "none",
-          transition: "all 0.24s cubic-bezier(0.16,1,0.3,1)",
-          cursor: "pointer",
-        }}
-      >
-        <span style={{ flex: 1, minWidth: 0 }}>
-          <span style={{
-            display: "block",
-            fontFamily: "var(--font-jost), sans-serif",
-            fontSize: "9.5px",
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            color: active ? "rgba(255,255,255,0.85)" : point,
-            marginBottom: "4px",
-            transition: "color 0.24s ease",
-          }}>STYLE GUIDE</span>
-          <span style={{
-            display: "block",
-            fontFamily: "var(--font-gowun), 'Batang', serif",
-            fontSize: "16px",
-            color: active ? "#fff" : "var(--t-txt)",
-            lineHeight: 1.4,
-            wordBreak: "keep-all",
-            transition: "color 0.24s ease",
-          }}>체형·퍼스널컬러 코디법 가이드</span>
+    <Link
+      href="/guide"
+      onMouseEnter={() => setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      style={{
+        display: "block",
+        textDecoration: "none",
+        padding: "18px 16px 20px",
+        borderTop: "2px solid var(--t-txt)",
+        borderBottom: "2px solid var(--t-txt)",
+        background: active ? "var(--t-txt)" : "transparent",
+        color: active ? "var(--t-bg)" : "var(--t-txt)",
+        transition: "background-color 0.4s var(--ease-out), color 0.4s var(--ease-out)",
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <span className="ed-label" style={{ color: active ? "var(--t-bg)" : "var(--t-acc)" }}>(04)&nbsp;&nbsp;Style guide</span>
+        <span className="ed-label">5 articles</span>
+      </div>
+      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px", marginTop: "14px" }}>
+        <span style={{ fontFamily: "var(--font-noto-sans), sans-serif", fontWeight: 800, fontSize: "24px", letterSpacing: "-0.045em", lineHeight: 1.2, wordBreak: "keep-all" }}>
+          체형·퍼스널컬러<br />코디법 가이드
         </span>
-        <span style={{
-          flexShrink: 0,
-          width: "30px",
-          height: "30px",
-          borderRadius: "50%",
-          border: `1px solid ${active ? "rgba(255,255,255,0.7)" : point}`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "var(--font-jost), sans-serif",
-          fontSize: "13px",
-          color: active ? "#fff" : point,
-          transform: active ? "translateX(3px)" : "none",
-          transition: "all 0.24s ease",
-        }}>→</span>
+        <span aria-hidden style={{ fontFamily: "var(--font-grotesk), sans-serif", fontSize: "30px", lineHeight: 1, transform: active ? "translateX(6px)" : "none", transition: "transform 0.45s var(--ease-out)" }}>→</span>
       </div>
     </Link>
   );
 }
 
-/* ── Empty State ── */
+/* ── Empty State (오른쪽 패널 / 모바일 코디 탭) ── */
 function EmptyState({
   onExample,
   vars,
@@ -614,40 +588,23 @@ function EmptyState({
 }) {
   return (
     <div className="flex flex-col">
-      <div className="mb-12" style={{ animation: "cardEnter 500ms cubic-bezier(0.16,1,0.3,1) both" }}>
-        <div style={{ height: "1px", backgroundColor: vars["--t-bdr"], marginBottom: "28px" }} />
-
+      <div className="mb-10" style={{ animation: "cardEnter 700ms var(--ease-out) both" }}>
+        <div style={{ height: "2px", backgroundColor: "var(--t-txt)", marginBottom: "10px" }} />
+        <span className="ed-label" style={{ color: "var(--t-acc)" }}>Head-to-toe · curated for you</span>
         <p
           style={{
-            fontFamily: "var(--font-gowun), 'Batang', serif",
-            fontWeight: 400,
-            fontSize: "clamp(26px, 5vw, 40px)",
-            lineHeight: 1.45,
-            letterSpacing: "0.01em",
+            fontFamily: "var(--font-noto-sans), sans-serif",
+            fontWeight: 800,
+            fontSize: "clamp(34px, 6vw, 56px)",
+            lineHeight: 1.08,
+            letterSpacing: "-0.055em",
             wordBreak: "keep-all",
             color: vars["--t-txt"],
-            marginBottom: "20px",
+            margin: "18px 0 0",
           }}
         >
           오늘의 상황을<br />알려주세요
         </p>
-
-        <p
-          style={{
-            fontFamily: "var(--font-jost), sans-serif",
-            fontWeight: 300,
-            fontSize: "10px",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: vars["--t-sub"],
-            opacity: 0.7,
-            marginBottom: "28px",
-          }}
-        >
-          Head-to-toe outfit · curated for you
-        </p>
-
-        <div style={{ height: "1px", backgroundColor: vars["--t-bdr"] }} />
       </div>
 
       <SituationSelector onSelect={onExample} isLoading={false} vars={vars} />

@@ -60,12 +60,13 @@ function Group({
       style={{
         backgroundColor: "var(--t-card)",
         border: "1px solid var(--t-bdr)",
-        borderRadius: "14px",
-        padding: compact ? "14px 12px" : "16px 16px 10px",
+        borderTop: "2px solid var(--t-txt)",
+        borderRadius: "2px",
+        padding: compact ? "12px 12px 14px" : "14px 16px 10px",
       }}
     >
       <p style={{ display: "flex", alignItems: "baseline", gap: "6px", margin: "0 0 10px", flexWrap: "wrap" }}>
-        <span style={{ fontFamily: serif, fontSize: compact ? "15px" : "17px", color: "var(--t-txt)" }}>{title}</span>
+        <span style={{ fontFamily: serif, fontSize: compact ? "16px" : "19px", color: "var(--t-txt)" }}>{title}</span>
         <span style={{ fontFamily: sans, fontSize: "11.5px", color: "var(--t-sub)" }}>
           {items.length}가지{compact ? "" : ` · ${caption}`}
         </span>
@@ -94,22 +95,23 @@ function Group({
                   flexShrink: 0,
                   width: "19px",
                   height: "19px",
-                  borderRadius: "50%",
-                  border: "1px solid var(--t-acc)",
+                  borderRadius: 0,
+                  border: "none",
                   color: "var(--t-acc)",
-                  fontFamily: sans,
-                  fontSize: "10.5px",
+                  fontFamily: "var(--font-grotesk), sans-serif",
+                  fontWeight: 800,
+                  fontSize: "12px",
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
                   marginTop: compact ? 0 : "1px",
                 }}
               >
-                {i + 1}
+                {String(i + 1).padStart(2, "0")}
               </span>
             )}
             <span style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-              <span style={{ fontFamily: sans, fontSize: compact ? "12.5px" : "14px", fontWeight: 600, color: "var(--t-txt)", wordBreak: "keep-all" }}>
+              <span style={{ fontFamily: sans, fontSize: compact ? "13.5px" : "15px", fontWeight: 700, letterSpacing: "-0.025em", color: "var(--t-txt)", wordBreak: "keep-all" }}>
                 {it.short}
               </span>
               {!compact && (

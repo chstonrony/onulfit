@@ -29,15 +29,11 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
 
         {/* 무드 이름 — OnulFit 로고와 동일 서체(Georgia 이탤릭) */}
         <p
+          className="ed-wordmark"
           style={{
-            fontFamily: "Georgia, 'Times New Roman', serif",
-            fontStyle: "italic",
-            fontWeight: 400,
-            fontSize: "clamp(36px, 8vw, 60px)",
-            letterSpacing: "0.01em",
-            lineHeight: 1.0,
-            color: "var(--t-txt)",
-            marginBottom: "10px",
+            fontSize: "clamp(48px, 11vw, 96px)",
+            color: "var(--t-acc)",
+            marginBottom: "14px",
             userSelect: "none",
           }}
         >
@@ -47,12 +43,14 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
         {/* 무드 부제 — Jost 300 */}
         <p
           style={{
-            fontFamily: "var(--font-jost), sans-serif",
-            fontWeight: 300,
+            fontFamily: "var(--font-grotesk), sans-serif",
+            fontWeight: 700,
             fontSize: "11px",
-            letterSpacing: "0.2em",
+            letterSpacing: "0.06em",
             textTransform: "uppercase",
-            color: "var(--t-sub)",
+            color: "var(--t-txt)",
+            borderTop: "2px solid var(--t-txt)",
+            paddingTop: "8px",
           }}
         >
           {subtitle}
@@ -66,8 +64,8 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
           style={{
             display: "flex",
             gap: "2px",
-            height: "3px",
-            borderRadius: "1.5px",
+            height: "18px",
+            borderRadius: 0,
             overflow: "hidden",
           }}
         >
@@ -93,13 +91,12 @@ export default function ColorPalette({ palette, mood }: ColorPaletteProps) {
               key={name}
               style={{
                 flex: 1,
-                fontFamily: "var(--font-jost), sans-serif",
-                fontWeight: 200,
-                fontSize: "7.5px",
-                letterSpacing: "0.05em",
+                fontFamily: "var(--font-noto-sans), sans-serif",
+                fontWeight: 500,
+                fontSize: "10.5px",
+                letterSpacing: "-0.01em",
                 color: "var(--t-sub)",
-                opacity: 0.6,
-                textAlign: "center",
+                textAlign: "left",
               }}
             >
               {name}

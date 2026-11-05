@@ -84,7 +84,7 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
     gap: "7px",
     flex: 1,
     height: "44px",
-    borderRadius: "10px",
+    borderRadius: "4px",
     border: `1px solid ${accent ? "transparent" : "var(--t-bdr)"}`,
     backgroundColor: accent ? "var(--t-acc)" : "transparent",
     color: accent ? "var(--t-bg)" : "var(--t-txt)",

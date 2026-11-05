@@ -21,7 +21,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             wordBreak: "keep-all",
             color: "var(--t-txt)",
             backgroundColor: "var(--t-bu)",
-            borderRadius: "20px 20px 5px 20px",
+            borderRadius: "2px",
           }}
         >
           {message.content}
@@ -45,7 +45,7 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             color: "var(--t-txt)",
             backgroundColor: "var(--t-bai)",
             border: "1px solid var(--t-baib)",
-            borderRadius: "20px 20px 20px 5px",
+            borderRadius: "2px",
           }}
         >
           {message.content}

@@ -1,23 +1,31 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* ── Palette ── */
-  --color-cream:    #FAF8F5;
-  --color-sidebar:  #F0EBE3;
-  --color-sand:     #E8DDD0;
-  --color-snow:     #FFFFFF;
-  --color-border:   #E5E0D8;
-  --color-mocha:    #2C2825;
-  --color-subtext:  #9B8E85;
-  --color-warm:     #C4A882;
+  /* ── Palette (2026-11 에디토리얼 리뉴얼) ──
+     종이(paper) 바탕 + 잉크(ink) + 버밀리언 포인트 하나 */
+  --color-cream:    #EDE8E2;
+  --color-sidebar:  #E6E0D9;
+  --color-sand:     #DCD3C8;
+  --color-snow:     #F7F4F0;
+  --color-border:   #D9D1C7;
+  --color-mocha:    #1B1714;
+  --color-subtext:  #6F665D;
+  --color-warm:     #C23B22;
 
-  /* ── Font Stacks ──
-     헤딩용: 영문(Cormorant) → 한글(Gowun Batang) → generic serif
-     본문용: 영문(Jost) → 한글(Noto Sans KR) → generic sans        */
-  --font-heading: var(--font-cormorant), var(--font-gowun), "Batang", serif;
-  --font-ko-serif: var(--font-gowun), "Batang", serif;
-  --font-sans:    var(--font-jost), var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-heading: var(--font-gowun), sans-serif;
+  --font-ko-serif: var(--font-gowun), sans-serif;
+  --font-sans:    var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   --font-ko:      var(--font-noto-sans), "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+:root {
+  --ink: #1B1714;
+  --paper: #EDE8E2;
+  --paper-2: #F7F4F0;
+  --red: #C23B22;
+  --line: #D9D1C7;
+  --muted: #6F665D;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html,
@@ -26,49 +34,142 @@ body {
 }
 
 body {
-  background-color: #FAF8F5;
-  color: #2C2825;
-  /* 기본 본문: Jost(영문) + Noto Sans KR(한글) */
-  font-family: var(--font-jost), var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.03em;
-  line-height: 1.6;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  /* 한글 줄바꿈 기본 설정 */
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   word-break: keep-all;
   overflow-wrap: break-word;
 }
 
-/* ── 한글 텍스트 전체에 keep-all 적용 ── */
+::selection {
+  background: var(--red);
+  color: var(--paper);
+}
+
 :lang(ko) {
   word-break: keep-all;
   overflow-wrap: break-word;
 }
 
-/* ── 한글 본문 line-height 1.8 ── */
 p, span, div, li, a {
   line-height: inherit;
 }
 
-/* ── Placeholder: Noto Sans KR 300 italic ── */
 textarea::placeholder,
 input::placeholder {
   font-family: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
-  font-style: italic;
-  font-weight: 300;
-  font-size: 13px;
-  letter-spacing: 0.02em;
-  color: #9B8E85;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: #9A9088;
 }
 
-/* ── Luxury Label: Jost 200, ALL CAPS, wide tracking ── */
-.luxury-label {
-  font-family: var(--font-jost), sans-serif;
-  font-weight: 200;
-  font-size: 10px;
-  letter-spacing: 0.22em;
+/* ── 타이포 규칙 (인라인 스타일 일괄 보정) ──────────────────
+   화면 곳곳의 인라인 스타일이 폰트 변수만 참조하고 있어서,
+   변수 이름으로 골라 굵기·자간을 한 번에 맞춘다.
+   · 한글 제목(--font-gowun): 굵고 촘촘하게 — 매거진 헤드라인
+   · 라벨(--font-jost): 그로테스크 세미볼드, 대문자 자간 좁게
+   · 액센트 세리프(--font-cormorant): Instrument Serif는 400 한 굵기뿐 → 가짜 볼드 방지 */
+[style*="--font-gowun"] {
+  font-weight: 700 !important;
+  letter-spacing: -0.035em !important;
+}
+[style*="--font-jost"] {
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+}
+[style*="--font-cormorant"] {
+  font-weight: 400 !important;
+  font-synthesis: none;
+  letter-spacing: 0 !important;
+}
+
+/* ── 에디토리얼 유틸리티 ── */
+.ed-wordmark {
+  font-family: var(--font-grotesk), sans-serif;
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.065em;
   text-transform: uppercase;
-  color: #9B8E85;
+  white-space: nowrap;
+}
+.ed-label {
+  font-family: var(--font-grotesk), var(--font-noto-sans), sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.ed-accent {
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.ed-rule {
+  height: 3px;
+  background: currentColor;
+  border: 0;
+  margin: 0;
+}
+
+/* 밑줄이 왼쪽에서 그려지는 링크 */
+html .ed-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.45s var(--ease-out);
+  text-decoration: none;
+}
+.ed-link:hover { background-size: 100% 1px; }
+
+/* 사진 — 호버 시 천천히 확대 */
+.ed-zoom { overflow: hidden; }
+html .ed-zoom img { transition: transform 1.2s var(--ease-out); }
+.ed-zoom:hover img { transform: scale(1.04); }
+
+/* 스크롤 진입 등장 (Reveal 컴포넌트가 .is-in을 붙임) */
+html .ed-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+}
+html .ed-reveal.is-in { opacity: 1; transform: none; }
+
+/* 흐르는 띠 문구 */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ed-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html .ed-reveal { opacity: 1; transform: none; transition: none; }
+  .ed-marquee { animation: none; }
+  html .ed-zoom img { transition: none; }
+}
+
+/* ── Luxury Label (구 스타일 호환) ── */
+.luxury-label {
+  font-family: var(--font-grotesk), sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -155,7 +256,7 @@ input::placeholder {
   inset: 0;
   pointer-events: none;
   z-index: 999;
-  opacity: 0.028;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
   background-size: 200px 200px;
 }
@@ -163,4 +264,8 @@ input::placeholder {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #E5E0D8; border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #CFC5B9; border-radius: 0; }
+
+/* 가이드 목록 — 줄 호버 시 종이색이 짙어지며 살짝 밀림 */
+html .guide-row { transition: background-color 0.4s var(--ease-out), padding 0.4s var(--ease-out); }
+.guide-row:hover { background-color: #E3DCD3; padding-left: 8px !important; padding-right: 8px !important; }

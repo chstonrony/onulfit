@@ -38,16 +38,15 @@ export default function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
 
   return (
     <div
-      className="px-6 pb-6 pt-4"
-      style={{ borderTop: "1px solid var(--t-bdr)" }}
+      className="px-5 lg:px-6 pb-5 pt-3"
+      style={{ borderTop: "1px solid var(--t-txt)" }}
     >
       <div
         className="flex items-end gap-3 px-5 py-3.5 transition-all duration-200"
         style={{
           backgroundColor: "var(--t-inp)",
-          border: `1.5px solid ${focused ? "var(--t-acc)" : "var(--t-bdr)"}`,
-          borderRadius: "9999px",
-          boxShadow: focused ? "0 0 0 3px color-mix(in srgb, var(--t-acc) 10%, transparent)" : "none",
+          border: `1px solid ${focused ? "var(--t-txt)" : "var(--t-bdr)"}`,
+          borderRadius: "2px",
         }}
       >
         <textarea
@@ -64,10 +63,10 @@ export default function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
           className="flex-1 resize-none bg-transparent focus:outline-none disabled:opacity-50"
           style={{
             fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
-            fontWeight: 300,
-            fontSize: "13px",
-            lineHeight: 1.8,
-            letterSpacing: "0.02em",
+            fontWeight: 400,
+            fontSize: "15px",
+            lineHeight: 1.6,
+            letterSpacing: "-0.015em",
             wordBreak: "keep-all",
             color: "var(--t-txt)",
             minHeight: "22px",
@@ -79,7 +78,7 @@ export default function ChatInput({ onSubmit, isLoading }: ChatInputProps) {
           onClick={handleSubmit}
           disabled={!canSend}
           aria-label="전송"
-          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-150 disabled:cursor-not-allowed active:scale-95"
+          className="flex-shrink-0 w-9 h-9 flex items-center justify-center transition-all duration-150 disabled:cursor-not-allowed active:scale-95"
           style={{
             backgroundColor: canSend ? "var(--t-acc)" : "transparent",
             border: canSend ? "none" : "1.5px solid var(--t-bdr)",

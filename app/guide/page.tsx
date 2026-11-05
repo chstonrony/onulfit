@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ARTICLES } from "@/lib/articles";
+import { Wordmark } from "@/components/Editorial";
 
 export const metadata: Metadata = {
   title: "스타일 가이드 — 체형·퍼스널컬러 코디법 | 오늘핏",
@@ -9,56 +10,73 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://onulfit.com/guide" },
 };
 
+const INK = "#1B1714";
+const ACC = "#C23B22";
+const SUB = "#6F665D";
+const PAPER = "#EDE8E2";
+const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+
 export default function GuidePage() {
   return (
-    <main style={{ minHeight: "100dvh", background: "#FAF8F5", padding: "0 20px 64px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <div style={{ width: "100%", maxWidth: "640px", paddingTop: "32px" }}>
-        <Link href="/" style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "11px", letterSpacing: "0.16em", color: "#A89880", textDecoration: "none" }}>
-          ← ONULFIT
-        </Link>
+    <main style={{ minHeight: "100dvh", background: PAPER, padding: "0 20px 72px", display: "flex", flexDirection: "column", alignItems: "center", ["--t-acc" as string]: ACC, ["--t-txt" as string]: INK }}>
+      <div style={{ width: "100%", maxWidth: "720px", paddingTop: "16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}` }}>
+          <Link href="/" className="ed-label ed-link" style={{ color: INK }}>← OnulFit</Link>
+          <Link href="/apply" className="ed-label ed-link" style={{ color: ACC }}>1:1 진단</Link>
+        </div>
 
-        <header style={{ margin: "24px 0 36px" }}>
-          <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "11px", letterSpacing: "0.2em", textTransform: "uppercase", color: "#B89A6A", marginBottom: "10px" }}>
-            STYLE GUIDE
-          </p>
-          <h1 style={{ fontFamily: "var(--font-gowun), serif", fontSize: "clamp(26px, 6vw, 36px)", fontWeight: 400, color: "#2C2825", lineHeight: 1.35, marginBottom: "10px", wordBreak: "keep-all" }}>
+        <header style={{ margin: "18px 0 36px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+            <span className="ed-label" style={{ color: ACC }}>Style guide</span>
+            <span className="ed-label" style={{ color: SUB }}>{ARTICLES.length} articles</span>
+          </div>
+          <Wordmark text="GUIDE" mark={false} size={33} />
+          <div style={{ height: "4px", background: ACC, margin: "10px 0 22px" }} />
+          <h1 style={{ fontFamily: sans, fontSize: "clamp(28px, 7.5vw, 40px)", fontWeight: 800, letterSpacing: "-0.055em", color: INK, lineHeight: 1.15, margin: "0 0 12px", wordBreak: "keep-all" }}>
             내 체형에 맞는 옷, 이제 헤매지 마세요
           </h1>
-          <p style={{ fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "14px", color: "#7A7268", lineHeight: 1.7, wordBreak: "keep-all" }}>
+          <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 500, color: SUB, lineHeight: 1.7, wordBreak: "keep-all" }}>
             골격 체형과 퍼스널컬러를 알면 쇼핑이 쉬워집니다. 오늘핏이 정리한 체형별·컬러별 코디 가이드예요.
           </p>
         </header>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-          {ARTICLES.map((a) => (
+        <div style={{ borderTop: `2px solid ${INK}` }}>
+          {ARTICLES.map((a, i) => (
             <Link
               key={a.slug}
               href={`/guide/${a.slug}`}
-              style={{ display: "block", padding: "22px 0", borderTop: "1px solid #ECE6DD", textDecoration: "none" }}
+              className="guide-row"
+              style={{ display: "grid", gridTemplateColumns: "40px 1fr 24px", gap: "6px", alignItems: "start", padding: "20px 0 22px", borderBottom: `1px solid ${INK}`, textDecoration: "none", color: INK }}
             >
-              <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.16em", textTransform: "uppercase", color: "#B89A6A", marginBottom: "8px" }}>
-                {a.category} · {a.readingTime}분
-              </p>
-              <h2 style={{ fontFamily: "var(--font-gowun), serif", fontSize: "19px", fontWeight: 400, color: "#2C2825", lineHeight: 1.4, marginBottom: "6px", wordBreak: "keep-all" }}>
-                {a.title}
-              </h2>
-              <p style={{ fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "13px", color: "#9A9088", lineHeight: 1.6, wordBreak: "keep-all" }}>
-                {a.subtitle}
-              </p>
+              <span style={{ fontFamily: "var(--font-grotesk), sans-serif", fontWeight: 800, fontSize: "13px", color: ACC, paddingTop: "4px" }}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>
+                <span className="ed-label" style={{ display: "block", color: SUB, marginBottom: "8px" }}>
+                  {a.category} · {a.readingTime}분
+                </span>
+                <span style={{ display: "block", fontFamily: sans, fontSize: "21px", fontWeight: 800, letterSpacing: "-0.045em", lineHeight: 1.3, marginBottom: "6px", wordBreak: "keep-all" }}>
+                  {a.title}
+                </span>
+                <span style={{ display: "block", fontFamily: sans, fontSize: "14px", color: SUB, lineHeight: 1.6, wordBreak: "keep-all" }}>
+                  {a.subtitle}
+                </span>
+              </span>
+              <span aria-hidden style={{ fontFamily: "var(--font-grotesk), sans-serif", fontSize: "20px", paddingTop: "22px" }}>→</span>
             </Link>
           ))}
         </div>
 
-        <div style={{ borderTop: "1px solid #ECE6DD", marginTop: "8px", paddingTop: "32px" }}>
+        <div style={{ marginTop: "32px" }}>
           <Link
             href="/?diag=1"
             style={{
-              display: "flex", alignItems: "center", justifyContent: "center", height: "52px",
-              fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "14px", fontWeight: 500,
-              color: "#fff", backgroundColor: "#2C2825", borderRadius: "12px", textDecoration: "none",
+              display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "62px", padding: "0 18px",
+              fontFamily: sans, fontSize: "16px", fontWeight: 700, letterSpacing: "-0.025em",
+              color: PAPER, backgroundColor: ACC, borderRadius: "2px", textDecoration: "none",
             }}
           >
-            무료로 내 결 찾기 →
+            무료로 내 결 찾기 <span aria-hidden style={{ fontSize: "20px" }}>→</span>
           </Link>
         </div>
       </div>

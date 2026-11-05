@@ -59,7 +59,7 @@ export default function Moodboard({ vars, images }: Props) {
       </div>
 
       {/* 인스타 스토리/콜라주 카드 */}
-      <div style={{ border: `1px solid ${vars["--t-bdr"]}`, borderRadius: "16px", overflow: "hidden", backgroundColor: vars["--t-side"] }}>
+      <div style={{ border: `1px solid ${vars["--t-bdr"]}`, borderRadius: "4px", overflow: "hidden", backgroundColor: vars["--t-side"] }}>
         {/* 헤더 — 핸들 */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "13px 14px" }}>
           <span style={{

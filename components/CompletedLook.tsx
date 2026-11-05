@@ -25,7 +25,7 @@ export default function CompletedLook({ color, body, vars }: Props) {
   return (
     <>
       {looks.map((look) => (
-        <div key={look.id} style={{ border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
+        <div key={look.id} style={{ border: `1px solid ${bdr}`, borderRadius: "4px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
           <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>
             LOOK · 결의 완성 코디
           </p>
@@ -41,13 +41,13 @@ export default function CompletedLook({ color, body, vars }: Props) {
                 rel="noopener noreferrer sponsored"
                 style={{
                   display: "flex", alignItems: "center", gap: "12px",
-                  padding: "8px", borderRadius: "10px", textDecoration: "none",
+                  padding: "8px", borderRadius: "4px", textDecoration: "none",
                   border: `1px solid ${bdr}`, backgroundColor: "var(--t-bai)",
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={it.image} alt={it.name} loading="lazy"
-                  style={{ width: "62px", height: "80px", objectFit: "cover", borderRadius: "7px", flexShrink: 0, backgroundColor: bdr }} />
+                  style={{ width: "62px", height: "80px", objectFit: "cover", borderRadius: "3px", flexShrink: 0, backgroundColor: bdr }} />
                 <span style={{ flex: 1, minWidth: 0 }}>
                   <span style={{ display: "block", fontFamily: "var(--font-jost), sans-serif", fontSize: "9.5px", letterSpacing: "0.12em", textTransform: "uppercase", color: acc, marginBottom: "3px" }}>{it.cat}</span>
                   <span style={{ display: "block", fontFamily: sans, fontSize: "12.5px", color: txt, lineHeight: 1.4, wordBreak: "keep-all", marginBottom: "3px" }}>{it.name}</span>

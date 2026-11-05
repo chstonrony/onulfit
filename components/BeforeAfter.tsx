@@ -59,7 +59,7 @@ export default function BeforeAfter({ body, vars }: Props) {
         letterSpacing: "0.08em",
         textTransform: "uppercase",
         padding: "3px 11px",
-        borderRadius: "999px",
+        borderRadius: "2px",
         color: "#fff",
         backgroundColor: filled ? acc : "rgba(30,28,25,0.6)",
       }}
@@ -69,7 +69,7 @@ export default function BeforeAfter({ body, vars }: Props) {
   );
 
   return (
-    <div style={{ border: `1px solid ${bdr}`, borderRadius: "14px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
+    <div style={{ border: `1px solid ${bdr}`, borderRadius: "4px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-side)" }}>
       <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: "10px", letterSpacing: "0.2em", textTransform: "uppercase", color: acc, marginBottom: "8px" }}>
         LOOKBOOK · 비포 / 애프터
       </p>
@@ -83,7 +83,7 @@ export default function BeforeAfter({ body, vars }: Props) {
             {badge("Before", false)}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cut.before} alt={`${body} 체형 비포 코디`} loading="lazy"
-              style={{ width: "100%", borderRadius: "10px", display: "block", border: `1px solid ${bdr}`, backgroundColor: bdr }} />
+              style={{ width: "100%", borderRadius: "4px", display: "block", border: `1px solid ${bdr}`, backgroundColor: bdr }} />
           </div>
           <p style={{ fontFamily: sans, fontSize: "11.5px", color: sub, lineHeight: 1.65, marginTop: "8px", wordBreak: "keep-all" }}>{cut.beforeCap}</p>
         </div>
@@ -92,7 +92,7 @@ export default function BeforeAfter({ body, vars }: Props) {
             {badge("After", true)}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={cut.after} alt={`${body} 체형 애프터 코디`} loading="lazy"
-              style={{ width: "100%", borderRadius: "10px", display: "block", border: `1px solid ${bdr}`, backgroundColor: bdr }} />
+              style={{ width: "100%", borderRadius: "4px", display: "block", border: `1px solid ${bdr}`, backgroundColor: bdr }} />
           </div>
           <p style={{ fontFamily: sans, fontSize: "11.5px", color: txt, opacity: 0.85, lineHeight: 1.65, marginTop: "8px", wordBreak: "keep-all" }}>{cut.afterCap}</p>
         </div>

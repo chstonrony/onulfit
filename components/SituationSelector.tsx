@@ -99,10 +99,10 @@ export default function SituationSelector({ onSelect, isLoading, vars }: Situati
   return (
     <div className="w-full">
 
-      {/* ── 카테고리 탭: Cormorant Garamond 이탤릭 ── */}
+      {/* ── 카테고리 탭 — 굵은 한글 + 빨간 밑줄 ── */}
       <div
-        className="flex flex-wrap gap-x-6 gap-y-1 mb-7"
-        style={{ borderBottom: `1px solid ${vars["--t-bdr"]}`, paddingBottom: "16px" }}
+        className="flex flex-wrap gap-x-5 gap-y-2 mb-4"
+        style={{ paddingBottom: "12px" }}
       >
         {SITUATION_CATEGORIES.map((cat, i) => {
           const isActive = i === activeCategory;
@@ -112,43 +112,34 @@ export default function SituationSelector({ onSelect, isLoading, vars }: Situati
               onClick={() => setActiveCategory(i)}
               style={{
                 fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
-                fontWeight: isActive ? 600 : 400,
+                fontWeight: isActive ? 800 : 500,
                 fontSize: "15px",
-                letterSpacing: "-0.01em",
+                letterSpacing: "-0.03em",
                 color: isActive ? vars["--t-txt"] : vars["--t-sub"],
-                opacity: isActive ? 1 : 0.5,
+                opacity: isActive ? 1 : 0.6,
                 background: "none",
                 border: "none",
-                padding: "2px 0",
+                borderBottom: `2px solid ${isActive ? vars["--t-acc"] : "transparent"}`,
+                padding: "2px 0 3px",
                 cursor: "pointer",
-                position: "relative",
                 transition: "all 0.2s ease",
                 wordBreak: "keep-all",
               }}
             >
               {cat.category}
-              {isActive && (
-                <span style={{
-                  position: "absolute",
-                  bottom: -3,
-                  left: 0,
-                  right: 0,
-                  height: "1px",
-                  backgroundColor: vars["--t-acc"],
-                }} />
-              )}
             </button>
           );
         })}
       </div>
 
-      {/* ── 상황 리스트 (에디토리얼 카드) ── */}
-      <div className="flex flex-col" style={{ gap: "9px" }}>
+      {/* ── 상황 리스트 — 가로줄 목록, 호버 시 빨간 띠 ── */}
+      <div key={current.en} style={{ borderTop: `1px solid ${vars["--t-txt"]}`, animation: "tileEnter 500ms var(--ease-out) both" }}>
         {current.situations.map((s, i) => (
           <SituationRow
             key={s.label}
             index={i + 1}
             label={s.label}
+            en={current.en}
             onClick={() => !isLoading && onSelect(s.prompt)}
             disabled={isLoading}
             vars={vars}
@@ -164,17 +155,20 @@ export default function SituationSelector({ onSelect, isLoading, vars }: Situati
 function SituationRow({
   index,
   label,
+  en,
   onClick,
   disabled,
   vars,
 }: {
   index: number;
   label: string;
+  en: string;
   onClick: () => void;
   disabled: boolean;
   vars: Record<string, string>;
 }) {
   const [hovered, setHovered] = useState(false);
+  const on = hovered && !disabled;
 
   return (
     <button
@@ -184,59 +178,71 @@ function SituationRow({
       onMouseLeave={() => setHovered(false)}
       className="flex items-center text-left w-full"
       style={{
-        padding: "15px 17px",
-        background: hovered ? "var(--t-bai)" : "var(--t-side)",
-        border: `1px solid ${hovered ? vars["--t-acc"] : vars["--t-bdr"]}`,
-        borderRadius: "14px",
+        padding: "16px 10px",
+        background: on ? vars["--t-acc"] : "transparent",
+        border: "none",
+        borderBottom: `1px solid ${vars["--t-txt"]}`,
+        borderRadius: 0,
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.3 : 1,
-        transition: "all 0.18s ease",
+        transition: "background-color 0.35s var(--ease-out)",
         gap: "14px",
       }}
     >
-      {/* 번호 — 세리프 이탤릭, 액센트 원 */}
       <span
         style={{
-          fontFamily: "var(--font-cormorant), Georgia, serif",
-          fontStyle: "italic",
-          fontWeight: 500,
-          fontSize: "15px",
+          fontFamily: "var(--font-grotesk), sans-serif",
+          fontWeight: 700,
+          fontSize: "12px",
           letterSpacing: "0.02em",
-          color: vars["--t-point"] ?? vars["--t-acc"],
+          color: on ? vars["--t-bg"] : vars["--t-acc"],
           minWidth: "22px",
-          transition: "color 0.18s ease",
           flexShrink: 0,
         }}
       >
         {String(index).padStart(2, "0")}
       </span>
 
-      {/* 상황 이름 — Pretendard (UI 통일) */}
       <span
         style={{
           fontFamily: "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif",
-          fontWeight: 500,
-          fontSize: "15px",
-          letterSpacing: "-0.01em",
-          color: vars["--t-txt"],
+          fontWeight: 700,
+          fontSize: "17px",
+          letterSpacing: "-0.035em",
+          color: on ? vars["--t-bg"] : vars["--t-txt"],
           flex: 1,
-          transition: "all 0.18s ease",
+          transform: on ? "translateX(4px)" : "none",
+          transition: "transform 0.45s var(--ease-out)",
           wordBreak: "keep-all",
-          lineHeight: 1.45,
+          lineHeight: 1.35,
         }}
       >
         {label}
       </span>
 
-      {/* 화살표 — 모바일에서도 항상 보이게 (살아있는 느낌) */}
       <span
+        className="hidden sm:inline"
         style={{
-          fontFamily: "var(--font-jost), sans-serif",
-          fontSize: "13px",
-          color: vars["--t-point"] ?? vars["--t-acc"],
-          opacity: hovered ? 1 : 0.5,
-          transform: hovered ? "translateX(2px)" : "translateX(0)",
-          transition: "all 0.18s ease",
+          fontFamily: "var(--font-grotesk), sans-serif",
+          fontWeight: 700,
+          fontSize: "11px",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: on ? vars["--t-bg"] : vars["--t-sub"],
+          flexShrink: 0,
+        }}
+      >
+        {en}
+      </span>
+
+      <span
+        aria-hidden
+        style={{
+          fontFamily: "var(--font-grotesk), sans-serif",
+          fontSize: "18px",
+          color: on ? vars["--t-bg"] : vars["--t-txt"],
+          transform: on ? "translateX(3px)" : "none",
+          transition: "transform 0.45s var(--ease-out)",
           flexShrink: 0,
         }}
       >

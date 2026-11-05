@@ -32,11 +32,11 @@ export interface Theme {
 
 export const THEMES: Record<MoodKey, Theme> = {
 
-  /* ── EVERYDAY: 크림 베이지 ── */
+  /* ── EVERYDAY: 종이 바탕 + 잉크 + 버밀리언 (2026-11 기본 테마) ── */
   everyday: {
     key: "everyday",
     name: "Everyday",
-    dot: "#E8DDD0",
+    dot: "#C23B22",
     palette: [
       { name: "베이지",   hex: "#C9B99A" },
       { name: "모카",    hex: "#7A5C4E" },
@@ -46,22 +46,22 @@ export const THEMES: Record<MoodKey, Theme> = {
       { name: "오트밀",  hex: "#D2C6AE" },
     ],
     vars: {
-      "--t-bg":   "#FAF8F6",
-      "--t-point": "#6B5F55",
-      "--t-side": "#F0ECE6",
-      "--t-bdr":  "#E5E1DA",
-      "--t-bu":   "#E9E3DA",
-      "--t-bai":  "#FFFFFF",
-      "--t-baib": "#E5E1DA",
-      "--t-card": "#FFFFFF",
-      "--t-rsec": "#F6F3EF",
-      "--t-acc":  "#8A7C6E",
-      "--t-txt":  "#2C2825",
-      "--t-sub":  "#7A7168",
-      "--t-inp":  "#FFFFFF",
-      "--t-sk1":  "rgba(229,224,216,0.50)",
-      "--t-sk2":  "rgba(229,224,216,0.90)",
-      "--t-warm": "#CBC0B2",
+      "--t-bg":   "#EDE8E2",
+      "--t-point": "#C23B22",
+      "--t-side": "#EDE8E2",
+      "--t-bdr":  "#D9D1C7",
+      "--t-bu":   "#E2DAD0",
+      "--t-bai":  "#F7F4F0",
+      "--t-baib": "#D9D1C7",
+      "--t-card": "#F7F4F0",
+      "--t-rsec": "#E6E0D9",
+      "--t-acc":  "#C23B22",
+      "--t-txt":  "#1B1714",
+      "--t-sub":  "#6F665D",
+      "--t-inp":  "#F7F4F0",
+      "--t-sk1":  "rgba(217,209,199,0.50)",
+      "--t-sk2":  "rgba(217,209,199,0.90)",
+      "--t-warm": "#CFC5B9",
     },
   },
 

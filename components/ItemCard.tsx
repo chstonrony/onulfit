@@ -37,7 +37,7 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
           style={{
             width: "62px",
             height: "62px",
-            borderRadius: "14px",
+            borderRadius: "4px",
             backgroundColor: swatchHex,
             border: "1px solid var(--t-bdr)",
             boxShadow: "inset 0 0 0 4px rgba(255,255,255,0.35)",

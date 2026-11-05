@@ -2,19 +2,21 @@
 
 import { useState } from "react";
 import { sendGAEvent } from "@next/third-parties/google";
+import Link from "next/link";
 import { WEB3FORMS_KEY, IS_APPLY_READY } from "@/lib/consult";
+import { Wordmark } from "@/components/Editorial";
 
 /* ── 1:1 진단 컨설팅 신청 페이지 ──
    인스타 bio 링크 → 이 페이지. 제출은 Web3Forms로 운영자 이메일에 도착.
    NEXT_PUBLIC_WEB3FORMS_KEY 가 없으면 "준비 중" 안내만 노출(빈 전송 방지). */
 
-const ACCENT = "#8A7C6E";
-const POINT = "#6B5F55";
-const INK = "#2C2825";
-const SUB = "#7A7168";
-const BDR = "#E5E1DA";
-const CARD = "#FFFFFF";
-const SOFT = "#F0ECE6";
+const ACCENT = "#C23B22";
+const POINT = "#9E2E19";
+const INK = "#1B1714";
+const SUB = "#6F665D";
+const BDR = "#D9D1C7";
+const CARD = "#F7F4F0";
+const SOFT = "#F7F4F0";
 
 const serif = "var(--font-cormorant), Georgia, serif";
 const gowun = "var(--font-gowun), 'Batang', serif";
@@ -77,37 +79,44 @@ export default function ApplyPage() {
   }
 
   return (
-    <main style={{ minHeight: "100%", padding: "40px 18px 70px", display: "flex", justifyContent: "center" }}>
+    <main style={{ minHeight: "100%", padding: "16px 20px 72px", display: "flex", justifyContent: "center", ["--t-acc" as string]: ACCENT, ["--t-txt" as string]: INK }}>
       <div style={{ width: "100%", maxWidth: "600px" }}>
-        <a href="/" style={{ fontFamily: serif, fontStyle: "italic", fontSize: "13px", color: SUB, textDecoration: "none" }}>
-          ← onulfit
-        </a>
-        <p style={{ fontFamily: serif, fontStyle: "italic", fontSize: "14px", letterSpacing: "0.04em", color: ACCENT, margin: "14px 0 4px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}`, marginBottom: "18px" }}>
+          <Link href="/" className="ed-label ed-link" style={{ color: INK }}>← OnulFit</Link>
+          <Link href="/self-check" className="ed-label ed-link" style={{ color: INK }}>무료 자가진단</Link>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+          <span className="ed-label" style={{ color: ACCENT }}>1:1 Consulting</span>
+          <span className="ed-label" style={{ color: SUB }}>Body · Color · Fit</span>
+        </div>
+        <Wordmark text={"1:1\u2002STYLING"} mark={false} size={15.6} color={ACCENT} />
+        <div style={{ height: "4px", background: ACCENT, margin: "10px 0 22px" }} />
+        <p className="ed-accent" style={{ fontSize: "34px", lineHeight: 1, color: ACCENT, margin: "0 0 8px" }}>
           1:1 Consulting
         </p>
-        <h1 style={{ fontFamily: gowun, fontSize: "30px", fontWeight: 400, lineHeight: 1.35, color: INK, margin: 0, wordBreak: "keep-all" }}>
+        <h1 style={{ fontFamily: sans, fontSize: "clamp(29px, 8vw, 38px)", fontWeight: 800, letterSpacing: "-0.055em", lineHeight: 1.15, color: INK, margin: 0, wordBreak: "keep-all" }}>
           오늘핏 스타일 컨설팅 신청
         </h1>
-        <p style={{ fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, margin: "12px 0 0", wordBreak: "keep-all" }}>
+        <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 500, lineHeight: 1.75, color: SUB, margin: "12px 0 0", wordBreak: "keep-all" }}>
           퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요.
           지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 특가).
         </p>
-        <div style={{ height: "2px", width: "46px", background: ACCENT, margin: "18px 0 0" }} />
+        <div style={{ height: "2px", background: INK, margin: "22px 0 0" }} />
 
         {!IS_APPLY_READY ? (
-          <div style={{ marginTop: "28px", padding: "26px 22px", background: CARD, border: `1px solid ${BDR}`, borderRadius: "16px", fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, wordBreak: "keep-all" }}>
+          <div style={{ marginTop: "28px", padding: "26px 22px", background: CARD, border: `1px solid ${BDR}`, borderRadius: "4px", fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, wordBreak: "keep-all" }}>
             신청 폼을 준비 중이에요. 곧 오픈합니다 🤍
           </div>
         ) : status === "done" ? (
-          <div style={{ marginTop: "28px", padding: "30px 24px", background: CARD, border: `1px solid ${ACCENT}`, borderRadius: "16px", textAlign: "center" }}>
-            <p style={{ fontFamily: serif, fontStyle: "italic", fontSize: "26px", color: ACCENT, margin: 0 }}>Thank you</p>
-            <p style={{ fontFamily: gowun, fontSize: "19px", color: INK, margin: "10px 0 8px", lineHeight: 1.5 }}>신청이 접수됐어요</p>
+          <div style={{ marginTop: "28px", padding: "30px 24px", background: CARD, border: `1px solid ${ACCENT}`, borderRadius: "4px", textAlign: "center" }}>
+            <p style={{ fontFamily: serif, fontStyle: "italic", fontSize: "44px", lineHeight: 1, color: ACCENT, margin: 0 }}>Thank you</p>
+            <p style={{ fontFamily: gowun, fontSize: "24px", color: INK, margin: "12px 0 8px", lineHeight: 1.4 }}>신청이 접수됐어요</p>
             <p style={{ fontFamily: sans, fontSize: "14px", color: SUB, lineHeight: 1.8, margin: 0, wordBreak: "keep-all" }}>
               빠른 시일 내에 적어주신 연락처로 일정과 장소를 안내드릴게요.<br />당신의 결을 함께 찾는 시간, 곧 만나요.
             </p>
-            <a href="/" style={{ display: "inline-block", marginTop: "20px", fontFamily: sans, fontSize: "13px", color: ACCENT, textDecoration: "none" }}>
+            <Link href="/" className="ed-link" style={{ display: "inline-block", marginTop: "20px", fontFamily: sans, fontSize: "14px", fontWeight: 700, color: ACCENT }}>
               홈으로 돌아가기 →
-            </a>
+            </Link>
           </div>
         ) : (
           <form onSubmit={onSubmit} style={{ marginTop: "26px", display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -170,9 +179,9 @@ export default function ApplyPage() {
               type="submit"
               disabled={status === "sending"}
               style={{
-                height: "52px", borderRadius: "13px", border: "none",
-                background: status === "sending" ? POINT : ACCENT, color: "#FAF8F6",
-                fontFamily: sans, fontWeight: 600, fontSize: "15px", letterSpacing: "0.02em",
+                height: "60px", borderRadius: "2px", border: "none",
+                background: status === "sending" ? POINT : ACCENT, color: "#EDE8E2",
+                fontFamily: sans, fontWeight: 700, fontSize: "16px", letterSpacing: "-0.025em",
                 cursor: status === "sending" ? "default" : "pointer",
               }}
             >
@@ -191,7 +200,7 @@ export default function ApplyPage() {
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <label style={{ display: "block" }}>
-      <span style={{ display: "block", fontFamily: sans, fontSize: "13px", fontWeight: 500, color: INK, marginBottom: "7px", wordBreak: "keep-all" }}>
+      <span style={{ display: "block", fontFamily: sans, fontSize: "14px", fontWeight: 700, letterSpacing: "-0.025em", color: INK, marginBottom: "8px", wordBreak: "keep-all" }}>
         {label}{required && <span style={{ color: ACCENT }}> *</span>}
       </span>
       {children}
@@ -200,14 +209,14 @@ function Field({ label, required, children }: { label: string; required?: boolea
 }
 
 const inputStyle: React.CSSProperties = {
-  width: "100%", height: "46px", padding: "0 14px",
-  background: SOFT, border: `1px solid ${BDR}`, borderRadius: "11px",
-  fontFamily: sans, fontSize: "14px", color: INK, outline: "none",
+  width: "100%", height: "50px", padding: "0 14px",
+  background: SOFT, border: `1px solid ${BDR}`, borderBottom: `1.5px solid ${INK}`, borderRadius: "2px",
+  fontFamily: sans, fontSize: "15px", color: INK, outline: "none",
 };
 
 const chipLabel: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "6px",
   fontFamily: sans, fontSize: "13.5px", color: INK,
-  background: CARD, border: `1px solid ${BDR}`, borderRadius: "999px",
+  background: CARD, border: `1px solid ${INK}`, borderRadius: "2px",
   padding: "8px 14px", cursor: "pointer",
 };
