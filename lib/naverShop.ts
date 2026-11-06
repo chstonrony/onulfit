@@ -54,7 +54,10 @@ export async function searchShop(query: string): Promise<NaverItem[]> {
       next: { revalidate: 86400 },
     });
     if (!res.ok) {
-      lastStatus = `naver-${res.status}`;
+      // 네이버 오류 코드만 남김(예: 024 = 앱에 '검색' API 권한 없음, 키 값은 담지 않음)
+      let code = "";
+      try { code = String(((await res.json()) as { errorCode?: string }).errorCode ?? ""); } catch {}
+      lastStatus = `naver-${res.status}${code ? `-${code}` : ""}`;
       console.error("naver shop search failed:", res.status); // 키 값은 남기지 않음
       return [];
     }
