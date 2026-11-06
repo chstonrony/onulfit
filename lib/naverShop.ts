@@ -10,7 +10,7 @@ const FASHION = ["패션의류", "패션잡화"];
 
 /* 키는 요청 때마다 읽는다(빌드 때 값이 박히지 않게) */
 function keys() {
-  return { id: process.env.NAVER_CLIENT_ID ?? "", secret: process.env.NAVER_CLIENT_SECRET ?? "" };
+  return { id: (process.env.NAVER_CLIENT_ID ?? "").trim(), secret: (process.env.NAVER_CLIENT_SECRET ?? "").trim() }; // 붙여 넣을 때 들어간 앞뒤 빈칸 제거
 }
 export function hasNaverKey(): boolean {
   const { id, secret } = keys();
