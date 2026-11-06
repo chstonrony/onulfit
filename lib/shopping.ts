@@ -65,8 +65,8 @@ export function getWConceptUrl(keyword: string): string {
   return wconceptLink(`https://www.wconcept.co.kr/Search?keyword=${kw}`);
 }
 
-/** 29cm 검색 (제휴 후보 추가) */
+/** 29cm 검색 (제휴 후보 추가) — 2026-11 주소가 /store/search 로 바뀜(예전 /search 는 "페이지 없음") */
 export function get29cmUrl(keyword: string): string {
   const kw = encodeURIComponent(normalizeKeyword(keyword));
-  return withAffiliate(`https://www.29cm.co.kr/search?keyword=${kw}`);
+  return withAffiliate(`https://www.29cm.co.kr/store/search?keyword=${kw}&sort=RECOMMENDED`);
 }
