@@ -41,7 +41,7 @@ export default function Lookboard({ vars, chips, boardUrl }: Props) {
         LOOKBOOK · 비주얼 레퍼런스
       </p>
       <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>
-        이런 느낌으로 더 찾아보세요. 핀터레스트에서 실제 코디 사진을 모아 보여드려요.
+        이런 느낌으로 더 찾아보세요. 계절에 맞는 트렌드 키워드가 매일 바뀌어요.
       </p>
 
       {/* 큐레이션 보드 임베드 (URL 있을 때) */}
