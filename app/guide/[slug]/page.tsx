@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { OG_IMAGE } from "@/lib/og";
 import { ARTICLES, getArticle } from "@/lib/articles";
 import GuideCTA from "@/components/GuideCTA";
 
@@ -33,6 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: a.seoTitle,
       description: a.seoDescription,
       url: `${BASE_URL}/guide/${a.slug}`,
+      siteName: "오늘핏 OnulFit",
+      locale: "ko_KR",
+      images: [OG_IMAGE],
     },
   };
 }

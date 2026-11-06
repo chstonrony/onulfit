@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter_Tight, Instrument_Serif } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import KakaoInit from "@/components/KakaoInit";
+import { OG_IMAGE } from "@/lib/og";
 import "./globals.css";
 
 /* ── 타이포그래피 시스템 (2026-11 리뉴얼) ──────────────────────
@@ -51,19 +52,18 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://onulfit.com",
-    title: "오늘핏 OnulFit — 오늘, 어떤 나를 찾으세요",
+    title: "오늘 뭐 입지? 그 답은, 오늘핏",
     description:
-      "상황을 알려주시면 상의부터 신발까지 딱 맞는 코디를 찾아드려요. 30~50대 여성을 위한 AI 패션 코디 서비스, 오늘핏.",
+      "문 너머, 나에게 맞는 한 벌. 체형·퍼스널컬러 무료 자가진단 1분, 오늘 상황에 맞는 코디까지 오늘핏이 찾아드려요.",
     siteName: "오늘핏 OnulFit",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "OnulFit — 매일 아침, 가장 좋은 버전의 나",
-      },
-    ],
+    images: [OG_IMAGE],
     locale: "ko_KR",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "오늘 뭐 입지? 그 답은, 오늘핏",
+    description: "문 너머, 나에게 맞는 한 벌. 체형·퍼스널컬러 무료 자가진단 1분.",
+    images: [OG_IMAGE.url],
   },
 
   /* ── PWA + 앱 아이콘 ── */
