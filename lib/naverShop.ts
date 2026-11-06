@@ -56,8 +56,14 @@ export async function searchShop(query: string): Promise<NaverItem[]> {
     if (!res.ok) {
       // 네이버 오류 코드만 남김(예: 024 = 앱에 '검색' API 권한 없음, 키 값은 담지 않음)
       let code = "";
-      try { code = String(((await res.json()) as { errorCode?: string }).errorCode ?? ""); } catch {}
-      lastStatus = `naver-${res.status}${code ? `-${code}` : ""}`;
+      let nid = "";
+      try {
+        const e = (await res.json()) as { errorCode?: string; errorMessage?: string };
+        code = String(e.errorCode ?? "");
+        nid = (e.errorMessage ?? "").match(/Invalid \((\d+)\)/)?.[1] ?? ""; // 1000 = 아이디 틀림, 28 = 시크릿 틀림
+      } catch {}
+      // 값은 남기지 않고 글자 수만(아이디 20자, 시크릿 10자가 정상)
+      lastStatus = `naver-${res.status}${code ? `-${code}` : ""}${nid ? `-nid${nid}` : ""}-len${id.length}/${secret.length}`;
       console.error("naver shop search failed:", res.status); // 키 값은 남기지 않음
       return [];
     }
