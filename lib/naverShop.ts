@@ -60,10 +60,11 @@ export async function searchShop(query: string): Promise<NaverItem[]> {
       try {
         const e = (await res.json()) as { errorCode?: string; errorMessage?: string };
         code = String(e.errorCode ?? "");
-        nid = (e.errorMessage ?? "").match(/Invalid \((\d+)\)/)?.[1] ?? ""; // 1000 = 아이디 틀림, 28 = 시크릿 틀림
+        // 네이버 오류 문장 앞부분(키 값은 들어 있지 않음). 예: "NID AUTH Result Invalid (28)", "Scope Status Invalid"
+        nid = (e.errorMessage ?? "").split(":")[0].replace(/[^A-Za-z0-9 ()]/g, "").trim().slice(0, 50).replace(/ /g, "_");
       } catch {}
       // 값은 남기지 않고 글자 수만(아이디 20자, 시크릿 10자가 정상)
-      lastStatus = `naver-${res.status}${code ? `-${code}` : ""}${nid ? `-nid${nid}` : ""}-len${id.length}/${secret.length}`;
+      lastStatus = `naver-${res.status}${code ? `-${code}` : ""}${nid ? `-${nid}` : ""}-len${id.length}/${secret.length}`;
       console.error("naver shop search failed:", res.status); // 키 값은 남기지 않음
       return [];
     }
