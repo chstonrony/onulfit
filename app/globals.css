@@ -197,6 +197,8 @@ html .ed-reveal.is-in { opacity: 1; transform: none; }
   .fx-btn:hover::before, .fx-btn:focus-visible::before { transform: scaleX(1); }
   .fx-btn:hover, .fx-btn:focus-visible { color: var(--fx-fg) !important; }
   .fx-btn:active { transform: scale(0.985); }
+  html .shop-tile { transition: transform 0.25s var(--ease-out), box-shadow 0.25s var(--ease-out), filter 0.25s ease; }
+  .shop-tile:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(29, 31, 22, 0.18); filter: brightness(1.06); }
   .fx-btn[data-tone="ink"]   { --fx-sweep: var(--t-acc, #5A6122); --fx-fg: var(--t-bg, #ECEAE0); }
   .fx-btn[data-tone="acc"],
   .fx-btn[data-tone="paper"] { --fx-sweep: var(--t-txt, #1D1F16); --fx-fg: var(--t-bg, #ECEAE0); }
