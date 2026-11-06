@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 /* 옷 그림 — 색 블록 대신, 아이템 종류(니트·슬랙스·코트·부츠·머플러…)를 그 색으로 그린다.
    사진을 가져올 수 없을 때도 "어떤 옷인지" 바로 떠오르게 하려는 것.
    종류는 아이템 이름·검색어에서 찾고, 못 찾으면 카테고리 기본 모양을 쓴다. */
@@ -46,7 +48,7 @@ const RULES: Record<string, [RegExp, Kind][]> = {
     [/로퍼|플랫|메리제인|단화|모카신|더비|발레/, "loafer"],
   ],
   accessory: [
-    [/머플러|스카프|목도리|숄/, "scarf"],
+    [/머플러|스카프|목도리|숄(?!더)/, "scarf"],
     [/귀걸이|이어링/, "earring"],
     [/목걸이|네크리스|펜던트|초커/, "necklace"],
     [/벨트/, "belt"],
@@ -125,33 +127,70 @@ const SHAPES: Record<Kind, Shape> = {
   hat: { body: ["M30 56 Q30 24 50 24 Q70 24 70 56 Z", "M12 60 Q50 48 88 60 Q50 72 12 60 Z"], lines: ["M30 50 Q50 46 70 50"] },
 };
 
+/* 디자이너 도식화(스케치) 스타일
+   · 잉크 펜 선: 살짝 떨리고(feDisplacementMap) 두 번 겹쳐 그은 손그림 선
+   · 수채 채색: 선에서 살짝 어긋나고 번진 색, 가장자리에 물감이 고인 듯 진하게
+   · 연필 해칭: 오른쪽 아래로만 얇은 빗금 그림자 */
+const INK = "#2A2521";
+
 export default function GarmentArt({ category, text, hex, size = 72 }: { category: string; text: string; hex: string; size?: number }) {
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const kind = garmentKind(category, text);
   const s = SHAPES[kind];
-  const dark = luminance(hex) < 0.22;
-  const line = dark ? mix(hex, [255, 255, 255], 0.42) : mix(hex, [0, 0, 0], 0.42);
-  const edge = dark ? mix(hex, [255, 255, 255], 0.25) : mix(hex, [0, 0, 0], 0.32);
+  const lum = luminance(hex);
+  // 아주 어두운 색은 먹물 느낌의 회색으로, 아주 밝은 색은 종이와 구분되게 한 톤 내려 칠한다
+  const wash = lum < 0.18 ? mix(hex, [255, 255, 255], 0.18) : lum > 0.9 ? mix(hex, [120, 105, 90], 0.1) : hex;
+  const pool = mix(wash, [0, 0, 0], 0.25);
+  const id = (n: string) => `ga${uid}${kind}${hex.replace(/[^a-zA-Z0-9]/g, "")}${n}`; // 한 화면에 여러 개여도 겹치지 않게
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden style={{ display: "block", overflow: "visible" }}>
-      <ellipse cx="50" cy="97" rx="34" ry="3.2" fill="rgba(0,0,0,0.07)" />
-      {s.body.map((d, i) => (
-        <path key={i} d={d} fill={hex} stroke={edge} strokeWidth="1.6" strokeLinejoin="round" />
-      ))}
-      {/* 왼쪽 위 은은한 빛 — 납작한 색면이 아니라 천처럼 보이게 */}
-      <path d={s.body[0]} fill="url(#ga-shine)" stroke="none" />
       <defs>
-        <linearGradient id="ga-shine" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#fff" stopOpacity="0.22" />
-          <stop offset="0.55" stopColor="#fff" stopOpacity="0" />
-          <stop offset="1" stopColor="#000" stopOpacity="0.08" />
+        <filter id={id("r")} x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="4" />
+          <feDisplacementMap in="SourceGraphic" scale="2.4" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+        <filter id={id("w")} x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="11" result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" result="d" />
+          <feGaussianBlur in="d" stdDeviation="0.45" />
+        </filter>
+        <pattern id={id("h")} width="2.6" height="2.6" patternUnits="userSpaceOnUse" patternTransform="rotate(42)">
+          <line x1="0" y1="0" x2="0" y2="2.6" stroke={INK} strokeWidth="0.45" />
+        </pattern>
+        <linearGradient id={id("g")} x1="0" y1="0" x2="1" y2="0.6">
+          <stop offset="0" stopColor="#000" />
+          <stop offset="0.5" stopColor="#000" />
+          <stop offset="1" stopColor="#fff" />
         </linearGradient>
+        <mask id={id("m")}>
+          <rect x="0" y="0" width="100" height="100" fill={`url(#${id("g")})`} />
+        </mask>
+        <clipPath id={id("c")}>
+          {s.body.map((d, i) => <path key={i} d={d} />)}
+        </clipPath>
       </defs>
-      {s.lines?.map((d, i) => (
-        <path key={i} d={d} fill="none" stroke={line} strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" opacity="0.75" />
-      ))}
-      {s.dots?.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2" fill={line} />
-      ))}
+
+      {/* 수채 채색 — 선에서 살짝 어긋나게 */}
+      <g transform="translate(2.2 1.8)" filter={`url(#${id("w")})`}>
+        {s.body.map((d, i) => (
+          <path key={i} d={d} fill={wash} fillOpacity="0.74" stroke={pool} strokeOpacity="0.35" strokeWidth="2.2" strokeLinejoin="round" />
+        ))}
+      </g>
+
+      {/* 연필 해칭 그림자 */}
+      <g clipPath={`url(#${id("c")})`} mask={`url(#${id("m")})`} opacity="0.32">
+        <rect x="0" y="0" width="100" height="100" fill={`url(#${id("h")})`} />
+      </g>
+
+      {/* 잉크 선 — 한 번 더 겹쳐 그은 듯 */}
+      <g filter={`url(#${id("r")})`} fill="none" stroke={INK} strokeLinecap="round" strokeLinejoin="round">
+        {s.body.map((d, i) => <path key={i} d={d} strokeWidth="1" />)}
+        <g transform="translate(0.8 -0.6)" opacity="0.35">
+          {s.body.map((d, i) => <path key={i} d={d} strokeWidth="0.6" />)}
+        </g>
+        {s.lines?.map((d, i) => <path key={i} d={d} strokeWidth="0.75" opacity="0.85" />)}
+        {s.dots?.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="1.4" strokeWidth="0.7" />)}
+      </g>
     </svg>
   );
 }
