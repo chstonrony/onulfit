@@ -159,10 +159,54 @@ html .ed-reveal.is-in { opacity: 1; transform: none; }
   animation: marquee 28s linear infinite;
 }
 
+/* ── 마우스 효과 (2026-11-06) — 마우스가 있는 PC에서만, 터치 화면은 그대로 ──
+   · .fx-wave  영문 큰 제목: 글자가 왼쪽부터 차례로 굵어지며 올리브색으로
+   · .ed-accent 영문 포인트 한마디: 더 굵고 각지게
+   · .fx-btn   블록 버튼: 다른 색이 왼쪽에서 밀려 들어옴 + 화살표 이동 */
+@media (hover: hover) and (pointer: fine) {
+  html .fx-ch {
+    transition: font-weight 0.55s var(--ease-out), font-variation-settings 0.55s var(--ease-out), color 0.55s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 32ms);
+  }
+  .fx-wave { cursor: default; }
+  .fx-wave:hover .fx-ch {
+    font-weight: 800;
+    font-variation-settings: "SOFT" 0;
+    color: var(--t-acc, #5A6122);
+  }
+
+  html .ed-accent { transition: font-weight 0.45s var(--ease-out), font-variation-settings 0.45s var(--ease-out), letter-spacing 0.45s var(--ease-out), color 0.4s ease; }
+  .ed-accent:hover { font-weight: 800; font-variation-settings: "SOFT" 0; letter-spacing: -0.035em; }
+
+  html .fx-btn {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    transition: color 0.45s var(--ease-out), transform 0.2s ease;
+  }
+  .fx-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--fx-sweep);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.6s var(--ease-out);
+  }
+  .fx-btn:hover::before, .fx-btn:focus-visible::before { transform: scaleX(1); }
+  .fx-btn:hover, .fx-btn:focus-visible { color: var(--fx-fg) !important; }
+  .fx-btn:active { transform: scale(0.985); }
+  .fx-btn[data-tone="ink"]   { --fx-sweep: var(--t-acc, #5A6122); --fx-fg: var(--t-bg, #ECEAE0); }
+  .fx-btn[data-tone="acc"],
+  .fx-btn[data-tone="paper"] { --fx-sweep: var(--t-txt, #1D1F16); --fx-fg: var(--t-bg, #ECEAE0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html .ed-reveal { opacity: 1; transform: none; transition: none; }
   .ed-marquee { animation: none; }
   html .ed-zoom img { transition: none; }
+  html .fx-ch, html .ed-accent, html .fx-btn, .fx-btn::before { transition: none; }
 }
 
 /* ── Luxury Label (구 스타일 호환) ── */

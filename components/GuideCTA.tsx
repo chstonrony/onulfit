@@ -22,6 +22,8 @@ export default function GuideCTA({ slug }: { slug: string }) {
       <Link
         href="/?diag=1"
         onClick={() => track("diag_open", { where: "guide", slug })}
+        className="fx-btn"
+        data-tone="ink"
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: "62px", padding: "0 18px",
           fontFamily: sans, fontSize: "16px", fontWeight: 700, letterSpacing: "-0.025em",

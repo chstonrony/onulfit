@@ -62,8 +62,11 @@ export function GyeolSymbol({ size = 22, color = "currentColor" }: { size?: numb
 export function Wordmark({ text, color = "var(--t-txt)", size = 24 }: { text: string; color?: string; size?: number }) {
   return (
     <div style={{ containerType: "inline-size", width: "100%" }}>
-      <p className="ed-wordmark" style={{ fontSize: `${size}cqw`, color, margin: 0 }}>
-        {text}
+      {/* 마우스를 올리면 글자가 왼쪽부터 차례로 굵어지는 물결(globals.css .fx-wave) */}
+      <p className="ed-wordmark fx-wave" aria-label={text} style={{ fontSize: `${size}cqw`, color, margin: 0 }}>
+        {Array.from(text).map((c, i) => (
+          <span key={i} aria-hidden className="fx-ch" style={{ ["--i" as string]: i } as CSSProperties}>{c}</span>
+        ))}
       </p>
     </div>
   );
@@ -184,7 +187,7 @@ export function BlockButton({
           fontFamily: "var(--font-grotesk), sans-serif",
           fontWeight: 500,
           fontSize: "22px",
-          transform: hover ? "translateX(5px)" : "none",
+          transform: hover ? "translateX(7px)" : "none",
           transition: "transform 0.45s var(--ease-out)",
         }}
       >
@@ -210,8 +213,8 @@ export function BlockButton({
   };
   const h = { onMouseEnter: () => setHover(true), onMouseLeave: () => setHover(false) };
   return href ? (
-    <a href={href} onClick={onClick} style={s} {...h}>{inner}</a>
+    <a href={href} onClick={onClick} style={s} className="fx-btn" data-tone={tone} {...h}>{inner}</a>
   ) : (
-    <button type="button" onClick={onClick} style={s} {...h}>{inner}</button>
+    <button type="button" onClick={onClick} style={s} className="fx-btn" data-tone={tone} {...h}>{inner}</button>
   );
 }
