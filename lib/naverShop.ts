@@ -6,11 +6,16 @@
 import { wconceptLink } from "./shopping";
 import type { ProductPick } from "./types";
 
-const ID = process.env.NAVER_CLIENT_ID;
-const SECRET = process.env.NAVER_CLIENT_SECRET;
 const FASHION = ["패션의류", "패션잡화"];
 
-export const HAS_NAVER_KEY = !!(ID && SECRET);
+/* 키는 요청 때마다 읽는다(빌드 때 값이 박히지 않게) */
+function keys() {
+  return { id: process.env.NAVER_CLIENT_ID ?? "", secret: process.env.NAVER_CLIENT_SECRET ?? "" };
+}
+export function hasNaverKey(): boolean {
+  const { id, secret } = keys();
+  return !!(id && secret);
+}
 
 export interface NaverItem {
   title: string;
@@ -37,14 +42,18 @@ export const isWconcept = (it: NaverItem) =>
   /w\s?컨셉|더블유컨셉|wconcept/i.test(it.mallName) || it.link.includes("wconcept.co.kr");
 
 export async function searchShop(query: string): Promise<NaverItem[]> {
-  if (!HAS_NAVER_KEY) return [];
+  const { id, secret } = keys();
+  if (!id || !secret) return [];
   const url = `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(query)}&display=40&sort=sim&exclude=used:rental:cbshop`;
   try {
     const res = await fetch(url, {
-      headers: { "X-Naver-Client-Id": ID!, "X-Naver-Client-Secret": SECRET! },
+      headers: { "X-Naver-Client-Id": id, "X-Naver-Client-Secret": secret },
       next: { revalidate: 86400 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error("naver shop search failed:", res.status); // 키 값은 남기지 않음
+      return [];
+    }
     const data = (await res.json()) as { items?: NaverItem[] };
     return (data.items ?? []).filter((it) => FASHION.includes(it.category1) && it.image);
   } catch {

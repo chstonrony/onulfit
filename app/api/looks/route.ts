@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { HAS_NAVER_KEY, searchShop, rankPicks } from "@/lib/naverShop";
+import { hasNaverKey, searchShop, rankPicks } from "@/lib/naverShop";
 import { todaysRecipe, SEASON_LABEL } from "@/lib/lookRecipes";
 
 /* ── 오늘의 완성 코디 (매일 자동으로 바뀜) ──
@@ -7,12 +7,12 @@ import { todaysRecipe, SEASON_LABEL } from "@/lib/lookRecipes";
    W컨셉 상품이 있으면 우선(제휴 링크). 키가 없거나 상품을 3개 미만으로 찾으면 빈 결과 →
    화면은 계절에 맞는 직접 고른 룩이 있으면 그것을, 없으면 카드를 숨긴다. */
 
-export const runtime = "edge";
+export const dynamic = "force-dynamic"; // 키를 실행 때 읽도록 Node 런타임 사용
 
 export async function GET(request: NextRequest) {
   const body = request.nextUrl.searchParams.get("body") ?? "";
   const color = request.nextUrl.searchParams.get("color") ?? "";
-  if (!HAS_NAVER_KEY) return NextResponse.json({ look: null });
+  if (!hasNaverKey()) return NextResponse.json({ look: null });
 
   const { recipe, colorWord, season } = todaysRecipe(body, color);
   const found = await Promise.all(
