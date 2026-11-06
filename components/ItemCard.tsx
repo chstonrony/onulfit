@@ -5,6 +5,7 @@ import { ClothingItem, ProductPick } from "@/lib/types";
 import { getZigzagUrl, get29cmUrl, getWConceptUrl } from "@/lib/shopping";
 import { getColorHex } from "@/lib/colors";
 import { track } from "@/lib/track";
+import GarmentArt from "./GarmentArt";
 
 const CATEGORY_LABELS: Record<string, string> = {
   top: "상의",
@@ -22,7 +23,7 @@ interface ItemCardProps {
 
 /* 아이템 카드
    · 실제 옷 사진: 네이버 쇼핑(W컨셉 상품이 있으면 맨 앞, 제휴 링크) — /api/products
-   · 사진을 못 가져오면(키 없음·결과 없음) 예전처럼 색 블록을 보여준다
+   · 사진을 못 가져오면(키 없음·결과 없음) 그 색으로 그린 옷 그림(GarmentArt)을 보여준다
    · 29CM·지그재그: 상품 정보를 가져올 공개 통로가 없어 브랜드 타일로 검색 결과에 연결만 */
 export default function ItemCard({ category, item, animationIndex = 0 }: ItemCardProps) {
   const label = CATEGORY_LABELS[category] ?? category;
@@ -56,13 +57,15 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
       <div style={{ display: "flex", gap: "14px", alignItems: "center", marginBottom: "12px" }}>
         {!hasPhotos && (
           <span
-            className="flex-shrink-0"
+            className="flex-shrink-0 garment-box"
             style={{
-              width: "62px", height: "62px", borderRadius: "4px",
-              backgroundColor: swatchHex, border: "1px solid var(--t-bdr)",
-              boxShadow: "inset 0 0 0 4px rgba(255,255,255,0.35)",
+              width: "84px", height: "84px", borderRadius: "6px",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "var(--t-bai)", border: "1px solid var(--t-bdr)",
             }}
-          />
+          >
+            <GarmentArt category={category} text={`${item.name} ${item.searchKeyword}`} hex={swatchHex} size={64} />
+          </span>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{
