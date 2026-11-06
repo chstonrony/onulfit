@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter_Tight, Fraunces } from "next/font/google";
+import { Inter_Tight, Fraunces, Geist, JetBrains_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import KakaoInit from "@/components/KakaoInit";
 import { OG_IMAGE } from "@/lib/og";
@@ -26,7 +26,21 @@ const accentSerif = Fraunces({
   display: "swap",
 });
 
-const PRETENDARD = '"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+/* 오늘의 코디 보드(OutfitBoard) 전용 — 제목 onulfit(Geist), 라벨 테이프 영문(JetBrains Mono) */
+const boardTitle = Geist({
+  variable: "--font-board-title",
+  subsets: ["latin"],
+  weight: ["600"],
+  display: "swap",
+});
+const labelMono = JetBrains_Mono({
+  variable: "--font-label-mono",
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  display: "swap",
+});
+
+const PRETENDARD ='"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
 
 /* ── 메타데이터 ── */
 export const metadata: Metadata = {
@@ -100,7 +114,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${grotesk.variable} ${accentSerif.variable} h-full`}
+      className={`${grotesk.variable} ${accentSerif.variable} ${boardTitle.variable} ${labelMono.variable} h-full`}
       style={{
         /* 라벨·숫자 → 그로테스크(영문) + Pretendard(한글) */
         ["--font-jost" as string]: `var(--font-grotesk), ${PRETENDARD}`,

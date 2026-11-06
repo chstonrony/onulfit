@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ClothingItem, ProductPick } from "@/lib/types";
 import { getZigzagUrl, get29cmUrl, getWConceptUrl } from "@/lib/shopping";
-import { getColorHex } from "@/lib/colors";
+import { getColorHex, getLineColorHex } from "@/lib/colors";
 import { track } from "@/lib/track";
 import GarmentArt from "./GarmentArt";
 
@@ -64,7 +64,7 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
               backgroundColor: "var(--t-bai)", border: "1px solid var(--t-bdr)",
             }}
           >
-            <GarmentArt category={category} text={`${item.name} ${item.searchKeyword}`} hex={swatchHex} size={80} />
+            <GarmentArt category={category} text={`${item.name} ${item.color} ${item.searchKeyword}`} hex={swatchHex} lineHex={getLineColorHex(item.color)} size={80} />
           </span>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>

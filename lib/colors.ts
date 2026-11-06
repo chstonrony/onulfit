@@ -35,6 +35,37 @@ const COLOR_MAP: Record<string, string> = {
   "라벤더": "#C4B8E0",
   "머스타드": "#D4A830",
   "캐럿": "#E07A40",
+  /* 2026-11-07 코디 보드용 — 자주 나오는 패션 색 */
+  "오트밀": "#D9CDB8",
+  "탄": "#B08A63",
+  "모카 브라운": "#7E5E45",
+  "웜 베이지": "#CDB596",
+  "누드 베이지": "#D8BFA6",
+  "샴페인 베이지": "#E3D3B5",
+  "카멜 베이지": "#C9A97E",
+  "골드": "#C9A24E",
+  "로즈 골드": "#C99A86",
+  "화이트 골드": "#E6DCC3",
+  "실버": "#BFC1C2",
+  "펄": "#EEE9E0",
+  "딥 네이비": "#14213D",
+  "인디고": "#2E3A6B",
+  "데님": "#5B7896",
+  "중청": "#6D8BAA",
+  "진청": "#2F4563",
+  "그린": "#5E7D5A",
+  "세이지 그린": "#9BAA8A",
+  "포레스트": "#2F4A35",
+  "옐로우": "#E8C65A",
+  "버터 옐로우": "#F1DF9C",
+  "레드": "#B23A2E",
+  "와인": "#5E2129",
+  "코랄": "#E58B76",
+  "퍼플": "#6B4E86",
+  "멜란지": "#B9B6B1",
+  "토프": "#8B7D6B",
+  "코냑": "#9A5B34",
+  "에크루": "#EAE2CF",
 };
 
 export function getColorHex(colorName: string): string {
@@ -42,9 +73,30 @@ export function getColorHex(colorName: string): string {
 
   if (COLOR_MAP[normalized]) return COLOR_MAP[normalized];
 
+  // 이름 안에 든 색 중 가장 긴 것(예: "카멜 브라운"은 "카멜"보다 "카멜 브라운")
+  let best = "";
+  for (const key of Object.keys(COLOR_MAP)) {
+    if (normalized.includes(key) && key.length > best.length) best = key;
+  }
+  if (best) return COLOR_MAP[best];
   for (const [key, value] of Object.entries(COLOR_MAP)) {
-    if (normalized.includes(key) || key.includes(normalized)) return value;
+    if (key.includes(normalized)) return value;
   }
 
   return "#B8AFA6";
+}
+
+/** 무늬 옷의 줄 색 — 색 이름에 색이 둘 이상이면(예: "화이트 네이비 스트라이프") 두 번째 색. 없으면 null */
+export function getLineColorHex(colorName: string): string | null {
+  const text = colorName.trim().replace(/\s+/g, " ");
+  const found: { at: number; key: string }[] = [];
+  // 긴 이름부터 찾고, 이미 찾은 자리와 겹치면 건너뛴다
+  for (const key of Object.keys(COLOR_MAP).sort((a, b) => b.length - a.length)) {
+    const at = text.indexOf(key);
+    if (at < 0) continue;
+    if (found.some((f) => at < f.at + f.key.length && f.at < at + key.length)) continue;
+    found.push({ at, key });
+  }
+  found.sort((a, b) => a.at - b.at);
+  return found.length > 1 ? COLOR_MAP[found[1].key] : null;
 }

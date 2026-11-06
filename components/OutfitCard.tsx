@@ -3,7 +3,7 @@ import ItemCard from "./ItemCard";
 import ShareButtons from "./ShareButtons";
 import ConsultCTA from "./ConsultCTA";
 import CompletedLook from "./CompletedLook";
-import { getColorHex } from "@/lib/colors";
+import OutfitBoard from "./OutfitBoard";
 import { Profile } from "@/lib/profile";
 
 interface OutfitCardProps {
@@ -58,14 +58,9 @@ export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
         </p>
       </div>
 
-      {/* 오늘의 컬러 스토리 — 한눈에 보이는 비주얼 */}
-      <div className="mb-7">
-        <p style={LABEL} className="mb-3">오늘의 컬러</p>
-        <div className="flex gap-1.5" style={{ height: "54px", borderRadius: "4px", overflow: "hidden" }}>
-          {[outfit.items.top, outfit.items.bottom, outfit.items.outer, outfit.items.shoes, outfit.items.accessory].map((it, i) => (
-            <div key={i} title={it.color} style={{ flex: 1, backgroundColor: getColorHex(it.color) }} />
-          ))}
-        </div>
+      {/* 오늘의 코디 보드 — 옷 사진에 추천 색·무늬를 입혀 한 장으로(색 칩 포함) */}
+      <div className="mb-8">
+        <OutfitBoard outfit={outfit} />
       </div>
 
       {/* 아이템 그리드 */}
