@@ -60,11 +60,11 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
             className="flex-shrink-0 garment-box"
             style={{
               width: "84px", height: "84px", borderRadius: "6px",
-              display: "flex", alignItems: "center", justifyContent: "center",
+              display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
               backgroundColor: "var(--t-bai)", border: "1px solid var(--t-bdr)",
             }}
           >
-            <GarmentArt category={category} text={`${item.name} ${item.searchKeyword}`} hex={swatchHex} size={64} />
+            <GarmentArt category={category} text={`${item.name} ${item.searchKeyword}`} hex={swatchHex} size={80} />
           </span>
         )}
         <div style={{ flex: 1, minWidth: 0 }}>
