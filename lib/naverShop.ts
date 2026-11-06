@@ -41,9 +41,12 @@ function clean(s: string) {
 export const isWconcept = (it: NaverItem) =>
   /w\s?컨셉|더블유컨셉|wconcept/i.test(it.mallName) || it.link.includes("wconcept.co.kr");
 
+/** 마지막 검색 상태 — 사진이 안 나올 때 원인 확인용(키 값은 담지 않음) */
+export let lastStatus = "";
+
 export async function searchShop(query: string): Promise<NaverItem[]> {
   const { id, secret } = keys();
-  if (!id || !secret) return [];
+  if (!id || !secret) { lastStatus = "no-key"; return []; }
   const url = `https://openapi.naver.com/v1/search/shop.json?query=${encodeURIComponent(query)}&display=40&sort=sim&exclude=used:rental:cbshop`;
   try {
     const res = await fetch(url, {
@@ -51,12 +54,17 @@ export async function searchShop(query: string): Promise<NaverItem[]> {
       next: { revalidate: 86400 },
     });
     if (!res.ok) {
+      lastStatus = `naver-${res.status}`;
       console.error("naver shop search failed:", res.status); // 키 값은 남기지 않음
       return [];
     }
     const data = (await res.json()) as { items?: NaverItem[] };
-    return (data.items ?? []).filter((it) => FASHION.includes(it.category1) && it.image);
+    const all = data.items ?? [];
+    const kept = all.filter((it) => FASHION.includes(it.category1) && it.image);
+    lastStatus = `ok-${all.length}-${kept.length}`;
+    return kept;
   } catch {
+    lastStatus = "fetch-error";
     return [];
   }
 }
