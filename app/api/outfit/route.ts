@@ -3,6 +3,14 @@ import { SYSTEM_PROMPT, buildProfileGuide } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
 import { getMockOutfit, IS_DEMO_MODE } from "@/lib/mockData";
 import type { BodyType, ColorType } from "@/lib/profile";
+import { currentSeason, SEASON_LABEL } from "@/lib/lookRecipes";
+
+/** 오늘 날짜·계절(한국 기준) — 겨울에 반팔·샌들을 추천하지 않도록 */
+function seasonNote(): string {
+  const k = new Date(Date.now() + 9 * 60 * 60 * 1000);
+  const date = `${k.getUTCFullYear()}년 ${k.getUTCMonth() + 1}월 ${k.getUTCDate()}일`;
+  return `\n\n[참고] 오늘은 ${date}, 한국은 ${SEASON_LABEL[currentSeason()].ko}이에요. 상황에 따로 계절이 적혀 있지 않으면 이 계절에 맞는 소재와 아우터로 추천해 주세요.`;
+}
 
 export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
 
@@ -55,7 +63,7 @@ export async function POST(request: NextRequest) {
           },
         ],
         messages: [
-          { role: "user", content: situation.trim() + buildProfileGuide(bodyType, colorType) },
+          { role: "user", content: situation.trim() + buildProfileGuide(bodyType, colorType) + seasonNote() },
         ],
       }),
     });

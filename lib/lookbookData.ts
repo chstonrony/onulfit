@@ -19,6 +19,7 @@ export interface CuratedLook {
   mood: string;       // 결의 한 줄 큐레이션 코멘트
   colors?: string[];  // 매칭 퍼스널컬러 (비면 전체)
   bodies?: string[];  // 매칭 체형 (비면 전체)
+  seasons?: string[]; // 보여줄 계절 spring|summer|autumn|winter (비면 사계절) — 겨울에 여름 옷이 나오지 않게
   items: LookItem[];
 }
 
@@ -27,6 +28,7 @@ export const CURATED_LOOKS: CuratedLook[] = [
     id: "daily-beige-dress",
     title: "편하지만 예쁜, 원피스 한 벌 룩",
     mood: "키높이 샌들로 비율을 살리고, 미니백으로 가볍게 휙. 너무 과하지 않아서 데일리로 딱이에요.",
+    seasons: ["spring", "summer"],
     items: [
       {
         cat: "원피스",
@@ -55,11 +57,12 @@ export const CURATED_LOOKS: CuratedLook[] = [
   },
 ];
 
-/** 진단 결과(color/body)에 맞는 룩 — 없으면 전체에서 반환 */
-export function looksFor(color: string, body: string): CuratedLook[] {
+/** 진단 결과(color/body)와 지금 계절에 맞는 룩 */
+export function looksFor(color: string, body: string, season?: string): CuratedLook[] {
   return CURATED_LOOKS.filter(
     (l) =>
       (!l.colors || l.colors.includes(color)) &&
-      (!l.bodies || l.bodies.includes(body))
+      (!l.bodies || l.bodies.includes(body)) &&
+      (!season || !l.seasons || l.seasons.includes(season))
   );
 }

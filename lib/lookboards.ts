@@ -9,6 +9,7 @@
 
 import type { BodyType, ColorType } from "./profile";
 import { BODY_META, COLOR_META } from "./profile";
+import { trendSeasonTag } from "./lookRecipes";
 
 export function pinterestSearchUrl(query: string): string {
   return `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(query)}`;
@@ -32,7 +33,8 @@ export function lookboardChips(body?: BodyType, color?: ColorType): { label: str
     });
   }
   // 트렌드(시즌) — 편집 키워드
-  chips.push({ label: "2025 SS 트렌드", url: pinterestSearchUrl("2025 ss women fashion trend outfit") });
+  const tag = trendSeasonTag(); // 예: 2026 FW — 날짜에 따라 자동으로 바뀜
+  chips.push({ label: `${tag} 트렌드`, url: pinterestSearchUrl(`${tag.toLowerCase()} women fashion trend outfit`) });
   return chips;
 }
 
