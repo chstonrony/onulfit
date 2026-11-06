@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter_Tight, Instrument_Serif } from "next/font/google";
+import { Inter_Tight, Fraunces } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import KakaoInit from "@/components/KakaoInit";
 import { OG_IMAGE } from "@/lib/og";
@@ -7,7 +7,7 @@ import "./globals.css";
 
 /* ── 타이포그래피 시스템 (2026-11 리뉴얼) ──────────────────────
    · 그로테스크(영문 워드마크·라벨): Inter Tight — 크고 촘촘한 에디토리얼 헤드라인
-   · 액센트 세리프(영문 이탤릭 한마디): Instrument Serif — 감성 포인트
+   · 액센트 세리프(영문 이탤릭 한마디): Fraunces — 둥글고 통통한 소프트 세리프(2026-11-06, 굵은 한글과 무게 맞춤)
    · 한글(제목·본문 전부): Pretendard — 제목은 굵고 촘촘하게(globals.css)
    기존 인라인 스타일이 쓰는 변수명(--font-cormorant/-jost/-gowun/-noto-sans)은
    그대로 두고, 가리키는 폰트만 바꾼다. ─────────────────────────── */
@@ -18,11 +18,11 @@ const grotesk = Inter_Tight({
   display: "swap",
 });
 
-const accentSerif = Instrument_Serif({
+const accentSerif = Fraunces({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400"],
   style: ["normal", "italic"],
+  axes: ["SOFT", "opsz"],
   display: "swap",
 });
 
