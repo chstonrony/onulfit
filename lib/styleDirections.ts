@@ -5,6 +5,7 @@
    아이템 이름은 옷 사진(GarmentArt)이 알아보는 말로 쓴다 — 트위드 자켓·메리제인·플리츠 스커트 등. */
 
 import type { Season } from "./lookRecipes";
+import type { BodyType } from "./profile";
 
 /** 자리 — C 일상 · S 단정 · F 격식 · D 데이트 · P 특별한 저녁 · A 야외 · M 조문 */
 export type Occ = "C" | "S" | "F" | "D" | "P" | "A" | "M";
@@ -165,7 +166,7 @@ const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 /* ── 신발·액세서리도 매번 다르게 (2026-11-07) ──
    AI에게 맡기면 신발은 메리제인·슬링백, 액세서리는 드롭 이어링으로 늘 모인다.
    자리(occ)·계절에 맞는 것 중에서 하나씩 무작위로 정해 건넨다. */
-type Pick = { name: string; occ?: Occ[]; not?: Season[] };
+type Pick = { name: string; occ?: Occ[]; not?: Season[]; /** 이 골격엔 주지 않음 */ nob?: BodyType[] };
 const ALL: Occ[] = ["C", "S", "F", "D", "P", "A"];
 const SHOES: Pick[] = [
   { name: "앵클 부츠", not: ["summer"] },
@@ -199,8 +200,30 @@ const ACCS: Pick[] = [
   { name: "캔버스 토트백", occ: ["C", "A"], not: ["winter"] },
   { name: "볼드 뱅글", occ: ["C", "D", "P"] },
 ];
-function pickFor(list: Pick[], occ: Occ, season: Season): string {
-  const ok = list.filter((x) => (x.occ ?? ALL).includes(occ) && !(x.not ?? []).includes(season));
+/* ── 상의도 매번 다르게 (2026-11-07) ──
+   신발·액세서리처럼 정해 주지 않으면 상의는 늘 "실크 블라우스"로 모였다(라이브 4번 중 4번).
+   골격에 안 맞는 상의(스트레이트에 두꺼운 터틀넥·프릴 등)는 그 골격일 때 빼고 고른다. */
+const TOPS: Pick[] = [
+  { name: "브이넥 니트", not: ["summer"] },
+  { name: "니트 카디건", occ: ["C", "S", "D", "A"] },
+  { name: "터틀넥 니트", occ: ["C", "S", "D", "P"], not: ["summer"], nob: ["straight"] },
+  { name: "케이블 니트", occ: ["C", "A", "D"], not: ["summer"], nob: ["straight"] },
+  { name: "보트넥 니트", occ: ["C", "S", "D"], not: ["summer"] },
+  { name: "폴로 니트", occ: ["C", "S", "A"] },
+  { name: "니트 베스트", occ: ["C", "S"], nob: ["straight"] },
+  { name: "스트라이프 셔츠", occ: ["C", "S", "A"] },
+  { name: "코튼 셔츠", occ: ["C", "S", "A"], nob: ["wave"] },
+  { name: "실크 블라우스", occ: ["S", "F", "P", "D"] },
+  { name: "리본 블라우스", occ: ["S", "F", "D"], nob: ["natural"] },
+  { name: "프릴 블라우스", occ: ["C", "D", "F"], nob: ["straight", "natural"] },
+  { name: "새틴 셔츠", occ: ["F", "P", "D"] },
+  { name: "맨투맨", occ: ["C", "A"], nob: ["wave"] },
+  { name: "스트라이프 티셔츠", occ: ["C", "A"] },
+  { name: "반팔 니트", occ: ["C", "S", "D"], not: ["winter"] },
+  { name: "슬리브리스 니트", occ: ["C", "D", "P"], not: ["winter", "autumn"] },
+];
+function pickFor(list: Pick[], occ: Occ, season: Season, body?: BodyType): string {
+  const ok = list.filter((x) => (x.occ ?? ALL).includes(occ) && !(x.not ?? []).includes(season) && !(body && (x.nob ?? []).includes(body)));
   return pick(ok.length ? ok : list).name;
 }
 
@@ -209,21 +232,30 @@ export interface StyleBrief {
   hero: Hero;
   palette: string[];
   bottom: string;
+  top: string;
   shoes: string;
   accessory: string;
 }
 
-export function pickStyleBrief(occ: Occ, season: Season): StyleBrief | null {
+/** 골격에 안 맞는 주인공 아이템 (그 골격일 땐 다른 주인공으로) */
+const HERO_NOT_FOR: Record<BodyType, RegExp> = {
+  straight: /터틀넥|케이블|프릴|러플|티어드/,
+  wave: /오버핏|맨투맨|옥스퍼드|박시/,
+  natural: /프릴|러플|리본/,
+};
+
+export function pickStyleBrief(occ: Occ, season: Season, body?: BodyType): StyleBrief | null {
   if (occ === "M") return null; // 조문은 정해진 단정한 검정 차림
   const pool = DIRECTIONS.filter((d) => d.occ.includes(occ));
   const direction = pick(pool.length ? pool : DIRECTIONS);
   const okHero = direction.heroes.filter((x) =>
-    season === "summer" ? !WINTER_ONLY.test(x.name) : season === "winter" ? !SUMMER_ONLY.test(x.name) : true
+    (season === "summer" ? !WINTER_ONLY.test(x.name) : season === "winter" ? !SUMMER_ONLY.test(x.name) : true) &&
+    !(body && HERO_NOT_FOR[body].test(x.name))
   );
   const hero = pick(okHero.length ? okHero : direction.heroes);
   return {
     direction, hero, palette: pick(direction.palettes), bottom: pick(direction.bottoms),
-    shoes: pickFor(SHOES, occ, season), accessory: pickFor(ACCS, occ, season),
+    top: pickFor(TOPS, occ, season, body), shoes: pickFor(SHOES, occ, season), accessory: pickFor(ACCS, occ, season),
   };
 }
 
@@ -236,6 +268,7 @@ export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProf
   if (b) {
     lines.push(`- 스타일: ${b.direction.name} — ${b.direction.vibe}`);
     lines.push(`- 주인공 아이템(${CAT_KO[b.hero.cat]}): "${b.hero.name}" — 이 아이템을 ${CAT_KO[b.hero.cat]}로 그대로 쓰고, 나머지를 여기에 맞출 것`);
+    if (b.hero.cat !== "top") lines.push(`- 상의: "${b.top}" 계열로 (다른 상의로 바꾸지 말 것)`);
     if (b.hero.cat !== "bottom") lines.push(`- 하의 형태: ${b.bottom}`);
     if (b.hero.cat !== "shoes") lines.push(`- 신발: "${b.shoes}" 계열로 (다른 신발로 바꾸지 말 것)`);
     if (b.hero.cat !== "accessory") lines.push(`- 액세서리: "${b.accessory}" 계열로 (다른 액세서리로 바꾸지 말 것)`);

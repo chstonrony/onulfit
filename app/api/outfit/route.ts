@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
               buildProfileGuide(bodyType, colorType) +
               seasonNote() +
               // 매번 다른 코디: 스타일 방향·주인공 아이템·팔레트·하의 형태를 무작위로 정해 건넨다
-              briefPrompt(pickStyleBrief(detectOccasion(situation), detectSeason(situation)), recent, !!colorType),
+              briefPrompt(pickStyleBrief(detectOccasion(situation), detectSeason(situation), bodyType), recent, !!colorType),
           },
         ],
       }),
