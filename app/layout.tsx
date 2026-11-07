@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter_Tight, Fraunces, Geist, JetBrains_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import KakaoInit from "@/components/KakaoInit";
+import KakaoFloat from "@/components/KakaoFloat";
 import { OG_IMAGE } from "@/lib/og";
 import "./globals.css";
 
@@ -145,7 +146,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full">{children}</body>
+      <body className="h-full">
+        {children}
+        {/* 카톡 상담 — 모든 화면에 늘 떠 있는 버튼 */}
+        <KakaoFloat />
+      </body>
       <KakaoInit />
       <GoogleAnalytics gaId="G-01XNX2CRQD" />
     </html>
