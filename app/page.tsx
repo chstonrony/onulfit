@@ -387,11 +387,10 @@ function ProfileChip({
         onClick={onOpen}
         className="w-full flex items-center justify-between gap-2"
         style={{
-          padding: "12px 0",
-          background: "transparent",
-          border: "none",
-          borderTop: "1px solid var(--t-txt)",
-          borderBottom: "1px solid var(--t-txt)",
+          padding: "11px 14px",
+          background: "var(--t-card)",
+          border: "1px solid var(--t-bdr)",
+          borderRadius: "3px",
           cursor: "pointer",
           textAlign: "left",
         }}
@@ -547,7 +546,6 @@ function EmptyState({
   return (
     <div className="flex flex-col">
       <div className="mb-10" style={{ animation: "cardEnter 700ms var(--ease-out) both" }}>
-        <div style={{ height: "1px", backgroundColor: "var(--t-txt)", marginBottom: "10px" }} />
         <span className="ed-label" style={{ color: "var(--t-acc)" }}>Head-to-toe · curated for you</span>
         <p
           style={{

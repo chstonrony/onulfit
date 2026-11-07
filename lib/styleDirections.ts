@@ -162,11 +162,55 @@ const WINTER_ONLY = /패딩|무스탕|시어링|비니|롱부츠|코트|니트 �
 
 const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
 
+/* ── 신발·액세서리도 매번 다르게 (2026-11-07) ──
+   AI에게 맡기면 신발은 메리제인·슬링백, 액세서리는 드롭 이어링으로 늘 모인다.
+   자리(occ)·계절에 맞는 것 중에서 하나씩 무작위로 정해 건넨다. */
+type Pick = { name: string; occ?: Occ[]; not?: Season[] };
+const ALL: Occ[] = ["C", "S", "F", "D", "P", "A"];
+const SHOES: Pick[] = [
+  { name: "앵클 부츠", not: ["summer"] },
+  { name: "롱부츠", occ: ["C", "D", "P", "S"], not: ["summer", "spring"] },
+  { name: "첼시 부츠", occ: ["C", "A", "S"], not: ["summer"] },
+  { name: "스웨이드 부츠", occ: ["C", "D", "A"], not: ["summer"] },
+  { name: "로퍼", occ: ["C", "S", "A", "D"] },
+  { name: "스니커즈", occ: ["C", "A"] },
+  { name: "슬링백", occ: ["S", "F", "D", "P", "C"] },
+  { name: "포인티드 펌프스", occ: ["S", "F", "P", "D"] },
+  { name: "스트랩 힐", occ: ["F", "P", "D"] },
+  { name: "뮬", occ: ["C", "D"], not: ["winter"] },
+  { name: "발레 플랫", occ: ["C", "S", "D", "A"] },
+  { name: "메리제인", occ: ["C", "S", "D", "F"] },
+  { name: "스트랩 샌들", occ: ["C", "D", "P"], not: ["winter", "autumn"] },
+];
+const ACCS: Pick[] = [
+  { name: "실크 스카프", occ: ALL },
+  { name: "울 머플러", not: ["summer", "spring"] },
+  { name: "체인 숄더백", occ: ["C", "S", "D", "P", "F"] },
+  { name: "미니 토트백", occ: ["C", "S", "D", "F"] },
+  { name: "호보백", occ: ["C", "D", "A"] },
+  { name: "가죽 벨트", occ: ["C", "S", "D", "A"] },
+  { name: "골드 후프 이어링", occ: ["C", "D", "P", "S"] },
+  { name: "레이어드 체인 목걸이", occ: ["C", "D", "P"] },
+  { name: "진주 목걸이", occ: ["F", "S", "P", "D"] },
+  { name: "드롭 이어링", occ: ["F", "P", "D"] },
+  { name: "베레모", occ: ["C", "D"], not: ["summer"] },
+  { name: "버킷햇", occ: ["C", "A"] },
+  { name: "미니 클러치", occ: ["F", "P", "D"] },
+  { name: "캔버스 토트백", occ: ["C", "A"], not: ["winter"] },
+  { name: "볼드 뱅글", occ: ["C", "D", "P"] },
+];
+function pickFor(list: Pick[], occ: Occ, season: Season): string {
+  const ok = list.filter((x) => (x.occ ?? ALL).includes(occ) && !(x.not ?? []).includes(season));
+  return pick(ok.length ? ok : list).name;
+}
+
 export interface StyleBrief {
   direction: StyleDirection;
   hero: Hero;
   palette: string[];
   bottom: string;
+  shoes: string;
+  accessory: string;
 }
 
 export function pickStyleBrief(occ: Occ, season: Season): StyleBrief | null {
@@ -177,7 +221,10 @@ export function pickStyleBrief(occ: Occ, season: Season): StyleBrief | null {
     season === "summer" ? !WINTER_ONLY.test(x.name) : season === "winter" ? !SUMMER_ONLY.test(x.name) : true
   );
   const hero = pick(okHero.length ? okHero : direction.heroes);
-  return { direction, hero, palette: pick(direction.palettes), bottom: pick(direction.bottoms) };
+  return {
+    direction, hero, palette: pick(direction.palettes), bottom: pick(direction.bottoms),
+    shoes: pickFor(SHOES, occ, season), accessory: pickFor(ACCS, occ, season),
+  };
 }
 
 const CAT_KO: Record<Cat, string> = { top: "상의", bottom: "하의", outer: "아우터", shoes: "신발", accessory: "액세서리" };
@@ -190,6 +237,8 @@ export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProf
     lines.push(`- 스타일: ${b.direction.name} — ${b.direction.vibe}`);
     lines.push(`- 주인공 아이템(${CAT_KO[b.hero.cat]}): "${b.hero.name}" — 이 아이템을 ${CAT_KO[b.hero.cat]}로 그대로 쓰고, 나머지를 여기에 맞출 것`);
     if (b.hero.cat !== "bottom") lines.push(`- 하의 형태: ${b.bottom}`);
+    if (b.hero.cat !== "shoes") lines.push(`- 신발: "${b.shoes}" 계열로 (다른 신발로 바꾸지 말 것)`);
+    if (b.hero.cat !== "accessory") lines.push(`- 액세서리: "${b.accessory}" 계열로 (다른 액세서리로 바꾸지 말 것)`);
     lines.push(
       hasColorProfile
         ? `- 색: 반드시 위 퍼스널컬러 베스트 컬러(와 무난한 무채색) 안에서만 고를 것. 주인공 아이템 이름에 색이 들어 있어도 색은 베스트 컬러로 바꿀 것. 피할 색은 어떤 아이템에도 쓰지 말 것`
@@ -199,7 +248,7 @@ export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProf
   } else {
     lines.push("- 조문 자리: 검정·짙은 남색 무지, 광택·장식 없이 단정하게");
   }
-  lines.push("- 여성복 코디: 모든 아이템은 여성복(우먼즈) 품목·핏으로. 한 벌 안에 여성스러운 실루엣이나 디테일이 또렷한 요소를 최소 하나 넣을 것(스커트·원피스, 허리선이 들어간 핏, 블라우스의 리본·드레이프, 메리제인·슬링백·발레 플랫·힐, 진주·골드 주얼리, 미니백 등). 남성복처럼 보이는 조합(옥스퍼드 셔츠+스트레이트 데님+블레이저+페니 로퍼, 맨투맨+조거+볼캡+러닝화 등)은 쓰지 말 것.");
+  lines.push("- 여성복 코디: 모든 아이템은 여성복(우먼즈) 품목·핏으로. 한 벌 안에 여성스러운 실루엣이나 디테일이 또렷한 요소를 최소 하나 넣을 것(스커트·원피스, 허리선이 들어간 핏, 블라우스 디테일, 위에서 정한 신발·액세서리 등 — 매번 다른 방식으로). 남성복처럼 보이는 조합(옥스퍼드 셔츠+스트레이트 데님+블레이저+페니 로퍼, 맨투맨+조거+볼캡+러닝화 등)은 쓰지 말 것.");
   lines.push("- 너무 뻔한 조합 금지: '아이보리(크림) 터틀넥 니트 + 차콜 와이드 슬랙스 + 카멜 롱코트 + 로퍼'처럼 무난함만 노린 조합은 쓰지 말 것. 이 중 두 가지 이상을 한 벌에 같이 넣지 말 것(주인공 아이템인 경우만 예외).");
   if (recent.length) {
     lines.push(`- 이 사용자에게 방금 추천한 아이템(겹치지 말 것, 같은 품목·같은 색 조합 금지): ${recent.join(", ")}`);
