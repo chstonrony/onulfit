@@ -45,7 +45,8 @@ export async function POST(request: NextRequest) {
        @anthropic-ai/sdk 는 node:path 에 의존해 Edge Runtime 미호환.
        fetch 로 직접 호출하면 모든 Edge 환경에서 동작한다.
        모델: Claude Haiku 5.5 (2026-11-07 결정 — 1회 1~2원 수준, 콘솔에서 월 한도를 걸어 둔다)
-       · 생각(thinking)은 기본으로 켜져 있으니 effort 를 low 로 두고, max_tokens 는 생각+JSON 이 들어가게 넉넉히
+       · 속도 우선(2026-11-07): 생각(thinking)을 끄고 effort low — Haiku 5.5 는 effort high 이하에서 끄기 허용
+       · 15초 안에 답이 없으면 기다리지 않고 데모 코디로 답한다
        · 실패(한도 초과·오류·거절·JSON 깨짐)하면 데모 코디로 대신 답한다 → 사이트가 멈추지 않는다 */
     // x-onulfit-ai 헤더: ai(정상) · fallback-quota(크레딧·월 한도 소진) · fallback-error(그 밖의 실패)
     // 하루 한 번 자동 점검이 이 헤더를 보고 한도 소진을 알려 준다
@@ -56,8 +57,11 @@ export async function POST(request: NextRequest) {
       });
     };
 
+    const abort = new AbortController();
+    const timer = setTimeout(() => abort.abort(), 15000);
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: abort.signal,
       headers: {
         "x-api-key":        process.env.ANTHROPIC_API_KEY!,
         "anthropic-version": "2023-06-01",
@@ -65,7 +69,8 @@ export async function POST(request: NextRequest) {
       },
       body: JSON.stringify({
         model: "claude-haiku-5-5",
-        max_tokens: 8000,
+        max_tokens: 3000,
+        thinking: { type: "disabled" },
         output_config: { effort: "low" },
         system: [
           {
@@ -81,15 +86,21 @@ export async function POST(request: NextRequest) {
       }),
     }).catch(() => null);
 
-    if (!res) return fallback("network");
+    if (!res) {
+      clearTimeout(timer);
+      return fallback(abort.signal.aborted ? "timeout 15s" : "network");
+    }
     if (!res.ok) {
-      const body = (await res.text()).slice(0, 300);
+      const body = (await res.text().catch(() => "")).slice(0, 300);
+      clearTimeout(timer);
       // 크레딧 부족·월 사용 한도 도달은 400 등으로 오고 본문에 credit/spend/limit 이 들어 있다
       const quota = [400, 402, 403, 429].includes(res.status) && /credit|spend|usage limit|billing/i.test(body);
       return fallback(`API ${res.status} ${body}`, quota);
     }
 
-    const json = await res.json();
+    const json = await res.json().catch(() => null);
+    clearTimeout(timer);
+    if (!json) return fallback("timeout or bad body");
     if (json.stop_reason === "refusal" || json.stop_reason === "max_tokens") return fallback(`stop_reason ${json.stop_reason}`);
     const textBlock = json.content?.find((b: { type: string }) => b.type === "text");
     if (!textBlock) return fallback("no text block");

@@ -4,7 +4,7 @@
    제목 폰트는 --hero-font / --hero-weight 두 값만 바꾸면 된다. */
 
 .stage {
-  --o: 0; --a: 0; --x: 1; --b: 0; --s: 0deg;
+  --o: 0; --a: 1; --x: 1; --b: 0; --s: 0deg; /* --a: 첫 문구는 영상을 기다리지 않고 처음부터 보임 */
   --hero-font: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif;
   --hero-weight: 700;
   position: relative;

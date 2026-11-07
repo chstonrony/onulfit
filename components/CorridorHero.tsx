@@ -8,7 +8,8 @@ import s from "./CorridorHero.module.css";
    0–4.9s 복도를 따라 전진 · 4.6–6.6s 끝 문이 46%까지 올라감 · 이후 셔츠가 살짝 흔들리다 멈춤
    0.3s 첫 문구 등장 → 4.3s 사라짐 → 6.3s 마지막 문구 등장
    - videoSrc 를 주면 3D 장면 대신 영상을 깔고, 문구는 영상 재생 시간에 맞춰 바뀐다.
-   - 움직임 줄이기 설정이면 마지막 장면을 바로 보여 준다. */
+   - 움직임 줄이기 설정 · 느린 연결 · 2.5초 안에 재생이 안 되면 마지막 장면을 바로 보여 준다.
+   - 첫 문구와 버튼은 영상을 기다리지 않고 처음부터 보인다. */
 
 const CAM_END = 2100;
 const T_END = 11; // 셔츠 흔들림이 잦아들 때까지
@@ -49,7 +50,6 @@ export default function CorridorHero({
         worldRef.current.style.transform = `translateZ(${(CAM_END * dolly(seg(t, 0, 4.9))).toFixed(1)}px)`;
       }
       st.style.setProperty("--o", inout(seg(t, 4.6, 6.6)).toFixed(4));
-      st.style.setProperty("--a", inout(seg(t, 0.3, 1.3)).toFixed(4));
       st.style.setProperty("--x", (1 - seg(t, 4.3, 5)).toFixed(4));
       st.style.setProperty("--b", inout(seg(t, 6.3, 7.2)).toFixed(4));
       st.style.setProperty("--s", `${sway(t).toFixed(3)}deg`);
@@ -68,10 +68,19 @@ export default function CorridorHero({
         cancelAnimationFrame(raf);
         video.pause();
         if (endSrc) video.poster = endSrc;
-        if (video.duration) video.currentTime = Math.max(0, video.duration - 0.05);
+        if (video.readyState < 2) {
+          // 아직 못 받은 영상은 받기를 멈춘다 (느린 데이터를 붙잡지 않게)
+          video.removeAttribute("src");
+          video.load();
+        } else if (video.duration) {
+          video.currentTime = Math.max(0, video.duration - 0.05);
+        }
         at(T_END);
       };
-      if (reduced) {
+      // 느린 연결·데이터 절약 모드면 영상 없이 마지막 장면만
+      const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+      const slowNet = !!conn && (conn.saveData === true || /(^|-)2g|3g/.test(conn.effectiveType ?? ""));
+      if (reduced || slowNet) {
         showEnd();
         return;
       }
@@ -84,8 +93,9 @@ export default function CorridorHero({
       };
       raf = requestAnimationFrame(tick);
       video.play().catch(showEnd);
+      // 2.5초 안에 영상이 움직이지 않으면(버퍼링) 기다리지 않고 마지막 장면으로
       const guard = window.setTimeout(() => {
-        if (video.paused && video.currentTime === 0) showEnd();
+        if (video.currentTime < 0.05) showEnd();
       }, 2500);
       video.addEventListener("error", showEnd);
       return () => {
@@ -113,7 +123,7 @@ export default function CorridorHero({
   return (
     <section ref={stageRef} className={s.stage} aria-label="오늘핏 — 오늘 뭐 입지?">
       {videoSrc ? (
-        <video ref={videoRef} className={s.video} src={videoSrc} poster={posterSrc} muted playsInline preload="auto" disablePictureInPicture aria-hidden />
+        <video ref={videoRef} className={s.video} src={videoSrc} poster={posterSrc} muted playsInline preload="none" disablePictureInPicture aria-hidden />
       ) : (
         <div ref={worldRef} className={s.world} aria-hidden>
           <div className={s.ceil} />

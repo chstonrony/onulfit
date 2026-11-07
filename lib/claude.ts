@@ -64,36 +64,36 @@ ${GYEOL_PERSONA_PROMPT}
     "top": {
       "name": "구체적인 아이템명",
       "color": "색상",
-      "description": "스타일링 포인트 포함 설명 (2-3문장)",
+      "description": "스타일링 포인트 한두 문장 (짧게)",
       "searchKeyword": "짧은 품목 키워드 2~3단어, 색·성별어 제외 (예: 실크 블라우스)"
     },
     "bottom": {
       "name": "구체적인 아이템명",
       "color": "색상",
-      "description": "스타일링 포인트 포함 설명 (2-3문장)",
+      "description": "스타일링 포인트 한두 문장 (짧게)",
       "searchKeyword": "짧은 품목 키워드 2~3단어, 색·성별어 제외 (예: 실크 블라우스)"
     },
     "outer": {
       "name": "구체적인 아이템명",
       "color": "색상",
-      "description": "스타일링 포인트 포함 설명 (2-3문장)",
+      "description": "스타일링 포인트 한두 문장 (짧게)",
       "searchKeyword": "짧은 품목 키워드 2~3단어, 색·성별어 제외 (예: 실크 블라우스)"
     },
     "shoes": {
       "name": "구체적인 아이템명",
       "color": "색상",
-      "description": "스타일링 포인트 포함 설명 (2-3문장)",
+      "description": "스타일링 포인트 한두 문장 (짧게)",
       "searchKeyword": "짧은 품목 키워드 2~3단어, 색·성별어 제외 (예: 실크 블라우스)"
     },
     "accessory": {
       "name": "구체적인 아이템명",
       "color": "색상",
-      "description": "스타일링 포인트 포함 설명 (2-3문장)",
+      "description": "스타일링 포인트 한두 문장 (짧게)",
       "searchKeyword": "짧은 품목 키워드 2~3단어, 색·성별어 제외 (예: 실크 블라우스)"
     }
   },
-  "stylingTip": "전체 코디를 완성하는 핵심 스타일링 팁 (2-3문장)",
-  "overallLook": "이 코디의 전체적인 분위기와 인상 (1-2문장)"
+  "stylingTip": "전체 코디를 완성하는 핵심 스타일링 팁 (두 문장 이내)",
+  "overallLook": "이 코디의 전체적인 분위기와 인상 (한 문장)"
 }
 
 ## 아이템 명칭 예시
