@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { OG_IMAGE } from "@/lib/og";
 
 interface ShareButtonsProps {
   situation: string;   // 공유할 상황 텍스트
@@ -9,6 +10,8 @@ interface ShareButtonsProps {
 
 export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
+  /* PC에서 카톡 공유를 누르면 링크를 복사하고 이렇게 알려 준다 */
+  const [kakaoHint, setKakaoHint] = useState(false);
 
   const shareUrl = "https://onulfit.com";
   const shareText = outfit
@@ -43,11 +46,11 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
       kakaoWindow.Kakao!.Share.sendDefault({
         objectType: "feed",
         content: {
-          title: "OnulFit — 오늘, 어떤 나를 찾으세요",
+          title: "오늘 뭐 입지? 그 답은, 오늘핏",
           description: outfit
             ? `"${situation}" → ${outfit}`
             : "상황을 알려주시면 딱 맞는 코디를 찾아드려요",
-          imageUrl: `${shareUrl}/og-image.png`,
+          imageUrl: `${shareUrl}${OG_IMAGE.url}`,
           link: { mobileWebUrl: shareUrl, webUrl: shareUrl },
         },
         buttons: [
@@ -56,8 +59,14 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
       });
       return;
     }
-    // SDK/키 미설정 → 모바일 네이티브 공유(카카오톡 포함) → 데스크탑은 링크 복사
-    handleNativeShare();
+    // SDK/키 미설정 → 휴대폰: 기본 공유창(카카오톡 포함) · PC: 링크 복사 후 "카톡에 붙여넣기" 안내
+    if (typeof navigator !== "undefined" && "share" in navigator) {
+      handleNativeShare();
+    } else {
+      handleCopy();
+      setKakaoHint(true);
+      setTimeout(() => setKakaoHint(false), 3000);
+    }
   };
 
   /* ── 네이티브 공유 (모바일) ── */
@@ -120,7 +129,7 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3C6.477 3 2 6.477 2 10.5c0 2.52 1.38 4.75 3.5 6.14L4.5 21l4.38-2.39A11.56 11.56 0 0 0 12 18c5.523 0 10-3.477 10-7.5S17.523 3 12 3z"/>
           </svg>
-          카카오톡 공유
+          {kakaoHint ? "링크 복사됨 · 카톡에 붙여넣기" : "카카오톡 공유"}
         </button>
 
         {/* 링크 복사 / 모바일 네이티브 공유 */}

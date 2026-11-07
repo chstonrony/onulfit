@@ -43,7 +43,7 @@ export default function SelfCheckLanding() {
         <Diagnosis vars={vars} onComplete={(p) => setProfile(p)} onClose={() => setOpen(false)} />
       )}
 
-      <main style={{ maxWidth: "600px", margin: "0 auto", padding: "16px 20px 64px" }}>
+      <main style={{ maxWidth: "760px", margin: "0 auto", padding: "16px 20px 64px" }}>
         <SiteHeader style={{ marginBottom: "18px" }} />
 
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>

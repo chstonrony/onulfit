@@ -89,7 +89,7 @@ export default function ApplyPage() {
 
   return (
     <main style={{ minHeight: "100%", padding: "16px 20px 72px", display: "flex", justifyContent: "center", ["--t-acc" as string]: ACCENT, ["--t-txt" as string]: INK }}>
-      <div style={{ width: "100%", maxWidth: "600px" }}>
+      <div style={{ width: "100%", maxWidth: "720px" }}>
         <SiteHeader style={{ marginBottom: "18px" }} />
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
           <span className="ed-label" style={{ color: ACCENT }}>1:1 Consulting</span>
