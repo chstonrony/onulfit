@@ -24,6 +24,8 @@ export interface Message {
   role: "user" | "assistant";
   content: string;
   outfit?: OutfitRecommendation;
+  /** "limit" = 오늘 무료 코디를 다 써서 상담 안내 카드를 보여 줌 */
+  kind?: "limit";
   timestamp: Date;
 }
 

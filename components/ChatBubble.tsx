@@ -1,4 +1,5 @@
 import { Message } from "@/lib/types";
+import FreeLimitCard from "./FreeLimitCard";
 
 interface ChatBubbleProps {
   message: Message;
@@ -6,6 +7,8 @@ interface ChatBubbleProps {
 
 export default function ChatBubble({ message }: ChatBubbleProps) {
   const isUser = message.role === "user";
+
+  if (message.kind === "limit") return <FreeLimitCard />;
 
   if (isUser) {
     return (

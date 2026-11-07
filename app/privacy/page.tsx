@@ -1,7 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import type { Metadata } from "next";
-import { PRIVACY, PRIVACY_VERSION, PRIVACY_OFFICER, KAKAO_CHANNEL_URL, IS_CHANNEL_READY } from "@/lib/consult";
+import { PRIVACY, PRIVACY_VERSION, PRIVACY_OFFICER, OPERATOR, KAKAO_CHANNEL_URL, IS_CHANNEL_READY } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
 
 /* ── 개인정보처리방침 ──
@@ -44,6 +44,7 @@ export default function PrivacyPage() {
     [
       "9. 개인정보 보호책임자·문의처",
       <>
+        운영자: {OPERATOR}<br />
         개인정보 보호책임자: {PRIVACY_OFFICER}
         {IS_CHANNEL_READY ? (
           <> · <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="ed-link" style={{ color: ACC, fontWeight: 700 }}>카카오톡 채널로 문의</a></>

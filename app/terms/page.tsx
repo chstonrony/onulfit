@@ -1,7 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import type { Metadata } from "next";
-import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY } from "@/lib/consult";
+import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
 
 /* ── 이용약관 (2026-11-08, 시범 운영 기본 문안) ──
@@ -23,7 +23,7 @@ const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
 export default function TermsPage() {
   const sections: [string, React.ReactNode][] = [
-    ["1. 서비스 내용", <>오늘핏은 체형·퍼스널컬러 무료 자가진단, AI 코디 제안, 스타일 가이드 글, 1:1 스타일 컨설팅 신청을 제공해요. 무료 기능은 회원가입 없이 쓸 수 있어요.</>],
+    ["1. 서비스 내용", <>오늘핏은 로니스튜디오가 운영하며, 체형·퍼스널컬러 무료 자가진단, AI 코디 제안, 스타일 가이드 글, 1:1 스타일 컨설팅 신청을 제공해요. 무료 기능은 회원가입 없이 쓸 수 있어요.</>],
     ["2. AI 코디와 자가진단", <>AI 코디는 인공지능(AI)이 만든 <b>참고용 제안</b>이에요. 사실과 다르거나 상황에 맞지 않을 수 있으니 최종 선택은 직접 판단해 주세요. 자가진단은 스스로 체크하는 간이 진단이라, 전문가의 대면 진단과 결과가 다를 수 있어요. 사이트의 일부 사진은 AI로 만든 연출 이미지예요.</>],
     ["3. 쇼핑 링크", <>코디에 연결된 쇼핑 링크는 외부 쇼핑몰로 이동해요. 일부는 제휴 링크라 구매 시 오늘핏에 수수료가 적립될 수 있어요(구매 가격은 같아요). 상품 구매·배송·환불은 각 쇼핑몰과의 거래이고, 오늘핏은 그 거래의 당사자가 아니에요. 가격·재고는 쇼핑몰에서 바뀔 수 있어요.</>],
     ["4. 1:1 컨설팅", <>현재 시범 운영 중이에요. 비용, 일정, 장소, 변경·취소 규정은 신청 후 개별로 안내하고, 이용자가 동의한 뒤에 진행해요. 환불 등은 관련 법령(전자상거래법·소비자기본법 등)을 따라요.</>],
@@ -34,7 +34,7 @@ export default function TermsPage() {
     [
       "9. 문의",
       <>
-        오늘핏 운영자
+        운영자: {OPERATOR}
         {IS_CHANNEL_READY ? (
           <> · <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="ed-link" style={{ color: ACC, fontWeight: 700 }}>카카오톡 채널로 문의</a></>
         ) : null}

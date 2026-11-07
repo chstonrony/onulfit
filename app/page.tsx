@@ -19,6 +19,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
+import { FREE_DAILY, freeLeft, spendFree } from "@/lib/freeQuota";
 
 type MobileTab = "chat" | "outfit";
 
@@ -29,6 +30,8 @@ export default function Home() {
   const [draft, setDraft] = useState<DraftOutfitData | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("chat");
   const [profile, setProfile] = useState<Profile | null>(null);
+  /* 오늘 남은 무료 AI 코디 횟수 (null = 아직 기기에서 안 읽음) */
+  const [freeLeftN, setFreeLeftN] = useState<number | null>(null);
   const [showDiag, setShowDiag] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const chatScrollRef = useRef<HTMLDivElement>(null);
@@ -60,6 +63,7 @@ export default function Home() {
   // 저장된 골격·컬러 프로필 로드
   useEffect(() => {
     setProfile(getProfile());
+    setFreeLeftN(freeLeft());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // /guide 등에서 ?diag=1 로 진입하면 진단 자동 오픈 (URL은 정리)
@@ -85,6 +89,15 @@ export default function Home() {
       content: situation,
       timestamp: new Date(),
     };
+    /* 오늘 무료 횟수를 다 썼으면 AI를 부르지 않고 상담 안내 카드 */
+    if (freeLeft() <= 0) {
+      ++requestNo.current;
+      setMessages((prev) => [...prev, userMsg, { id: crypto.randomUUID(), role: "assistant", content: "", kind: "limit", timestamp: new Date() }]);
+      setMobileTab("chat");
+      setFreeLeftN(0);
+      track("ai_limit_hit", { daily: FREE_DAILY });
+      return;
+    }
     const myNo = ++requestNo.current;
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
@@ -141,12 +154,16 @@ export default function Home() {
         outfit = (await res.json()) as OutfitRecommendation;
       }
       if (myNo !== requestNo.current) return;
+      const left = spendFree();
+      setFreeLeftN(left);
       setMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "오늘의 코디를 완성했어요.",
+          content: left > 0
+            ? `오늘의 코디를 완성했어요. 오늘 무료 코디가 ${left}번 남았어요.`
+            : `오늘의 코디를 완성했어요. 오늘 무료 코디는 여기까지예요. 내일 다시 ${FREE_DAILY}번 받을 수 있어요.`,
           outfit,
           timestamp: new Date(),
         },
@@ -264,6 +281,15 @@ export default function Home() {
           className="flex-shrink-0 lg:!pb-0"
           style={{ backgroundColor: "var(--t-side)", paddingBottom: "calc(64px + env(safe-area-inset-bottom))" }}
         >
+          {freeLeftN !== null && (
+            <p className="px-5 lg:px-6" style={{ fontFamily: "var(--font-noto-sans), sans-serif", fontSize: "11.5px", color: "var(--t-sub)", margin: 0, paddingTop: "8px", wordBreak: "keep-all" }}>
+              {freeLeftN > 0 ? (
+                <>오늘 무료 AI 코디 <b style={{ color: "var(--t-acc)" }}>{freeLeftN}/{FREE_DAILY}</b>번 남았어요</>
+              ) : (
+                <>오늘 무료 코디를 다 썼어요 · <Link href="/apply" onClick={() => track("consult_click", { where: "ai_limit_bar", method: "apply" })} style={{ color: "var(--t-acc)", fontWeight: 700 }}>1:1 진단 신청 →</Link></>
+              )}
+            </p>
+          )}
           <ChatInput onSubmit={handleSubmit} isLoading={isLoading} />
         </div>
       </div>
