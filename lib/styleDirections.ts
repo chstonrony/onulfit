@@ -241,7 +241,7 @@ export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProf
     if (b.hero.cat !== "accessory") lines.push(`- 액세서리: "${b.accessory}" 계열로 (다른 액세서리로 바꾸지 말 것)`);
     lines.push(
       hasColorProfile
-        ? `- 색: 반드시 위 퍼스널컬러 베스트 컬러(와 무난한 무채색) 안에서만 고를 것. 주인공 아이템 이름에 색이 들어 있어도 색은 베스트 컬러로 바꿀 것. 피할 색은 어떤 아이템에도 쓰지 말 것`
+        ? `- 색: 반드시 위 퍼스널컬러 베스트 컬러 안에서만 고를 것. 무채색(블랙·차콜·그레이·화이트)은 '피할 색'에 없을 때만 쓸 수 있고, 피할 색에 있으면 신발·가방까지 어떤 아이템에도 쓰지 말 것. 주인공 아이템 이름에 색이 들어 있어도 색은 베스트 컬러로 바꿀 것`
         : `- 색 팔레트: ${b.palette.join(" · ")} (이 안에서 고를 것)`
     );
     lines.push(`- 스타일링 포인트: ${b.direction.cue}`);

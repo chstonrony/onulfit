@@ -144,7 +144,8 @@ export interface DiagQuestion {
   /** 어떻게 확인하는지 한 줄 */
   hint: string;
   prompt: string;
-  options: { label: string; value: BodyType | "warm" | "cool" | "light" | "deep" }[];
+  /** 답마다 쉬운 설명 한 줄 (골격 문항) */
+  options: { label: string; value: BodyType | "warm" | "cool" | "light" | "deep"; desc?: string }[];
 }
 
 /** 골격 진단 (5문항 → 최다 득표 타입) */
@@ -155,9 +156,9 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     hint: "반대 손으로 손목을 가볍게 감싸 쥐어보세요",
     prompt: "손목을 반대 손으로 감싸 쥐었을 때, 만져지는 느낌은?",
     options: [
-      { label: "납작하고 단단하다", value: "straight" },
-      { label: "동그랗고 가늘다", value: "wave" },
-      { label: "크고 각진 뼈가 도드라진다", value: "natural" },
+      { label: "납작하고 단단하다", value: "straight", desc: "살이 탄탄하게 감싸서 뼈가 잘 안 느껴지고, 단면이 넓적해요" },
+      { label: "동그랗고 가늘다", value: "wave", desc: "가늘고 둥글어서 손가락이 여유 있게 겹쳐요" },
+      { label: "크고 각진 뼈가 도드라진다", value: "natural", desc: "바깥쪽 손목뼈가 크게 튀어나와 각이 만져져요" },
     ],
   },
   {
@@ -166,9 +167,9 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     hint: "살이 찔 때 어디부터 변했는지 떠올려보세요",
     prompt: "살이 찌면 주로 어디부터 변하나요?",
     options: [
-      { label: "상체·얼굴부터, 탄탄하게", value: "straight" },
-      { label: "하체·아랫배부터", value: "wave" },
-      { label: "티 안 나고 골격이 먼저 도드라진다", value: "natural" },
+      { label: "상체·얼굴부터, 탄탄하게", value: "straight", desc: "얼굴·팔뚝·가슴 같은 상체에 먼저 붙고, 살이 단단해요" },
+      { label: "하체·아랫배부터", value: "wave", desc: "엉덩이·허벅지·아랫배에 먼저 붙고, 살이 말랑해요" },
+      { label: "티 안 나고 골격이 먼저 도드라진다", value: "natural", desc: "살보다 어깨·무릎 같은 뼈마디가 먼저 눈에 띄어요" },
     ],
   },
   {
@@ -177,9 +178,9 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     hint: "거울에 옆모습을 비춰 가슴~등 두께를 보세요",
     prompt: "옆에서 본 상체(가슴~등) 두께는?",
     options: [
-      { label: "두껍고 입체적이다", value: "straight" },
-      { label: "얇은 편이다", value: "wave" },
-      { label: "보통인데 어깨 프레임이 크다", value: "natural" },
+      { label: "두껍고 입체적이다", value: "straight", desc: "가슴과 등이 앞뒤로 두툼해서 옆모습이 입체적이에요" },
+      { label: "얇은 편이다", value: "wave", desc: "앞뒤가 얇아서 옆에서 보면 몸이 납작해요" },
+      { label: "보통인데 어깨 프레임이 크다", value: "natural", desc: "두께는 보통이지만 어깨 뼈대가 크고 넓어요" },
     ],
   },
   {
@@ -188,9 +189,9 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     hint: "거울 앞에서 쇄골과 어깨뼈가 보이는 정도",
     prompt: "쇄골과 어깨를 보면?",
     options: [
-      { label: "쇄골이 잘 안 보이고 어깨가 둥글다", value: "straight" },
-      { label: "쇄골이 가늘게 비친다", value: "wave" },
-      { label: "쇄골·어깨뼈가 뚜렷하게 드러난다", value: "natural" },
+      { label: "쇄골이 잘 안 보이고 어깨가 둥글다", value: "straight", desc: "살에 덮여 쇄골이 희미하고, 어깨선이 둥글게 떨어져요" },
+      { label: "쇄골이 가늘게 비친다", value: "wave", desc: "가는 쇄골이 살짝 보이고, 어깨가 좁고 비스듬해요" },
+      { label: "쇄골·어깨뼈가 뚜렷하게 드러난다", value: "natural", desc: "쇄골과 어깨 끝 뼈가 굵고 또렷해서 어깨가 각져 보여요" },
     ],
   },
   {
@@ -199,9 +200,9 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     hint: "‘잘 어울린다’는 말을 들었던 옷을 떠올려보세요",
     prompt: "\"잘 어울린다\"는 말을 들었던 옷은?",
     options: [
-      { label: "심플하고 고급스러운 정장 느낌", value: "straight" },
-      { label: "부드럽고 하늘하늘한 여성스러운 옷", value: "wave" },
-      { label: "캐주얼하고 편한 오버핏", value: "natural" },
+      { label: "심플하고 고급스러운 정장 느낌", value: "straight", desc: "셔츠·테일러드 재킷처럼 깔끔하고 각 잡힌 옷" },
+      { label: "부드럽고 하늘하늘한 여성스러운 옷", value: "wave", desc: "프릴 블라우스·플레어 스커트처럼 부드러운 옷" },
+      { label: "캐주얼하고 편한 오버핏", value: "natural", desc: "오버핏 셔츠·루즈 니트처럼 크고 편안한 옷" },
     ],
   },
 ];

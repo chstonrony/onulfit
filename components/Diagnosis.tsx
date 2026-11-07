@@ -25,6 +25,7 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
+import BodyQuizArt, { BODY_ART_NOTE } from "./BodyQuizArt";
 import BeforeAfterBoard from "./BeforeAfterBoard";
 import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
@@ -202,7 +203,8 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
             question={BODY_QUESTIONS[qIdx].prompt}
             hint={BODY_QUESTIONS[qIdx].hint}
             kind="body"
-            options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickBody(o.value as BodyType) }))}
+            qid={BODY_QUESTIONS[qIdx].id}
+            options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, desc: o.desc, onClick: () => pickBody(o.value as BodyType) }))}
             vars={vars}
           />
         )}
@@ -288,6 +290,7 @@ function QuestionView({
   question,
   hint,
   kind,
+  qid,
   options,
   vars,
 }: {
@@ -296,7 +299,9 @@ function QuestionView({
   question: string;
   hint?: string;
   kind: "body" | "color";
-  options: { label: string; value: string; onClick: () => void }[];
+  /** 골격 문항 id — 문항별 그림을 고른다 */
+  qid?: string;
+  options: { label: string; value: string; desc?: string; onClick: () => void }[];
   vars: Record<string, string>;
 }) {
   const txt = vars["--t-txt"];
@@ -322,6 +327,11 @@ function QuestionView({
       {hint && (
         <p style={{ display: "inline-block", fontFamily: sans, fontSize: "12.5px", lineHeight: 1.55, color: txt, opacity: 0.8, backgroundColor: "var(--t-card)", border: `1px dashed ${bdr}`, borderRadius: "2px", padding: "8px 12px", marginBottom: "22px", wordBreak: "keep-all" }}>
           {hint}
+        </p>
+      )}
+      {kind === "body" && qid && BODY_ART_NOTE[qid] && (
+        <p style={{ fontFamily: sans, fontSize: "11.5px", color: sub, marginBottom: "10px", wordBreak: "keep-all" }}>
+          {BODY_ART_NOTE[qid]}
         </p>
       )}
       <div className="flex flex-col gap-3">
@@ -354,10 +364,23 @@ function QuestionView({
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = txt; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
-            <span style={{ flexShrink: 0, width: "52px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <OptionVisual kind={kind} value={o.value} acc={acc} />
+            {kind === "body" && qid ? (
+              <span style={{ flexShrink: 0, width: "84px", height: "84px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
+                <BodyQuizArt qid={qid} value={o.value} ink={txt} acc={acc} />
+              </span>
+            ) : (
+              <span style={{ flexShrink: 0, width: "52px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <OptionVisual kind={kind} value={o.value} acc={acc} />
+              </span>
+            )}
+            <span style={{ flex: 1 }}>
+              {o.label}
+              {o.desc && (
+                <span style={{ display: "block", marginTop: "4px", fontSize: "12.5px", fontWeight: 400, letterSpacing: "-0.01em", lineHeight: 1.5, color: sub }}>
+                  {o.desc}
+                </span>
+              )}
             </span>
-            <span style={{ flex: 1 }}>{o.label}</span>
           </button>
         ))}
       </div>

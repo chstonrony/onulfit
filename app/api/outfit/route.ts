@@ -5,7 +5,7 @@ import { IS_DEMO_MODE } from "@/lib/mockData";
 import { composeOutfit, detectOccasion, detectSeason } from "@/lib/demoStylist";
 import { pickStyleBrief, briefPrompt } from "@/lib/styleDirections";
 import { parseSafePrefix, stripFence } from "@/lib/partialJson";
-import { cleanOutfit } from "@/lib/cleanOutfit";
+import { cleanOutfit, fixAvoidColors } from "@/lib/cleanOutfit";
 import type { BodyType, ColorType } from "@/lib/profile";
 import { currentSeason, SEASON_LABEL } from "@/lib/lookRecipes";
 
@@ -83,6 +83,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(composeOutfit(situation.trim(), bodyType, colorType), {
         headers: { "x-onulfit-ai": quota ? "fallback-quota" : "fallback-error" },
       });
+    };
+
+    // 이름 다듬기 + 퍼스널컬러의 피할 색 막기 (조문 자리는 검정이 정답이라 색은 그대로)
+    const polish = <T,>(o: T): T => {
+      const c = cleanOutfit(o);
+      return detectOccasion(situation) === "M" ? c : fixAvoidColors(c, colorType);
     };
 
     const abort = new AbortController();
@@ -167,7 +173,7 @@ export async function POST(request: NextRequest) {
               if (ev.type === "content_block_delta" && ev.delta?.type === "text_delta" && ev.delta.text) {
                 text += ev.delta.text;
                 const raw = parseSafePrefix(text);
-                const part = raw ? cleanOutfit(raw) : null; // 이름 다듬기(괄호·후보 나열·앞 색 빼기)
+                const part = raw ? polish(raw) : null; // 이름 다듬기(괄호·후보 나열·앞 색 빼기)
                 if (part) {
                   const str = JSON.stringify(part);
                   if (str !== lastSent) { lastSent = str; send({ t: "p", o: part }); }
@@ -189,7 +195,7 @@ export async function POST(request: NextRequest) {
         const it = outfit?.items;
         const complete = !!(it?.top?.name && it?.bottom?.name && it?.outer?.name && it?.shoes?.name && it?.accessory?.name);
         if (outfit && complete && stop !== "refusal" && stop !== "max_tokens" && stop !== "error") {
-          send({ t: "done", o: cleanOutfit(outfit), ai: "ai" });
+          send({ t: "done", o: polish(outfit), ai: "ai" });
         } else {
           console.error("Outfit AI fallback:", `stream ${stop ?? "no stop"} parsed=${!!outfit} complete=${complete}`);
           send({ t: "done", o: composeOutfit(situation!.trim(), bodyType, colorType), ai: "fallback-error" });
