@@ -32,7 +32,9 @@ export const CONSULT_INFO = {
 } as const;
 
 /* ── 개인정보 수집·이용 안내 (신청서 동의 체크칸 + /privacy) ── */
-export const PRIVACY_VERSION = "2026-11-05";
+export const PRIVACY_VERSION = "2026-11-08";
+/** 개인정보 보호책임자 — 사업자 등록 후 대표자 성명으로 바꿀 것 */
+export const PRIVACY_OFFICER = "오늘핏 운영자";
 export const PRIVACY = {
   items: "성함, 연락처(카톡 ID 또는 전화번호), 나이대, 거주 지역, 인스타 아이디(선택), 고민·원하는 변화·가능한 일정·하고 싶은 말(선택), 사진·후기 게시 동의 여부",
   purpose: "1:1 컨설팅 신청 확인, 일정·장소·비용 안내 연락, 상담 진행",

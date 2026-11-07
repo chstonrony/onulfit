@@ -99,7 +99,7 @@ export default function BeforeAfter({ body, vars }: Props) {
       </div>
 
       <p style={{ fontFamily: sans, fontSize: "10.5px", color: sub, opacity: 0.65, lineHeight: 1.6, marginTop: "12px", wordBreak: "keep-all" }}>
-        * 체형별 스타일링 로직을 보여주기 위한 연출 이미지예요.
+        * AI로 만든 연출 이미지예요. 체형별 스타일링 원리를 보여드리려고 만들었어요.
       </p>
     </div>
   );

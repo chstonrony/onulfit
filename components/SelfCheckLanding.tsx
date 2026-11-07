@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { useEffect, useState } from "react";
 import { THEMES, DEFAULT_MOOD } from "@/lib/themes";
@@ -142,6 +143,7 @@ export default function SelfCheckLanding() {
             ))}
           </div>
         </section>
+        <SiteFooter style={{ marginLeft: "auto", marginRight: "auto" }} />
       </main>
     </div>
   );

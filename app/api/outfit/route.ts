@@ -8,6 +8,7 @@ import { parseSafePrefix, stripFence } from "@/lib/partialJson";
 import { cleanOutfit, fixAvoidColors } from "@/lib/cleanOutfit";
 import type { BodyType, ColorType } from "@/lib/profile";
 import { currentSeason, SEASON_LABEL } from "@/lib/lookRecipes";
+import { isAllowedOrigin, clientIp, rateLimit } from "@/lib/rateLimit";
 
 /** 오늘 날짜·계절(한국 기준) — 겨울에 반팔·샌들을 추천하지 않도록 */
 function seasonNote(): string {
@@ -20,6 +21,16 @@ export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isAllowedOrigin(request.headers.get("origin"))) {
+      return NextResponse.json({ error: "허용되지 않은 요청이에요." }, { status: 403 });
+    }
+    const retryIn = rateLimit(clientIp(request.headers));
+    if (retryIn) {
+      return NextResponse.json(
+        { error: `요청이 너무 잦아요. ${retryIn < 60 ? `${retryIn}초` : `${Math.ceil(retryIn / 60)}분`} 뒤에 다시 시도해 주세요.` },
+        { status: 429, headers: { "Retry-After": String(retryIn) } }
+      );
+    }
     const body = await request.json();
     const { situation, bodyType, colorType, recent: recentRaw } = body as {
       situation?: string;

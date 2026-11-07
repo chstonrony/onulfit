@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -121,6 +122,7 @@ export default async function ArticlePage({ params }: Props) {
             ))}
           </div>
         </div>
+        <SiteFooter />
       </article>
     </main>
   );

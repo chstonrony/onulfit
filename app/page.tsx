@@ -16,6 +16,7 @@ import SelfCheckGuide from "@/components/SelfCheckGuide";
 import { Reveal, GyeolSymbol, SectionHead, Marquee } from "@/components/Editorial";
 import CorridorHero from "@/components/CorridorHero";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
 
@@ -495,6 +496,8 @@ function WelcomeGuide({
       <Reveal>
         <ApplyCTA vars={vars} />
       </Reveal>
+
+      <SiteFooter />
     </div>
   );
 }

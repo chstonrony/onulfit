@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import type { Metadata } from "next";
 import { ARTICLES } from "@/lib/articles";
@@ -77,6 +78,7 @@ export default function GuidePage() {
             무료로 내 결 찾기 <span aria-hidden style={{ fontSize: "20px" }}>→</span>
           </Link>
         </div>
+        <SiteFooter />
       </div>
     </main>
   );

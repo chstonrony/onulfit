@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import { sendGAEvent } from "@next/third-parties/google";
 import Link from "next/link";
 import { WEB3FORMS_KEY, IS_APPLY_READY, CONSULT_INFO, PRIVACY, PRIVACY_VERSION } from "@/lib/consult";
@@ -264,6 +265,7 @@ export default function ApplyPage() {
             </p>
           </form>
         )}
+        <SiteFooter />
       </div>
     </main>
   );
