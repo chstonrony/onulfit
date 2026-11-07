@@ -38,23 +38,35 @@ export async function POST(request: NextRequest) {
     /* ── 데모 모드: API 키가 없을 때 — 상황·계절·골격·퍼스널컬러로 매번 새로 조합 ── */
     if (IS_DEMO_MODE) {
       await new Promise((r) => setTimeout(r, 900));
-      return NextResponse.json(composeOutfit(situation.trim(), bodyType, colorType));
+      return NextResponse.json(composeOutfit(situation.trim(), bodyType, colorType), { headers: { "x-onulfit-ai": "demo" } });
     }
 
     /* ── 실제 모드: Anthropic API 직접 호출 (fetch) ──
        @anthropic-ai/sdk 는 node:path 에 의존해 Edge Runtime 미호환.
-       fetch 로 직접 호출하면 모든 Edge 환경에서 동작한다.           */
+       fetch 로 직접 호출하면 모든 Edge 환경에서 동작한다.
+       모델: Claude Haiku 5.5 (2026-11-07 결정 — 1회 1~2원 수준, 콘솔에서 월 한도를 걸어 둔다)
+       · 생각(thinking)은 기본으로 켜져 있으니 effort 를 low 로 두고, max_tokens 는 생각+JSON 이 들어가게 넉넉히
+       · 실패(한도 초과·오류·거절·JSON 깨짐)하면 데모 코디로 대신 답한다 → 사이트가 멈추지 않는다 */
+    // x-onulfit-ai 헤더: ai(정상) · fallback-quota(크레딧·월 한도 소진) · fallback-error(그 밖의 실패)
+    // 하루 한 번 자동 점검이 이 헤더를 보고 한도 소진을 알려 준다
+    const fallback = (why: string, quota = false) => {
+      console.error(quota ? "AI_QUOTA_EXHAUSTED:" : "Outfit AI fallback:", why);
+      return NextResponse.json(composeOutfit(situation.trim(), bodyType, colorType), {
+        headers: { "x-onulfit-ai": quota ? "fallback-quota" : "fallback-error" },
+      });
+    };
+
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
       headers: {
         "x-api-key":        process.env.ANTHROPIC_API_KEY!,
         "anthropic-version": "2023-06-01",
-        "anthropic-beta":   "prompt-caching-2024-07-31",
         "content-type":     "application/json",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 2048,
+        model: "claude-haiku-5-5",
+        max_tokens: 8000,
+        output_config: { effort: "low" },
         system: [
           {
             // 고정 시스템 프롬프트만 캐싱 (프로필은 가변이라 user 메시지로 분리)
@@ -67,28 +79,35 @@ export async function POST(request: NextRequest) {
           { role: "user", content: situation.trim() + buildProfileGuide(bodyType, colorType) + seasonNote() },
         ],
       }),
-    });
+    }).catch(() => null);
 
+    if (!res) return fallback("network");
     if (!res.ok) {
-      const err = await res.text();
-      console.error("Anthropic API error:", res.status, err);
-      return NextResponse.json(
-        { error: "AI 서버와 통신 중 오류가 발생했어요. 잠시 후 다시 시도해주세요." },
-        { status: 502 }
-      );
+      const body = (await res.text()).slice(0, 300);
+      // 크레딧 부족·월 사용 한도 도달은 400 등으로 오고 본문에 credit/spend/limit 이 들어 있다
+      const quota = [400, 402, 403, 429].includes(res.status) && /credit|spend|usage limit|billing/i.test(body);
+      return fallback(`API ${res.status} ${body}`, quota);
     }
 
     const json = await res.json();
+    if (json.stop_reason === "refusal" || json.stop_reason === "max_tokens") return fallback(`stop_reason ${json.stop_reason}`);
     const textBlock = json.content?.find((b: { type: string }) => b.type === "text");
-    if (!textBlock) throw new Error("Claude가 응답을 반환하지 않았습니다.");
+    if (!textBlock) return fallback("no text block");
 
     const rawText = (textBlock.text as string)
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
 
-    const outfit: OutfitRecommendation = JSON.parse(rawText);
-    return NextResponse.json(outfit);
+    let outfit: OutfitRecommendation;
+    try {
+      outfit = JSON.parse(rawText);
+    } catch {
+      return fallback("JSON parse");
+    }
+    const it = outfit?.items;
+    if (!it?.top?.name || !it?.bottom?.name || !it?.outer?.name || !it?.shoes?.name || !it?.accessory?.name) return fallback("missing items");
+    return NextResponse.json(outfit, { headers: { "x-onulfit-ai": "ai" } });
 
   } catch (error) {
     if (error instanceof SyntaxError) {
