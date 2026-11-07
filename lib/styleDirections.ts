@@ -185,6 +185,7 @@ const CAT_KO: Record<Cat, string> = { top: "상의", bottom: "하의", outer: "�
 /** AI에게 건넬 이번 코디 방향 (user 메시지 끝에 붙인다) */
 export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProfile: boolean): string {
   const lines: string[] = ["\n\n## 이번 코디 방향 (반드시 따를 것 — 매번 다른 코디를 위해 무작위로 정해짐)"];
+  lines.push("- 단, 사용자가 상황에 아이템이나 조합을 직접 적었다면(예: \"셔츠 + 일자 슬랙스 조합으로\") 그 아이템을 그대로 쓰고, 아래 방향은 색·분위기 참고로만 쓸 것");
   if (b) {
     lines.push(`- 스타일: ${b.direction.name} — ${b.direction.vibe}`);
     lines.push(`- 주인공 아이템(${CAT_KO[b.hero.cat]}): "${b.hero.name}" — 이 아이템을 ${CAT_KO[b.hero.cat]}로 그대로 쓰고, 나머지를 여기에 맞출 것`);

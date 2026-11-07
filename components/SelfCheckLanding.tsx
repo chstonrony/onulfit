@@ -40,7 +40,7 @@ export default function SelfCheckLanding() {
   return (
     <div className="theme-root" style={{ ...(vars as React.CSSProperties), minHeight: "100dvh", backgroundColor: "var(--t-bg)" }}>
       {open && (
-        <Diagnosis vars={vars} onComplete={(p) => setProfile(p)} onClose={() => setOpen(false)} />
+        <Diagnosis vars={vars} onComplete={(p) => setProfile(p)} onClose={() => setOpen(false)} onAsk={(q) => { window.location.href = `/?ask=${encodeURIComponent(q)}`; }} />
       )}
 
       <main style={{ maxWidth: "760px", margin: "0 auto", padding: "16px 20px 64px" }}>

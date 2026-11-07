@@ -24,9 +24,9 @@ import { GYEOL } from "@/lib/gyeol";
 import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
-import { getWConceptUrl } from "@/lib/shopping";
 import CompletedLook from "./CompletedLook";
 import BeforeAfter from "./BeforeAfter";
+import { BodyForms, BodyDoDont, SeasonMap, ColorDrape, PaletteChips, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
 type Step = "intro" | "body" | "color" | "result";
 
@@ -63,9 +63,11 @@ interface Props {
   vars: Record<string, string>;
   onComplete: (p: Profile) => void;
   onClose: () => void;
+  /** 결과 화면에서 "이 공식으로 코디 받기" — 상황 문장을 코디 추천으로 넘긴다 */
+  onAsk?: (situation: string) => void;
 }
 
-export default function Diagnosis({ vars, onComplete, onClose }: Props) {
+export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
   const [step, setStep] = useState<Step>("intro");
   const [bodyAns, setBodyAns] = useState<BodyType[]>([]);
   const [colorAns, setColorAns] = useState<("warm" | "cool" | "light" | "deep")[]>([]);
@@ -212,7 +214,7 @@ export default function Diagnosis({ vars, onComplete, onClose }: Props) {
         )}
 
         {step === "result" && result && (
-          <ResultView body={result.body} color={result.color} bodyAns={bodyAns} colorAns={colorAns} vars={vars} onDone={onClose} />
+          <ResultView body={result.body} color={result.color} bodyAns={bodyAns} colorAns={colorAns} vars={vars} onDone={onClose} onAsk={onAsk} />
         )}
       </div>
     </div>
@@ -395,6 +397,7 @@ function ResultView({
   colorAns,
   vars,
   onDone,
+  onAsk,
 }: {
   body: BodyType;
   color: ColorType;
@@ -402,6 +405,7 @@ function ResultView({
   colorAns: ("warm" | "cool" | "light" | "deep")[];
   vars: Record<string, string>;
   onDone: () => void;
+  onAsk?: (situation: string) => void;
 }) {
   const txt = vars["--t-txt"];
   const sub = vars["--t-sub"];
@@ -472,7 +476,10 @@ function ResultView({
       <div id="res-body" style={{ ...cardStyle, scrollMarginTop: "16px" }}>
         {kicker("BODY · 골격")}
         <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{bm.label} 체형</p>
-        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{bm.tagline}</p>
+        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "10px", wordBreak: "keep-all" }}>{bm.tagline}</p>
+        <div style={{ marginBottom: "18px" }}>
+          <BodyForms body={body} acc={acc} txt={txt} sub={sub} bdr={bdr} />
+        </div>
         <div style={{ borderLeft: `2px solid ${acc}`, paddingLeft: "12px", marginBottom: "14px" }}>
           <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 500, color: txt, lineHeight: 1.6, wordBreak: "keep-all" }}>{bg.principle}</p>
         </div>
@@ -486,10 +493,20 @@ function ResultView({
       {/* 체형별 비포/애프터 — 텍스트 가이드 전에 이미지로 먼저 설득 */}
       <BeforeAfter body={body} vars={vars} />
 
-      {/* 아이템별 가이드 (L1 핵심) */}
+      {/* 한눈에 — 어울리는 옷 / 피할 옷 (내 베스트 컬러를 입혀서) */}
       <div style={cardStyle}>
-        {kicker("STYLING · 아이템별 가이드")}
-        <div className="flex flex-col gap-3 mt-1">
+        {kicker("STYLING · 한눈에 보기")}
+        <p style={{ fontFamily: serif, fontSize: "19px", fontWeight: 600, color: txt, margin: "0 0 14px", wordBreak: "keep-all" }}>{bm.label} 체형은 이렇게 입어요</p>
+        <BodyDoDont body={body} colors={cg.bestColors.slice(0, 4).map(colorHex)} txt={txt} sub={sub} bdr={bdr} acc={acc} />
+      </div>
+
+      {/* 아이템별 가이드 (L1 핵심) — 길어서 접어 둔다 */}
+      <details className="diag-more" style={cardStyle}>
+        <summary style={{ listStyle: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <span className="ed-label" style={{ color: acc }}>STYLING · 아이템별 자세한 가이드 9가지</span>
+          <span className="diag-more-icon" style={{ fontFamily: sans, fontSize: "12px", color: txt }} />
+        </summary>
+        <div className="flex flex-col gap-3" style={{ marginTop: "14px" }}>
           {ITEM_LABELS.map(({ key, label }) => (
             <div key={key}>
               <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{label}</p>
@@ -502,7 +519,7 @@ function ResultView({
             </div>
           ))}
         </div>
-      </div>
+      </details>
 
       {/* 흔한 실수 + 코디 공식 */}
       <div style={cardStyle}>
@@ -513,27 +530,27 @@ function ResultView({
             <li key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: sub, lineHeight: 1.7, wordBreak: "keep-all" }}>{m}</li>
           ))}
         </ul>
-        <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "6px" }}>결의 코디 공식</p>
-        <div className="flex flex-col gap-1.5">
-          {bg.formulas.map((f, i) => (
-            <p key={i} style={{ fontFamily: sans, fontSize: "12.5px", color: txt, opacity: 0.9, lineHeight: 1.5, wordBreak: "keep-all", padding: "6px 10px", border: `1px solid ${bdr}`, borderRadius: "3px" }}>{f}</p>
-          ))}
-        </div>
+        <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 600, color: txt, marginBottom: "4px" }}>결의 코디 공식</p>
+        <p style={{ fontFamily: sans, fontSize: "11.5px", color: sub, marginBottom: "10px", wordBreak: "keep-all" }}>내 베스트 컬러로 입혀 봤어요. 옷을 누르면 W컨셉에서 비슷한 상품을 볼 수 있어요.</p>
+        <FormulaBoards formulas={bg.formulas} colors={cg.bestColors.slice(0, 5).map(colorHex)} onAsk={onAsk} txt={txt} sub={sub} bdr={bdr} acc={acc} />
       </div>
 
       {/* 컬러 카드 (상세) */}
       <div id="res-color" style={{ ...cardStyle, marginBottom: "24px", scrollMarginTop: "16px" }}>
         {kicker("COLOR · 퍼스널컬러")}
         <p style={{ fontFamily: serif, fontSize: "24px", fontWeight: 600, color: txt, marginBottom: "4px" }}>{cm.label}</p>
-        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "14px", wordBreak: "keep-all" }}>{cg.tip}</p>
-        <p style={{ fontFamily: sans, fontSize: "11px", color: txt, opacity: 0.6, marginBottom: "6px" }}>베스트 컬러</p>
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {cg.bestColors.map((c) => (
-            <span key={c} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color: txt, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "2px", wordBreak: "keep-all" }}>
-              <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(c), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0 }} />
-              {c}
-            </span>
-          ))}
+        <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "16px", wordBreak: "keep-all" }}>{cg.tip}</p>
+        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>4계절 중 내 자리</p>
+        <div style={{ marginBottom: "20px" }}>
+          <SeasonMap color={color} txt={txt} sub={sub} bdr={bdr} />
+        </div>
+        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>얼굴 가까이 대 보면</p>
+        <div style={{ marginBottom: "20px" }}>
+          <ColorDrape goodHex={colorHex(cg.bestColors[0])} goodName={cg.bestColors[0]} badHex={colorHex(cg.worstColors[0])} badName={cg.worstColors[0]} txt={txt} sub={sub} bdr={bdr} />
+        </div>
+        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>내 베스트 컬러</p>
+        <div style={{ marginBottom: "16px" }}>
+          <PaletteChips names={cg.bestColors} hex={colorHex} txt={txt} />
         </div>
         <TagRow label="피하면 좋아요" items={cg.worstColors} color={sub} bdr={bdr} sans={sans} />
         <div className="flex flex-col gap-1 mt-2">
@@ -552,32 +569,9 @@ function ResultView({
       <div style={cardStyle}>
         {kicker("SHOP · 내 컬러로 쇼핑")}
         <p style={{ fontFamily: sans, fontSize: "13px", color: sub, lineHeight: 1.6, marginBottom: "12px", wordBreak: "keep-all" }}>
-          {cm.label} 컬러로 골라봤어요. 마음에 드는 걸 눌러 W컨셉에서 둘러보세요.
+          {cm.label} 베스트 컬러를 입혀 봤어요. 옷을 누르면 W컨셉에서 그 색 상품을 둘러볼 수 있어요.
         </p>
-        <div className="flex flex-wrap gap-2">
-          {["원피스", "블라우스", "니트", "팬츠", "스커트"].map((item) => {
-            const kw = `${cg.bestColors[0]} ${item}`;
-            return (
-              <a
-                key={item}
-                href={getWConceptUrl(kw)}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: "7px",
-                  fontFamily: sans, fontSize: "13px", color: txt,
-                  padding: "9px 14px 9px 10px",
-                  border: `1px solid ${acc}`, borderRadius: "2px",
-                  textDecoration: "none", wordBreak: "keep-all",
-                }}
-              >
-                <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(cg.bestColors[0]), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0 }} />
-                {kw}
-                <span style={{ color: acc }}>→</span>
-              </a>
-            );
-          })}
-        </div>
+        <ColorShop colorNames={cg.bestColors.slice(0, 6)} hex={colorHex} txt={txt} sub={sub} bdr={bdr} />
         <p style={{ fontFamily: sans, fontSize: "11px", color: sub, opacity: 0.7, lineHeight: 1.6, marginTop: "12px", wordBreak: "keep-all" }}>
           * 제휴 마케팅의 일환으로, 위 링크를 통한 구매 시 오늘핏에 일정 수수료가 적립될 수 있어요.
         </p>
@@ -691,9 +685,9 @@ function ResultSummary({
         <div style={half}>
           <p style={label}>퍼스널컬러</p>
           <p style={big}>{cm.label}</p>
-          <div style={{ display: "flex", gap: "4px", margin: "4px 0 6px" }}>
+          <div style={{ display: "flex", height: "26px", borderRadius: "3px", overflow: "hidden", margin: "6px 0 8px", border: "1px solid rgba(0,0,0,0.08)" }}>
             {cm.swatch.map((c) => (
-              <span key={c} style={{ width: "18px", height: "18px", borderRadius: "50%", backgroundColor: c, border: "1px solid rgba(0,0,0,0.1)" }} />
+              <span key={c} style={{ flex: 1, backgroundColor: c }} />
             ))}
           </div>
           <p style={small}>{cm.tagline}</p>

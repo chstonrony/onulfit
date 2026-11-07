@@ -318,3 +318,8 @@ html .ed-reveal.is-in { opacity: 1; transform: none; }
 /* 가이드 목록 — 줄 호버 시 종이색이 짙어지며 살짝 밀림 */
 html .guide-row { transition: background-color 0.4s var(--ease-out), padding 0.4s var(--ease-out); }
 .guide-row:hover { background-color: #E2E0D2; padding-left: 8px !important; padding-right: 8px !important; }
+
+/* 자가진단 결과 — 접어 둔 자세한 가이드 */
+.diag-more > summary::-webkit-details-marker { display: none; }
+.diag-more-icon::after { content: "펼치기 ↓"; }
+.diag-more[open] .diag-more-icon::after { content: "접기 ↑"; }

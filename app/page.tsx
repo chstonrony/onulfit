@@ -59,16 +59,23 @@ export default function Home() {
   // 저장된 골격·컬러 프로필 로드
   useEffect(() => {
     setProfile(getProfile());
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // /guide 등에서 ?diag=1 로 진입하면 진단 자동 오픈 (URL은 정리)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (new URLSearchParams(window.location.search).get("diag") === "1") {
+    const qs = new URLSearchParams(window.location.search);
+    if (qs.get("diag") === "1") {
       setShowDiag(true);
       window.history.replaceState(null, "", "/");
     }
-  }, []);
+    // /self-check 결과에서 "이 공식으로 코디 받기" → /?ask=… 로 오면 바로 코디 요청
+    const ask = qs.get("ask");
+    if (ask && ask.length <= 200) {
+      window.history.replaceState(null, "", "/");
+      handleSubmit(ask);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (situation: string) => {
     const userMsg: Message = {
@@ -90,8 +97,9 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           situation,
-          bodyType: profile?.body,
-          colorType: profile?.color,
+          // 진단 직후 바로 코디를 받을 때는 state 가 아직 안 바뀌었을 수 있어 저장된 값도 본다
+          bodyType: (profile ?? getProfile())?.body,
+          colorType: (profile ?? getProfile())?.color,
           // 방금 받은 코디 2벌의 아이템 — 다음 코디가 겹치지 않게
           recent: messages
             .filter((m) => m.outfit)
@@ -180,6 +188,7 @@ export default function Home() {
           vars={vars}
           onComplete={(p) => setProfile(p)}
           onClose={() => setShowDiag(false)}
+          onAsk={(q) => { setShowDiag(false); handleSubmit(q); }}
         />
       )}
 
