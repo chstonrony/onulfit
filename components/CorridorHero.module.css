@@ -121,6 +121,7 @@
   font-family: var(--font-grotesk), "Inter Tight", sans-serif;
   font-weight: 500; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase;
 }
+.eyebrow.ko { font-family: var(--font-noto-sans), "Apple SD Gothic Neo", sans-serif; font-weight: 600; font-size: 13px; letter-spacing: -.01em; }
 .title {
   margin: 0;
   font-family: var(--hero-font); font-weight: var(--hero-weight);
