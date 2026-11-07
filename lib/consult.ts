@@ -35,6 +35,8 @@ export const CONSULT_INFO = {
 export const PRIVACY_VERSION = "2026-11-08";
 /** 운영자 — 2026-11-08 사용자 요청. 사업자 등록 후 상호·사업자번호를 더할 것 */
 export const OPERATOR = "로니스튜디오 · 대표 최샤론";
+/** 공개 문의 이메일 (2026-11-08 사용자 요청). 바꾸려면 여기 또는 NEXT_PUBLIC_CONTACT_EMAIL */
+export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || "chston0603@gmail.com").trim();
 /** 개인정보 보호책임자 */
 export const PRIVACY_OFFICER = "최샤론 (로니스튜디오 대표)";
 export const PRIVACY = {

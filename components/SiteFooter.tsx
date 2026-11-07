@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR } from "@/lib/consult";
+import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR, CONTACT_EMAIL } from "@/lib/consult";
 
 /* ── 모든 화면 공통 하단 (2026-11-08) ──
    개인정보처리방침은 누구나 쉽게 볼 수 있어야 해서 모든 화면 맨 아래에 둔다.
@@ -25,11 +25,12 @@ export default function SiteFooter({ style }: { style?: React.CSSProperties }) {
         {IS_CHANNEL_READY && (
           <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={link}>카톡 문의</a>
         )}
+        {CONTACT_EMAIL && <a href={`mailto:${CONTACT_EMAIL}`} style={link}>이메일 문의</a>}
       </nav>
       <p style={{ margin: 0 }}>
         AI 코디는 AI가 만든 참고용 제안이에요. 일부 쇼핑 링크는 제휴 링크라 구매 시 오늘핏에 수수료가 적립될 수 있어요.
       </p>
-      <p style={{ margin: "4px 0 0" }}>운영 {OPERATOR}</p>
+      <p style={{ margin: "4px 0 0" }}>운영 {OPERATOR}{CONTACT_EMAIL ? ` · ${CONTACT_EMAIL}` : ""}</p>
       <p style={{ margin: "2px 0 0" }}>© {new Date().getFullYear()} 오늘핏 OnulFit</p>
     </footer>
   );

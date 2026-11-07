@@ -1,7 +1,7 @@
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import type { Metadata } from "next";
-import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR } from "@/lib/consult";
+import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR, CONTACT_EMAIL } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
 
 /* ── 이용약관 (2026-11-08, 시범 운영 기본 문안) ──
@@ -37,6 +37,9 @@ export default function TermsPage() {
         운영자: {OPERATOR}
         {IS_CHANNEL_READY ? (
           <> · <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" className="ed-link" style={{ color: ACC, fontWeight: 700 }}>카카오톡 채널로 문의</a></>
+        ) : null}
+        {CONTACT_EMAIL ? (
+          <> · 이메일 <a href={`mailto:${CONTACT_EMAIL}`} className="ed-link" style={{ color: ACC, fontWeight: 700 }}>{CONTACT_EMAIL}</a></>
         ) : null}
       </>,
     ],
