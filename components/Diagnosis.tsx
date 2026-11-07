@@ -25,7 +25,7 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
-import BeforeAfter from "./BeforeAfter";
+import BeforeAfterBoard from "./BeforeAfterBoard";
 import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
 type Step = "intro" | "body" | "color" | "result";
@@ -496,8 +496,8 @@ function ResultView({
         </ul>
       </div>
 
-      {/* 체형별 비포/애프터 — 텍스트 가이드 전에 이미지로 먼저 설득 */}
-      <BeforeAfter body={body} vars={vars} />
+      {/* 비포/애프터 — 옷 사진으로, 골격 × 퍼스널컬러 12가지가 모두 다르게 (예전 사람 사진 1쌍은 BeforeAfter.tsx 에 그대로 둠) */}
+      <BeforeAfterBoard body={body} color={color} best={cg.bestColors} worst={cg.worstColors} hex={colorHex} txt={txt} sub={sub} bdr={bdr} acc={acc} />
 
       {/* 한눈에 — 어울리는 옷 / 피할 옷 (내 베스트 컬러를 입혀서) */}
       <div style={cardStyle}>
