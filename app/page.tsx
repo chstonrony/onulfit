@@ -92,6 +92,11 @@ export default function Home() {
           situation,
           bodyType: profile?.body,
           colorType: profile?.color,
+          // 방금 받은 코디 2벌의 아이템 — 다음 코디가 겹치지 않게
+          recent: messages
+            .filter((m) => m.outfit)
+            .slice(-2)
+            .flatMap((m) => Object.values(m.outfit!.items).map((it) => `${it.color} ${it.name}`)),
         }),
       });
       if (!res.ok) {

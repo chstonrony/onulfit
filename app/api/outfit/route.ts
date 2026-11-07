@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { SYSTEM_PROMPT, buildProfileGuide } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
 import { IS_DEMO_MODE } from "@/lib/mockData";
-import { composeOutfit } from "@/lib/demoStylist";
+import { composeOutfit, detectOccasion, detectSeason } from "@/lib/demoStylist";
+import { pickStyleBrief, briefPrompt } from "@/lib/styleDirections";
 import { parseSafePrefix, stripFence } from "@/lib/partialJson";
 import type { BodyType, ColorType } from "@/lib/profile";
 import { currentSeason, SEASON_LABEL } from "@/lib/lookRecipes";
@@ -19,11 +20,16 @@ export const runtime = "edge"; // Cloudflare Pages / Edge 환경 호환
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { situation, bodyType, colorType } = body as {
+    const { situation, bodyType, colorType, recent: recentRaw } = body as {
       situation?: string;
       bodyType?: BodyType;
       colorType?: ColorType;
+      /** 이 사용자에게 방금 추천한 아이템 이름들 (겹치지 않게) */
+      recent?: unknown;
     };
+    const recent = Array.isArray(recentRaw)
+      ? recentRaw.filter((x): x is string => typeof x === "string").map((x) => x.replace(/[\n\r"]/g, " ").trim().slice(0, 30)).filter(Boolean).slice(0, 15)
+      : [];
 
     if (!situation || typeof situation !== "string" || situation.trim().length === 0) {
       return NextResponse.json({ error: "상황을 입력해주세요." }, { status: 400 });
@@ -103,7 +109,15 @@ export async function POST(request: NextRequest) {
           },
         ],
         messages: [
-          { role: "user", content: situation.trim() + buildProfileGuide(bodyType, colorType) + seasonNote() },
+          {
+            role: "user",
+            content:
+              situation.trim() +
+              buildProfileGuide(bodyType, colorType) +
+              seasonNote() +
+              // 매번 다른 코디: 스타일 방향·주인공 아이템·팔레트·하의 형태를 무작위로 정해 건넨다
+              briefPrompt(pickStyleBrief(detectOccasion(situation), detectSeason(situation)), recent, !!colorType),
+          },
         ],
       }),
     }).catch(() => null);

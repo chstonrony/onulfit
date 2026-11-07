@@ -218,6 +218,18 @@ const ROLE = {
 };
 
 /** 상황 글 → 코디 한 벌 (AI 키가 없을 때 쓰는 데모용) */
+/** 상황 글에서 자리(조문·격식·단정·데이트·저녁·야외·일상)를 찾는다 — AI 코디 방향 고르기에도 쓴다 */
+export function detectOccasion(situation: string): Occ {
+  const text = situation.toLowerCase();
+  return (OCCASIONS.find((o) => o.kw.some((k) => text.includes(k))) ?? OCCASIONS[OCCASIONS.length - 1]).id;
+}
+
+/** 상황 글에 계절이 적혀 있으면 그 계절, 아니면 오늘의 계절 */
+export function detectSeason(situation: string, now = new Date()): Season {
+  const text = situation.toLowerCase();
+  return /여름|휴가|바캉스|해변/.test(text) ? "summer" : /겨울|크리스마스|눈 오는/.test(text) ? "winter" : /봄|벚꽃/.test(text) ? "spring" : /가을|단풍/.test(text) ? "autumn" : currentSeason(now);
+}
+
 export function composeOutfit(situation: string, bodyType?: BodyType, colorType?: ColorType, now = new Date()): OutfitRecommendation {
   const text = situation.toLowerCase();
   const occ = OCCASIONS.find((o) => o.kw.some((k) => text.includes(k))) ?? OCCASIONS[OCCASIONS.length - 1];
