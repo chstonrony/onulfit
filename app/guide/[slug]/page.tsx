@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteHeader from "@/components/SiteHeader";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { OG_IMAGE } from "@/lib/og";
@@ -64,10 +65,7 @@ export default async function ArticlePage({ params }: Props) {
     <main style={{ minHeight: "100dvh", background: "#ECEAE0", padding: "0 20px 72px", display: "flex", flexDirection: "column", alignItems: "center" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <article style={{ width: "100%", maxWidth: "640px", paddingTop: "16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}` }}>
-          <Link href="/guide" className="ed-label ed-link" style={{ color: INK }}>← 스타일 가이드</Link>
-          <Link href="/apply" className="ed-label ed-link" style={{ color: ACC }}>1:1 진단</Link>
-        </div>
+        <SiteHeader />
 
         <header style={{ margin: "28px 0 34px" }}>
           <p className="ed-label" style={{ color: ACC, marginBottom: "14px" }}>

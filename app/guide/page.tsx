@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteHeader from "@/components/SiteHeader";
 import type { Metadata } from "next";
 import { ARTICLES } from "@/lib/articles";
 import { Wordmark } from "@/components/Editorial";
@@ -20,10 +21,7 @@ export default function GuidePage() {
   return (
     <main style={{ minHeight: "100dvh", background: PAPER, padding: "0 20px 72px", display: "flex", flexDirection: "column", alignItems: "center", ["--t-acc" as string]: ACC, ["--t-txt" as string]: INK }}>
       <div style={{ width: "100%", maxWidth: "720px", paddingTop: "16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}` }}>
-          <Link href="/" className="ed-label ed-link" style={{ color: INK }}>← OnulFit</Link>
-          <Link href="/apply" className="ed-label ed-link" style={{ color: ACC }}>1:1 진단</Link>
-        </div>
+        <SiteHeader />
 
         <header style={{ margin: "18px 0 36px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>

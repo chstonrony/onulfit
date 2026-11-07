@@ -1,45 +1,50 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Message, OutfitRecommendation } from "@/lib/types";
-import { THEMES, DEFAULT_MOOD, MoodKey } from "@/lib/themes";
+import { THEMES, DEFAULT_MOOD } from "@/lib/themes";
 import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingState from "@/components/LoadingState";
 import OutfitCard from "@/components/OutfitCard";
-import MoodSelector from "@/components/MoodSelector";
-import ColorPalette from "@/components/ColorPalette";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
 import SelfCheckGuide from "@/components/SelfCheckGuide";
 import { Reveal, GyeolSymbol, SectionHead, Marquee } from "@/components/Editorial";
 import CorridorHero from "@/components/CorridorHero";
+import SiteHeader from "@/components/SiteHeader";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
-
-/* 무드별 로고 파일 매핑 */
-function getLogoSrc(mood: MoodKey): string {
-  if (mood === "presence") return "/onulfit_logo_dark.svg";
-  if (mood === "allure" || mood === "shine") return "/onulfit_logo_shine.svg";
-  return "/onulfit_logo_light.svg";
-}
 
 type MobileTab = "chat" | "outfit";
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [mood, setMood] = useState<MoodKey>(DEFAULT_MOOD);
   const [mobileTab, setMobileTab] = useState<MobileTab>("chat");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [showDiag, setShowDiag] = useState(false);
   const chatBottomRef = useRef<HTMLDivElement>(null);
+  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const resultScrollRef = useRef<HTMLDivElement>(null);
+  /* 로고로 처음 화면에 돌아간 뒤 늦게 도착한 응답은 버리기 위한 번호 */
+  const requestNo = useRef(0);
 
-  const theme = THEMES[mood];
-  const vars = theme.vars;
+  /* 색 테마 전환은 없앴다 — 기본(올리브) 한 가지로 고정 */
+  const vars = THEMES[DEFAULT_MOOD].vars;
+
+  /* 로고 → 맨 처음 화면 (대화·결과 비우고 맨 위로) */
+  const goStart = () => {
+    requestNo.current += 1;
+    setMessages([]);
+    setIsLoading(false);
+    setShowDiag(false);
+    setMobileTab("chat");
+    chatScrollRef.current?.scrollTo({ top: 0 });
+    resultScrollRef.current?.scrollTo({ top: 0 });
+  };
 
   useEffect(() => {
     // 웰컴 화면(메시지 없음)에선 히어로부터 보이도록 자동 스크롤 안 함
@@ -68,6 +73,7 @@ export default function Home() {
       content: situation,
       timestamp: new Date(),
     };
+    const myNo = ++requestNo.current;
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
     // 모바일: 로딩 시작하면 코디 탭으로 이동
@@ -87,6 +93,7 @@ export default function Home() {
       if (!res.ok) throw new Error(data.error ?? "알 수 없는 오류가 발생했습니다.");
 
       const outfit = data as OutfitRecommendation;
+      if (myNo !== requestNo.current) return;
       setMessages((prev) => [
         ...prev,
         {
@@ -98,6 +105,7 @@ export default function Home() {
         },
       ]);
     } catch (err) {
+      if (myNo !== requestNo.current) return;
       setMobileTab("chat");
       setMessages((prev) => [
         ...prev,
@@ -112,7 +120,7 @@ export default function Home() {
         },
       ]);
     } finally {
-      setIsLoading(false);
+      if (myNo === requestNo.current) setIsLoading(false);
     }
   };
 
@@ -121,7 +129,7 @@ export default function Home() {
 
   return (
     <div
-      className="theme-root grain-panel flex flex-col h-full lg:flex-row"
+      className="theme-root grain-panel flex flex-col h-full"
       style={vars as React.CSSProperties}
     >
 
@@ -135,31 +143,16 @@ export default function Home() {
       )}
 
       {/* ══════════════════════════════════════════
-          모바일 전용 헤더 (lg 이상에서 숨김)
+          상단 메뉴 (모바일·데스크탑 공통) — 로고: 처음 화면으로
       ══════════════════════════════════════════ */}
-      <header
-        className="lg:hidden flex-shrink-0 flex flex-col gap-2 px-5 pt-3 pb-2"
-        style={{
-          backgroundColor: "var(--t-side)",
-          borderBottom: "1px solid var(--t-txt)",
-        }}
+      <div
+        className="flex-shrink-0 px-5 lg:px-8 pt-3"
+        style={{ backgroundColor: "var(--t-side)", zIndex: 30 }}
       >
-        <div className="flex items-center justify-between">
-          <Image
-            key={getLogoSrc(mood)}
-            src={getLogoSrc(mood)}
-            alt="OnulFit"
-            width={140}
-            height={42}
-            priority
-            unoptimized
-            style={{ width: "112px", height: "auto", display: "block" }}
-          />
-          <TopNav />
-        </div>
-        <MoodSelector selected={mood} onChange={setMood} vars={vars} compact />
-      </header>
+        <SiteHeader onHome={goStart} />
+      </div>
 
+      <div className="flex flex-col flex-1 min-h-0 lg:flex-row">
       {/* ══════════════════════════════════════════
           왼쪽 사이드바 (데스크탑 항상 표시 / 모바일 chat 탭)
       ══════════════════════════════════════════ */}
@@ -177,7 +170,7 @@ export default function Home() {
         }}
       >
         {/* 채팅 히스토리 */}
-        <div className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
+        <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-5 lg:px-6 py-5 lg:py-6 space-y-4 min-h-0">
           {!hasMessages && (
             <WelcomeGuide onExample={handleSubmit} isLoading={isLoading} vars={vars} onDiagnose={() => { track("diag_open", { where: "home" }); setShowDiag(true); }} profile={profile} />
           )}
@@ -234,41 +227,11 @@ export default function Home() {
           ${mobileTab === "outfit" ? "flex flex-col" : "hidden lg:flex lg:flex-col"}
         `}
         style={{ backgroundColor: "var(--t-bg)" }}
+        ref={resultScrollRef}
       >
-        {/* 데스크탑 헤더 — 모바일처럼 로고 · 메뉴 · 무드 탭을 한 줄로 (스크롤해도 위에 고정) */}
-        <header
-          className="hidden lg:block sticky top-0 z-20 flex-shrink-0"
-          style={{ backgroundColor: "var(--t-bg)", borderBottom: "1px solid var(--t-txt)" }}
-        >
-          <div className="px-12 pt-5 pb-3 max-w-[720px] mx-auto w-full flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <Image
-                key={getLogoSrc(mood)}
-                src={getLogoSrc(mood)}
-                alt="OnulFit"
-                width={160}
-                height={48}
-                priority
-                unoptimized
-                style={{ width: "128px", height: "auto", display: "block" }}
-              />
-              <TopNav />
-            </div>
-            <MoodSelector selected={mood} onChange={setMood} vars={vars} compact />
-          </div>
-        </header>
-
         {/* 결 프로필 칩 — 진단 진입점 (데스크탑) */}
         <div className="hidden lg:block max-w-[720px] mx-auto w-full lg:px-6 flex-shrink-0">
           <ProfileChip profile={profile} vars={vars} onOpen={() => { track("diag_open", { where: "profile_chip" }); setShowDiag(true); }} />
-        </div>
-
-        {/* 컬러 팔레트 */}
-        <div
-          className="px-6 lg:px-12 pt-8 lg:pt-10 pb-6 lg:pb-8 max-w-[720px] mx-auto w-full flex-shrink-0"
-          style={{ borderBottom: "1px solid var(--t-bdr)" }}
-        >
-          <ColorPalette palette={theme.palette} mood={mood} />
         </div>
 
         {/* 메인 콘텐츠 */}
@@ -284,6 +247,7 @@ export default function Home() {
             <EmptyState onExample={handleSubmit} vars={vars} />
           )}
         </div>
+      </div>
       </div>
 
       {/* ══════════════════════════════════════════
@@ -354,25 +318,6 @@ export default function Home() {
       </nav>
 
     </div>
-  );
-}
-
-/* ── 상단 링크 — 가이드 · 1:1 진단 (어느 화면에서든 상담으로 한 번에) ── */
-function TopNav() {
-  return (
-    <nav className="flex items-center gap-4">
-      <Link href="/guide" className="ed-label ed-link" style={{ color: "var(--t-txt)" }}>
-        Guide
-      </Link>
-      <Link
-        href="/apply"
-        onClick={() => track("consult_click", { where: "header", method: "apply" })}
-        className="ed-label ed-link"
-        style={{ color: "var(--t-acc)" }}
-      >
-        1:1 진단
-      </Link>
-    </nav>
   );
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import SiteHeader from "@/components/SiteHeader";
 import { useEffect, useState } from "react";
 import { THEMES, DEFAULT_MOOD } from "@/lib/themes";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
@@ -43,10 +44,7 @@ export default function SelfCheckLanding() {
       )}
 
       <main style={{ maxWidth: "600px", margin: "0 auto", padding: "16px 20px 64px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingBottom: "10px", borderBottom: "1px solid var(--t-txt)", marginBottom: "18px" }}>
-          <Link href="/" className="ed-label ed-link" style={{ color: "var(--t-txt)" }}>← OnulFit</Link>
-          <Link href="/apply" className="ed-label ed-link" style={{ color: "var(--t-acc)" }}>1:1 진단</Link>
-        </div>
+        <SiteHeader style={{ marginBottom: "18px" }} />
 
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
           <span className="ed-label" style={{ color: "var(--t-acc)" }}>Free self-check</span>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import SiteHeader from "@/components/SiteHeader";
 import type { Metadata } from "next";
 import { PRIVACY, PRIVACY_VERSION, KAKAO_CHANNEL_URL, IS_CHANNEL_READY } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
@@ -43,10 +43,7 @@ export default function PrivacyPage() {
   return (
     <main style={{ minHeight: "100dvh", background: "#ECEAE0", padding: "0 20px 72px", display: "flex", justifyContent: "center", ["--t-acc" as string]: ACC, ["--t-txt" as string]: INK }}>
       <article style={{ width: "100%", maxWidth: "640px", paddingTop: "16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: "10px", borderBottom: `1px solid ${INK}`, marginBottom: "18px" }}>
-          <Link href="/" className="ed-label ed-link" style={{ color: INK }}>← OnulFit</Link>
-          <Link href="/apply" className="ed-label ed-link" style={{ color: ACC }}>1:1 진단 신청</Link>
-        </div>
+        <SiteHeader style={{ marginBottom: "18px" }} />
         <Wordmark text="Privacy" size={24} />
         <div style={{ height: "1px", background: INK, margin: "14px 0 22px" }} />
         <h1 style={{ fontFamily: sans, fontSize: "clamp(27px, 7.5vw, 36px)", fontWeight: 800, letterSpacing: "-0.055em", lineHeight: 1.2, color: INK, margin: 0 }}>
