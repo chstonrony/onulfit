@@ -93,7 +93,7 @@ export interface ColorMeta {
   tagline: string;
   palette: string[];   // 어울리는 대표 색 (한글명 — colors.ts와 호환)
   avoid: string[];
-  swatch: string[];    // 표시용 hex
+  swatch: string[];    // 표시용 hex — 실제 옷감 톤(2026-11-07 채도 낮춤)
   promptGuide: string;
 }
 
@@ -104,7 +104,7 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
     tagline: "맑고 화사한 따뜻함",
     palette: ["코랄", "아이보리", "카멜", "라이트 그레이", "머스타드"],
     avoid: ["블랙", "차콜", "다크 네이비"],
-    swatch: ["#F5A38C", "#F5F0E8", "#C19A6B", "#D4A830"],
+    swatch: ["#E2826C", "#EFC2A4", "#B98D63", "#A2AE6A"],
     promptGuide: "봄 웜톤: 맑고 밝은 따뜻한 색이 화사하게 어울림. 코랄·아이보리·카멜·머스타드 등 밝은 웜컬러 우선. 새카만 블랙·차가운 회색은 얼굴을 칙칙하게 만드니 지양.",
   },
   summer: {
@@ -113,7 +113,7 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
     tagline: "부드럽고 시원한 파스텔",
     palette: ["로즈", "라벤더", "스카이 블루", "라이트 그레이", "오프화이트"],
     avoid: ["머스타드", "카멜", "다크 브라운"],
-    swatch: ["#C4978A", "#C4B8E0", "#A8C5D8", "#D0CCC8"],
+    swatch: ["#C07C88", "#AFA5CB", "#A5BFD6", "#BFBBB6"],
     promptGuide: "여름 쿨톤: 부드럽고 흐릿한 파스텔·쿨컬러가 어울림. 로즈·라벤더·스카이블루·소프트그레이 우선. 쨍한 원색이나 노란기 강한 웜컬러(머스타드·카멜)는 피함.",
   },
   autumn: {
@@ -122,7 +122,7 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
     tagline: "깊고 그윽한 어스 톤",
     palette: ["카멜", "올리브", "브라운", "머스타드", "테라코타"],
     avoid: ["핑크", "스카이 블루", "라벤더"],
-    swatch: ["#C19A6B", "#6B7A3E", "#795548", "#C4704A"],
+    swatch: ["#B98D63", "#6C7144", "#76533A", "#B0654B"],
     promptGuide: "가을 웜톤: 깊고 차분한 어스컬러가 고급스럽게 어울림. 카멜·올리브·브라운·테라코타 우선. 차가운 파스텔(핑크·스카이블루)은 얼굴을 떠 보이게 하니 지양.",
   },
   winter: {
@@ -131,7 +131,7 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
     tagline: "선명하고 또렷한 대비",
     palette: ["블랙", "화이트", "다크 네이비", "버건디", "그레이"],
     avoid: ["카멜", "올리브", "베이지"],
-    swatch: ["#1C1A18", "#F8F8F6", "#0F1C34", "#722F37"],
+    swatch: ["#1E1D1C", "#F8F8F6", "#252F4A", "#672634"],
     promptGuide: "겨울 쿨톤: 선명하고 또렷한 색과 강한 대비가 어울림. 블랙·퓨어화이트·네이비·버건디 우선. 노란기 도는 흐린 웜컬러(카멜·올리브·베이지)는 칙칙해 보이니 지양.",
   },
 };

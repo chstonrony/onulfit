@@ -5,8 +5,8 @@
    · BodyForms     — 세 골격을 드레스폼(마네킹 몸통)으로 나란히, 내 골격을 크게 + 특징 표시
    · BodyDoDont    — 내 골격에 어울리는 옷 / 피할 옷을 옷 사진으로 (내 베스트 컬러를 입혀서)
    · SeasonMap     — 웜·쿨 × 밝음·깊음 4칸 지도에서 내 자리
-   · ColorDrape    — 어울리는 색 vs 피할 색을 얼굴 아래 대 봤을 때 (설명용 그림)
-   · PaletteChips  — 베스트 컬러를 큰 색 칩으로 */
+   · ToneCompare   — 같은 니트를 베스트 컬러 vs 피할 색으로 나란히
+   · SwatchBoard   — 베스트 컬러를 옷감 스와치로(바탕색 / 포인트 색), 피할 색은 작게 */
 
 import type { BodyType, ColorType } from "@/lib/profile";
 import { BODY_META, COLOR_META } from "@/lib/profile";
@@ -251,77 +251,94 @@ function FragmentRow({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-/* ── 얼굴 아래 색 대보기 (설명용 그림) ── */
-function Face({ cape, good }: { cape: string; good: boolean }) {
+/* ── 얼굴 가까이 두는 상의 색 비교 ──
+   같은 니트를 베스트 컬러와 피할 색으로 나란히. (사람 얼굴 그림 대신 실제 옷 사진으로) */
+export function ToneCompare({ goodHex, goodName, badHex, badName, txt, sub, bdr }: { goodHex: string; goodName: string; badHex: string; badName: string; txt: string; sub: string; bdr: string }) {
+  const box = (hex: string, name: string, good: boolean) => (
+    <figure style={{ margin: 0, minWidth: 0 }}>
+      <div style={{ position: "relative", aspectRatio: "4 / 5", display: "flex", alignItems: "center", justifyContent: "center", background: "#F2EDE5", border: `1px solid ${good ? txt : bdr}`, borderRadius: "2px", overflow: "hidden" }}>
+        <GarmentPhoto kind="knit" hex={hex} width={128} height={128} />
+        <span style={{ position: "absolute", left: 10, top: 10, fontFamily: sans, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.06em", color: good ? "#F4EFE7" : "#6B655E", background: good ? "#191614" : "rgba(255,255,255,.8)", padding: "3px 8px", borderRadius: "999px" }}>
+          {good ? "BEST" : "AVOID"}
+        </span>
+      </div>
+      <figcaption style={{ marginTop: "8px" }}>
+        <span style={{ display: "block", fontFamily: sans, fontSize: "13px", fontWeight: 700, color: good ? txt : sub }}>{name} 니트</span>
+        <span style={{ display: "block", fontFamily: sans, fontSize: "11.5px", lineHeight: 1.5, color: sub, marginTop: "2px", wordBreak: "keep-all" }}>
+          {good ? "얼굴에 혈색이 돌고 피부가 맑아 보여요" : "그늘·다크서클이 도드라져 보이기 쉬워요"}
+        </span>
+      </figcaption>
+    </figure>
+  );
   return (
-    <svg viewBox="0 0 120 120" width="100%" aria-hidden style={{ display: "block" }}>
-      <rect width="120" height="120" fill="#F4EFE7" />
-      {/* 머리카락 뒤 */}
-      <path d="M33,58 C30,26 52,16 62,17 C82,18 92,34 88,60 L88,82 L33,82 Z" fill="#3B2E28" />
-      {/* 목 */}
-      <rect x="52" y="70" width="16" height="20" fill="#E9C9AE" />
-      {/* 얼굴 */}
-      <ellipse cx="60" cy="52" rx="21" ry="25" fill="#ECCDB3" />
-      {/* 앞머리 */}
-      <path d="M38,46 C40,30 52,26 62,26 C74,26 82,33 83,46 C74,38 62,36 50,40 C45,42 41,44 38,46 Z" fill="#3B2E28" />
-      {/* 눈·입 */}
-      <path d="M50,54 q4,-3 8,0 M64,54 q4,-3 8,0" stroke="#5A463C" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <path d="M55,67 q5,3.5 10,0" stroke={good ? "#C9706A" : "#A88478"} strokeWidth="1.8" fill="none" strokeLinecap="round" />
-      {good ? (
-        <>
-          {/* 맑게 — 볼 혈색과 얼굴 위 은은한 빛 */}
-          <ellipse cx="47" cy="62" rx="5" ry="3" fill="#F2A08C" opacity=".45" />
-          <ellipse cx="73" cy="62" rx="5" ry="3" fill="#F2A08C" opacity=".45" />
-          <ellipse cx="60" cy="50" rx="21" ry="25" fill="#FFFFFF" opacity=".12" />
-        </>
-      ) : (
-        <>
-          {/* 칙칙하게 — 그늘과 눈 밑 그림자 */}
-          <ellipse cx="60" cy="52" rx="21" ry="25" fill="#5D6066" opacity=".16" />
-          <path d="M49,58 q5,2.5 9,0 M63,58 q5,2.5 9,0" stroke="#8C7B78" strokeWidth="1.4" fill="none" opacity=".7" />
-        </>
-      )}
-      {/* 옷(천) */}
-      <path d="M8,120 C10,96 28,86 52,84 L60,92 L68,84 C92,86 110,96 112,120 Z" fill={cape} />
-    </svg>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+      {box(goodHex, goodName, true)}
+      {box(badHex, badName, false)}
+    </div>
   );
 }
 
-export function ColorDrape({ goodHex, goodName, badHex, badName, txt, sub, bdr }: { goodHex: string; goodName: string; badHex: string; badName: string; txt: string; sub: string; bdr: string }) {
-  const box = (hex: string, name: string, good: boolean) => (
-    <div style={{ minWidth: 0 }}>
-      <div style={{ border: `1px solid ${good ? txt : bdr}`, borderRadius: "3px", overflow: "hidden" }}>
-        <Face cape={hex} good={good} />
+/* ── 옷감 스와치 ──
+   색 칩을 납작한 원색 대신 옷감처럼(은은한 짜임 + 빛) 보여 준다. */
+function Swatch({ hex, size, muted }: { hex: string; size?: number; muted?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      style={{
+        display: "block",
+        width: size ?? "100%",
+        aspectRatio: "4 / 5",
+        borderRadius: "2px",
+        backgroundColor: hex,
+        backgroundImage: [
+          "linear-gradient(160deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,.10) 100%)",
+          "repeating-linear-gradient(0deg, rgba(0,0,0,.035) 0 1px, transparent 1px 3px)",
+          "repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 3px)",
+        ].join(","),
+        boxShadow: "inset 0 0 0 1px rgba(0,0,0,.06), 0 1px 2px rgba(40,30,20,.08)",
+        filter: muted ? "saturate(.55)" : undefined,
+        opacity: muted ? 0.7 : 1,
+      }}
+    />
+  );
+}
+
+/* 옷 전체에 써도 되는 바탕색(뉴트럴) — 나머지는 포인트 색 */
+const BASE = new Set(["아이보리", "카멜", "라이트 카키", "피치", "오프화이트", "소프트 그레이", "스카이 블루", "라벤더", "브라운", "카키", "올리브", "블랙", "퓨어 화이트", "네이비", "그레이"]);
+
+/** 베스트 컬러를 '바탕색 / 포인트 색'으로 나눠 옷감 스와치로, 피할 색은 작게 */
+export function SwatchBoard({ best, worst, hex, txt, sub }: { best: string[]; worst: string[]; hex: (n: string) => string; txt: string; sub: string }) {
+  const base = best.filter((c) => BASE.has(c));
+  const point = best.filter((c) => !BASE.has(c));
+  const group = (title: string, note: string, names: string[]) => (
+    <div style={{ marginBottom: "16px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px", marginBottom: "8px" }}>
+        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, margin: 0 }}>{title}</p>
+        <p style={{ fontFamily: sans, fontSize: "11px", color: sub, margin: 0, textAlign: "right", wordBreak: "keep-all" }}>{note}</p>
       </div>
-      <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: good ? txt : sub, margin: "7px 0 1px" }}>
-        {good ? "○ " : "✕ "}{name}
-      </p>
-      <p style={{ fontFamily: sans, fontSize: "11.5px", color: sub, margin: 0, wordBreak: "keep-all" }}>
-        {good ? "얼굴이 맑고 환해 보여요" : "그늘지고 칙칙해 보여요"}
-      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "8px" }}>
+        {names.map((n) => (
+          <div key={n} style={{ minWidth: 0 }}>
+            <Swatch hex={hex(n)} />
+            <p style={{ fontFamily: sans, fontSize: "11.5px", color: txt, margin: "5px 0 0", wordBreak: "keep-all", lineHeight: 1.3 }}>{n}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
   return (
     <div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-        {box(goodHex, goodName, true)}
-        {box(badHex, badName, false)}
+      {group("바탕색", "코트·니트·팬츠처럼 넓은 면적에", base)}
+      {point.length > 0 && group("포인트 색", "상의 하나·스카프·가방으로 한 곳만", point)}
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", paddingTop: "12px", borderTop: "1px solid rgba(0,0,0,.08)" }}>
+        <p style={{ fontFamily: sans, fontSize: "12px", fontWeight: 700, color: sub, margin: 0 }}>피하면 좋은 색</p>
+        {worst.map((n) => (
+          <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "11.5px", color: sub }}>
+            <Swatch hex={hex(n)} size={16} muted />
+            {n}
+          </span>
+        ))}
       </div>
-      <p style={{ fontFamily: sans, fontSize: "10.5px", color: sub, opacity: 0.8, margin: "8px 0 0" }}>* 얼굴 가까이 어떤 색을 두느냐에 따라 달라지는 인상을 보여 주는 그림이에요.</p>
-    </div>
-  );
-}
-
-/* ── 큰 색 칩 ── */
-export function PaletteChips({ names, hex, txt }: { names: string[]; hex: (n: string) => string; txt: string }) {
-  return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "6px" }}>
-      {names.map((n) => (
-        <div key={n} style={{ minWidth: 0 }}>
-          <div style={{ aspectRatio: "1 / 1", background: hex(n), borderRadius: "3px", border: "1px solid rgba(0,0,0,0.08)" }} />
-          <p style={{ fontFamily: sans, fontSize: "11.5px", color: txt, margin: "4px 0 0", textAlign: "center", wordBreak: "keep-all", lineHeight: 1.3 }}>{n}</p>
-        </div>
-      ))}
     </div>
   );
 }

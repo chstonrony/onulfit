@@ -26,22 +26,28 @@ import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
 import BeforeAfter from "./BeforeAfter";
-import { BodyForms, BodyDoDont, SeasonMap, ColorDrape, PaletteChips, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
+import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
 type Step = "intro" | "body" | "color" | "result";
 
-/* 색 이름 → 실제 hex (퍼스널컬러 칩 시각화) */
+/* 색 이름 → 실제 hex (퍼스널컬러 칩·옷 사진에 입히는 색)
+   2026-11-07: 화면용 원색이 아니라 실제 옷감에서 나오는 톤으로 다듬음(채도를 낮추고 깊이를 줌) */
 const COLOR_HEX: Record<string, string> = {
-  "코랄": "#F4826F", "피치": "#FBC9A8", "아이보리": "#EFE7D6", "카멜": "#C19A6B",
-  "라이트 옐로우": "#F0E2A0", "애플 그린": "#9DBE4A", "라이트 카키": "#BDB484", "터콰이즈": "#3FC9C0",
-  "블랙": "#222222", "차콜": "#3A4750", "버건디": "#6E2A3A", "탁한 회색": "#8E8B86",
-  "로즈": "#CE6E80", "라벤더": "#B39DDB", "스카이 블루": "#8DC6E8", "소프트 그레이": "#C2BEB8",
-  "오프화이트": "#F1EBE0", "베이비 핑크": "#F2C4CC", "민트": "#A6E0C6", "연보라": "#C7B6E6",
-  "머스타드": "#D2A017", "다크 브라운": "#4A3528", "오렌지": "#E8843A",
-  "올리브": "#6F7D3A", "브라운": "#7A5230", "테라코타": "#C66B47", "카키": "#88824F",
-  "딥 그린": "#2E4D38", "와인": "#71303A", "형광색": "#C6F542", "쨍한 핑크": "#F5379E",
-  "퓨어 화이트": "#FBFAF7", "네이비": "#26324F", "그레이": "#9B9B9B", "푸시아": "#C8377E",
-  "로열 블루": "#2E54C8", "에메랄드": "#2E8B6E", "베이지": "#D6C5A8",
+  // 봄 웜
+  "코랄": "#E2826C", "피치": "#EFC2A4", "아이보리": "#ECE4D3", "카멜": "#B98D63",
+  "라이트 옐로우": "#E8D59A", "애플 그린": "#A2AE6A", "라이트 카키": "#B9AF88", "터콰이즈": "#5E9E98",
+  // 여름 쿨
+  "로즈": "#C07C88", "라벤더": "#AFA5CB", "스카이 블루": "#A5BFD6", "소프트 그레이": "#BFBBB6",
+  "오프화이트": "#EFEAE0", "베이비 핑크": "#E8C4C8", "민트": "#AFCFC0", "연보라": "#C4B8D8",
+  // 가을 웜
+  "올리브": "#6C7144", "브라운": "#76533A", "머스타드": "#C2952F", "테라코타": "#B0654B",
+  "카키": "#7F7A55", "딥 그린": "#33503F", "와인": "#6A2D39",
+  // 겨울 쿨
+  "블랙": "#1E1D1C", "퓨어 화이트": "#F8F8F6", "네이비": "#252F4A", "버건디": "#672634",
+  "그레이": "#97979A", "푸시아": "#AE3F78", "로열 블루": "#2F4C9E", "에메랄드": "#2E7562",
+  // 피할 색에만 나오는 것
+  "차콜": "#3A3E44", "탁한 회색": "#8B8884", "다크 브라운": "#4B392D", "오렌지": "#D47E3E",
+  "형광색": "#C9E84A", "쨍한 핑크": "#E8479A", "베이지": "#D1C0A3",
 };
 function colorHex(name: string): string {
   return COLOR_HEX[name] ?? "#C9C2B8";
@@ -315,7 +321,7 @@ function QuestionView({
       </p>
       {hint && (
         <p style={{ display: "inline-block", fontFamily: sans, fontSize: "12.5px", lineHeight: 1.55, color: txt, opacity: 0.8, backgroundColor: "var(--t-card)", border: `1px dashed ${bdr}`, borderRadius: "2px", padding: "8px 12px", marginBottom: "22px", wordBreak: "keep-all" }}>
-          👀 {hint}
+          {hint}
         </p>
       )}
       <div className="flex flex-col gap-3">
@@ -544,15 +550,13 @@ function ResultView({
         <div style={{ marginBottom: "20px" }}>
           <SeasonMap color={color} txt={txt} sub={sub} bdr={bdr} />
         </div>
-        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>얼굴 가까이 대 보면</p>
-        <div style={{ marginBottom: "20px" }}>
-          <ColorDrape goodHex={colorHex(cg.bestColors[0])} goodName={cg.bestColors[0]} badHex={colorHex(cg.worstColors[0])} badName={cg.worstColors[0]} txt={txt} sub={sub} bdr={bdr} />
+        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>얼굴 가까이 두는 상의 색</p>
+        <div style={{ marginBottom: "22px" }}>
+          <ToneCompare goodHex={colorHex(cg.bestColors[0])} goodName={cg.bestColors[0]} badHex={colorHex(cg.worstColors[0])} badName={cg.worstColors[0]} txt={txt} sub={sub} bdr={bdr} />
         </div>
-        <p style={{ fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: txt, marginBottom: "10px" }}>내 베스트 컬러</p>
-        <div style={{ marginBottom: "16px" }}>
-          <PaletteChips names={cg.bestColors} hex={colorHex} txt={txt} />
+        <div style={{ marginBottom: "18px" }}>
+          <SwatchBoard best={cg.bestColors} worst={cg.worstColors} hex={colorHex} txt={txt} sub={sub} />
         </div>
-        <TagRow label="피하면 좋아요" items={cg.worstColors} color={sub} bdr={bdr} sans={sans} />
         <div className="flex flex-col gap-1 mt-2">
           <MiniRow label="메탈" value={cg.metal} txt={txt} sub={sub} sans={sans} />
           <MiniRow label="메이크업" value={cg.makeup} txt={txt} sub={sub} sans={sans} />
@@ -610,7 +614,7 @@ function ResultView({
           opacity: saving ? 0.6 : 1,
         }}
       >
-        {saving ? "이미지 만드는 중…" : "📸 내 결 카드 저장 · 공유하기"}
+        {saving ? "이미지 만드는 중…" : "내 결 카드 저장 · 공유하기"}
       </button>
 
       <button onClick={onDone} style={ctaStyle()}>
@@ -760,22 +764,6 @@ function MiniRow({ label, value, txt, sub, sans }: { label: string; value: strin
       <span style={{ color: sub }}>{label} · </span>
       <span style={{ color: txt, opacity: 0.9 }}>{value}</span>
     </p>
-  );
-}
-
-function TagRow({ label, items, color, bdr, sans }: { label: string; items: string[]; color: string; bdr: string; sans: string }) {
-  return (
-    <div style={{ marginBottom: "10px" }}>
-      <p style={{ fontFamily: sans, fontSize: "11px", color, opacity: 0.6, marginBottom: "6px" }}>{label}</p>
-      <div className="flex flex-wrap gap-1.5">
-        {items.map((it) => (
-          <span key={it} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: sans, fontSize: "12px", color, padding: "4px 11px 4px 7px", border: `1px solid ${bdr}`, borderRadius: "2px", wordBreak: "keep-all", opacity: 0.7 }}>
-            <span style={{ width: "12px", height: "12px", borderRadius: "50%", backgroundColor: colorHex(it), border: "0.5px solid rgba(0,0,0,0.12)", flexShrink: 0, opacity: 0.6 }} />
-            {it}
-          </span>
-        ))}
-      </div>
-    </div>
   );
 }
 
