@@ -15,6 +15,22 @@ const CATEGORY_LABELS: Record<string, string> = {
   accessory: "액세서리",
 };
 
+/* 같은 아이템 상품 사진은 한 번만 받는다 (코디가 도착하는 중 화면 → 완성 화면으로 바뀔 때 다시 받지 않게) */
+const pickCache = new Map<string, Promise<ProductPick[]>>();
+function loadPicks(q: string, color: string): Promise<ProductPick[]> {
+  const key = `${q}|${color}`;
+  let p = pickCache.get(key);
+  if (!p) {
+    const qs = new URLSearchParams({ q, color });
+    p = fetch(`/api/products?${qs}`)
+      .then((r) => (r.ok ? r.json() : { items: [] }))
+      .then((d: { items?: ProductPick[] }) => d.items ?? [])
+      .catch(() => []);
+    pickCache.set(key, p);
+  }
+  return p;
+}
+
 interface ItemCardProps {
   category: string;
   item: ClothingItem;
@@ -32,11 +48,7 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
 
   useEffect(() => {
     let alive = true;
-    const qs = new URLSearchParams({ q: item.searchKeyword, color: item.color });
-    fetch(`/api/products?${qs}`)
-      .then((r) => (r.ok ? r.json() : { items: [] }))
-      .then((d: { items?: ProductPick[] }) => { if (alive) setPicks(d.items ?? []); })
-      .catch(() => { if (alive) setPicks([]); });
+    loadPicks(item.searchKeyword, item.color).then((items) => { if (alive) setPicks(items); });
     return () => { alive = false; };
   }, [item.searchKeyword, item.color]);
 

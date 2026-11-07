@@ -8,6 +8,7 @@ import ChatBubble from "@/components/ChatBubble";
 import ChatInput from "@/components/ChatInput";
 import LoadingState from "@/components/LoadingState";
 import OutfitCard from "@/components/OutfitCard";
+import DraftOutfit, { type DraftOutfitData } from "@/components/DraftOutfit";
 import SituationSelector from "@/components/SituationSelector";
 import Diagnosis from "@/components/Diagnosis";
 import ApplyCTA from "@/components/ApplyCTA";
@@ -23,6 +24,8 @@ type MobileTab = "chat" | "outfit";
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  /* AI가 쓰는 중인 코디 (받는 대로 화면에 보여 줌) */
+  const [draft, setDraft] = useState<DraftOutfitData | null>(null);
   const [mobileTab, setMobileTab] = useState<MobileTab>("chat");
   const [profile, setProfile] = useState<Profile | null>(null);
   const [showDiag, setShowDiag] = useState(false);
@@ -40,6 +43,7 @@ export default function Home() {
     requestNo.current += 1;
     setMessages([]);
     setIsLoading(false);
+    setDraft(null);
     setShowDiag(false);
     setMobileTab("chat");
     chatScrollRef.current?.scrollTo({ top: 0 });
@@ -76,6 +80,7 @@ export default function Home() {
     const myNo = ++requestNo.current;
     setMessages((prev) => [...prev, userMsg]);
     setIsLoading(true);
+    setDraft(null);
     // 모바일: 로딩 시작하면 코디 탭으로 이동
     setMobileTab("outfit");
 
@@ -89,10 +94,38 @@ export default function Home() {
           colorType: profile?.color,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "알 수 없는 오류가 발생했습니다.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "알 수 없는 오류가 발생했습니다.");
+      }
 
-      const outfit = data as OutfitRecommendation;
+      let outfit: OutfitRecommendation | null = null;
+      if ((res.headers.get("content-type") ?? "").includes("ndjson") && res.body) {
+        // 한 줄씩 도착하는 코디 조각을 바로바로 화면에
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = "";
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let nl: number;
+          while ((nl = buf.indexOf("\n")) >= 0) {
+            const line = buf.slice(0, nl).trim();
+            buf = buf.slice(nl + 1);
+            if (!line) continue;
+            try {
+              const msg = JSON.parse(line) as { t: string; o: unknown };
+              if (myNo !== requestNo.current) continue;
+              if (msg.t === "p") setDraft(msg.o as DraftOutfitData);
+              else if (msg.t === "done") outfit = msg.o as OutfitRecommendation;
+            } catch { /* 깨진 줄은 건너뜀 */ }
+          }
+        }
+        if (!outfit) throw new Error("코디를 끝까지 받지 못했어요. 잠시 후 다시 시도해주세요.");
+      } else {
+        outfit = (await res.json()) as OutfitRecommendation;
+      }
       if (myNo !== requestNo.current) return;
       setMessages((prev) => [
         ...prev,
@@ -120,7 +153,10 @@ export default function Home() {
         },
       ]);
     } finally {
-      if (myNo === requestNo.current) setIsLoading(false);
+      if (myNo === requestNo.current) {
+        setIsLoading(false);
+        setDraft(null);
+      }
     }
   };
 
@@ -240,7 +276,7 @@ export default function Home() {
           style={{ paddingBottom: "calc(72px + env(safe-area-inset-bottom))" }}
         >
           {isLoading ? (
-            <LoadingState />
+            draft?.situation ? <DraftOutfit draft={draft} /> : <LoadingState />
           ) : lastOutfit ? (
             <OutfitCard outfit={lastOutfit} profile={profile} vars={vars} />
           ) : (
