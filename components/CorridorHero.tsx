@@ -180,7 +180,7 @@ export default function CorridorHero({
       <div className={s.veil} aria-hidden />
 
       <div className={`${s.copy} ${s.A} ${ending ? s.off : ""}`} aria-hidden={ending}>
-        <p className={`${s.eyebrow} ${s.ko}`}>30~50대 여성을 위한 AI 코디</p>
+        <p className={`${s.eyebrow} ${s.ko}`}>20대 후반 여성을 위한 AI 코디</p>
         <h1 className={s.title}>오늘{" "}<br />뭐 입지?</h1>
         <p className={s.lead}>수많은 문 앞에서 고민될 때.</p>
         <button type="button" className={s.pill} onClick={onStart} tabIndex={ending ? -1 : 0}>
@@ -189,7 +189,7 @@ export default function CorridorHero({
       </div>
 
       <div className={`${s.copy} ${s.B} ${ending ? "" : s.off}`} aria-hidden={!ending}>
-        <p className={`${s.eyebrow} ${s.ko}`}>30~50대 여성을 위한 AI 코디</p>
+        <p className={`${s.eyebrow} ${s.ko}`}>20대 후반 여성을 위한 AI 코디</p>
         <h2 className={s.title}>그 답은,{" "}<br />오늘핏.</h2>
         <p className={s.lead}>문 너머, 나에게 맞는 한 벌. 1분이면 열려요.</p>
         <button type="button" className={s.pill} onClick={onStart} tabIndex={ending ? 0 : -1}>
