@@ -52,6 +52,8 @@ export const metadata: Metadata = {
   authors: [{ name: "오늘핏 OnulFit" }],
   creator: "오늘핏 OnulFit",
   metadataBase: new URL("https://onulfit.com"),
+  /* 대표 주소 표시. 다른 페이지는 각자 자기 주소로 덮어쓴다 */
+  alternates: { canonical: "https://onulfit.com" },
 
   /* ── 검색엔진 소유 확인 (서치콘솔·서치어드바이저 토큰은 Vercel 환경변수로) ── */
   verification: {
