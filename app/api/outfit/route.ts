@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SYSTEM_PROMPT, buildProfileGuide } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
-import { getMockOutfit, IS_DEMO_MODE } from "@/lib/mockData";
+import { IS_DEMO_MODE } from "@/lib/mockData";
+import { composeOutfit } from "@/lib/demoStylist";
 import type { BodyType, ColorType } from "@/lib/profile";
 import { currentSeason, SEASON_LABEL } from "@/lib/lookRecipes";
 
@@ -34,10 +35,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    /* ── 데모 모드: API 키 없을 때 샘플 코디 반환 ── */
+    /* ── 데모 모드: API 키가 없을 때 — 상황·계절·골격·퍼스널컬러로 매번 새로 조합 ── */
     if (IS_DEMO_MODE) {
       await new Promise((r) => setTimeout(r, 900));
-      return NextResponse.json(getMockOutfit(situation.trim()));
+      return NextResponse.json(composeOutfit(situation.trim(), bodyType, colorType));
     }
 
     /* ── 실제 모드: Anthropic API 직접 호출 (fetch) ──

@@ -38,6 +38,7 @@ const COLOR_MAP: Record<string, string> = {
   /* 2026-11-07 코디 보드용 — 자주 나오는 패션 색 */
   "오트밀": "#D9CDB8",
   "탄": "#B08A63",
+  "탄 브라운": "#9C7350",
   "모카 브라운": "#7E5E45",
   "웜 베이지": "#CDB596",
   "누드 베이지": "#D8BFA6",
@@ -68,17 +69,25 @@ const COLOR_MAP: Record<string, string> = {
   "에크루": "#EAE2CF",
 };
 
+/** 색 이름 안에 든 색들을 앞에서부터(긴 이름 우선, 겹치지 않게) — 예: "화이트 네이비 스트라이프" → 화이트, 네이비 */
+function findColors(colorName: string): string[] {
+  const text = colorName.trim().replace(/\s+/g, " ");
+  const found: { at: number; key: string }[] = [];
+  for (const key of Object.keys(COLOR_MAP).sort((a, b) => b.length - a.length)) {
+    const at = text.indexOf(key);
+    if (at < 0) continue;
+    if (found.some((f) => at < f.at + f.key.length && f.at < at + key.length)) continue;
+    found.push({ at, key });
+  }
+  return found.sort((a, b) => a.at - b.at).map((f) => f.key);
+}
+
 export function getColorHex(colorName: string): string {
   const normalized = colorName.trim().replace(/\s+/g, " ");
-
   if (COLOR_MAP[normalized]) return COLOR_MAP[normalized];
 
-  // 이름 안에 든 색 중 가장 긴 것(예: "카멜 브라운"은 "카멜"보다 "카멜 브라운")
-  let best = "";
-  for (const key of Object.keys(COLOR_MAP)) {
-    if (normalized.includes(key) && key.length > best.length) best = key;
-  }
-  if (best) return COLOR_MAP[best];
+  const first = findColors(normalized)[0];
+  if (first) return COLOR_MAP[first];
   for (const [key, value] of Object.entries(COLOR_MAP)) {
     if (key.includes(normalized)) return value;
   }
@@ -88,15 +97,6 @@ export function getColorHex(colorName: string): string {
 
 /** 무늬 옷의 줄 색 — 색 이름에 색이 둘 이상이면(예: "화이트 네이비 스트라이프") 두 번째 색. 없으면 null */
 export function getLineColorHex(colorName: string): string | null {
-  const text = colorName.trim().replace(/\s+/g, " ");
-  const found: { at: number; key: string }[] = [];
-  // 긴 이름부터 찾고, 이미 찾은 자리와 겹치면 건너뛴다
-  for (const key of Object.keys(COLOR_MAP).sort((a, b) => b.length - a.length)) {
-    const at = text.indexOf(key);
-    if (at < 0) continue;
-    if (found.some((f) => at < f.at + f.key.length && f.at < at + key.length)) continue;
-    found.push({ at, key });
-  }
-  found.sort((a, b) => a.at - b.at);
-  return found.length > 1 ? COLOR_MAP[found[1].key] : null;
+  const found = findColors(colorName);
+  return found.length > 1 ? COLOR_MAP[found[1]] : null;
 }
