@@ -34,6 +34,10 @@ export const CONSULT_INFO = {
 /* ── 개인정보 수집·이용 안내 (신청서 동의 체크칸 + /privacy) ── */
 export const PRIVACY_VERSION = "2026-11-08";
 /** 운영자 — 2026-11-08 사용자 요청. 사업자 등록 후 상호·사업자번호를 더할 것 */
+/** 오늘핏 공식 인스타그램 (2026-11-09) */
+export const INSTAGRAM_HANDLE = "onulfit.official";
+export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
+
 export const OPERATOR = "로니스튜디오 · 대표 최샤론";
 /** 공개 문의 이메일 — 오늘핏 전용 (2026-11-08 사용자 요청). 바꾸려면 여기 또는 NEXT_PUBLIC_CONTACT_EMAIL */
 export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || "chston@naver.com").trim();

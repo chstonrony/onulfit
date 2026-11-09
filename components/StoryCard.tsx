@@ -112,9 +112,14 @@ const StoryCard = forwardRef<HTMLDivElement, Props>(({ body, color }, ref) => {
               무료 진단 · 체형 + 퍼스널컬러
             </p>
           </div>
-          <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: 13, fontWeight: 500, color: GOLD, margin: 0, letterSpacing: "0.02em" }}>
-            onulfit.com
-          </p>
+          <div style={{ textAlign: "right" }}>
+            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: 13, fontWeight: 500, color: GOLD, margin: 0, letterSpacing: "0.02em" }}>
+              onulfit.com
+            </p>
+            <p style={{ fontFamily: "var(--font-jost), sans-serif", fontSize: 10.5, color: "#B4A890", margin: "2px 0 0", letterSpacing: "0.02em" }}>
+              @onulfit.official
+            </p>
+          </div>
         </div>
       </div>
     </div>

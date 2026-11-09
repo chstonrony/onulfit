@@ -24,6 +24,7 @@ import {
   type Profile,
 } from "@/lib/profile";
 import { GYEOL } from "@/lib/gyeol";
+import { INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/consult";
 import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
@@ -718,6 +719,19 @@ function ResultView({
       >
         {saving ? "이미지 만드는 중…" : "내 결 카드 저장 · 공유하기"}
       </button>
+      <p style={{ fontFamily: sans, fontSize: "12px", color: sub, lineHeight: 1.6, textAlign: "center", margin: "0 0 14px", wordBreak: "keep-all" }}>
+        스토리에 올릴 땐{" "}
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track("instagram_click", { where: "diagnosis_result" })}
+          style={{ color: acc, fontWeight: 600, textDecoration: "none" }}
+        >
+          @{INSTAGRAM_HANDLE}
+        </a>
+        를 태그해 주세요 · 매일 코디도 올려요
+      </p>
 
       <button onClick={onDone} style={ctaStyle()}>
         코디 받으러 가기
