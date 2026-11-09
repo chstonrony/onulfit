@@ -176,7 +176,7 @@ const ACCS: Item[] = [
   { n: "니트 비니", k: "니트 비니", o: "A", s: WI, why: "귀까지 덮어 주는 비니가 따뜻하고 캐주얼한 멋을 더해요." },
   { n: "볼캡", k: "볼캡", o: "A", s: SFA, why: "햇빛도 가리고 경쾌한 분위기도 더해 주는 아이템이에요." },
   { n: "울 베레모", k: "베레모", o: "DC", s: FW, why: "베레모 하나로 프렌치 무드가 살아나요." },
-  { n: "진주 귀걸이", k: "진주 귀걸이", o: "FSDM", why: "은은한 진주가 얼굴을 환하게 밝혀 줘요." },
+  { n: "링 귀걸이", k: "링 귀걸이", o: "FSDM", why: "작은 링 귀걸이가 얼굴 가까이에서 환하게 반짝여요." },
   { n: "체인 목걸이", k: "체인 목걸이", o: "DPC", why: "가는 체인 목걸이가 목선에 반짝이는 포인트를 줘요." },
   { n: "레더 벨트", k: "레더 벨트", o: "SC", why: "허리에 벨트 하나를 더하면 비율이 정돈돼 보여요." },
   { n: "버킷햇", k: "버킷햇", o: "A", s: SS, why: "자외선도 막고 캐주얼한 분위기도 살려 줘요." },
@@ -260,7 +260,7 @@ export function composeOutfit(situation: string, bodyType?: BodyType, colorType?
   const lines = [...occ.line].sort(() => Math.random() - 0.5);
   const colorOf = (cat: keyof typeof ROLE, it: Item): string => {
     if (cat === "accessory") {
-      if (/귀걸이|목걸이/.test(it.n)) return /진주/.test(it.n) ? "펄" : cMetal;
+      if (/귀걸이|목걸이/.test(it.n)) return cMetal;
       return cBag;
     }
     const base = { outer: cOuter, top: cTop, bottom: cBottom, shoes: cShoes }[cat];
@@ -273,8 +273,8 @@ export function composeOutfit(situation: string, bodyType?: BodyType, colorType?
     const it = picked[cat];
     const color = colorOf(cat, it);
     const shownColor = color.split(" ").slice(0, 2).join(" ");
-    // 이름 앞 색: 무늬 옷은 바탕색만, 진주는 색 없이, 나머지는 색 이름 그대로(예: 다크 브라운 롱부츠)
-    const prefix = /진주/.test(it.n) ? "" : it.p ? color.split(" ")[0] : color;
+    // 이름 앞 색: 무늬 옷은 바탕색만, 나머지는 색 이름 그대로(예: 다크 브라운 롱부츠, 골드 링 귀걸이)
+    const prefix = it.p ? color.split(" ")[0] : color;
     return {
       name: `${prefix ? prefix + " " : ""}${it.n}`,
       color,

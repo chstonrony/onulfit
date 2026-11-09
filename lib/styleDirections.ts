@@ -46,7 +46,7 @@ export const DIRECTIONS: StyleDirection[] = [
   {
     key: "soft", name: "소프트 페미닌", vibe: "부드러운 소재와 곡선으로 다정해 보이는 룩",
     occ: ["D", "C", "F"],
-    heroes: [h("top", "리본 블라우스"), h("bottom", "플리츠 스커트"), h("outer", "크롭 가디건"), h("shoes", "메리제인"), h("accessory", "진주 목걸이"), h("bottom", "슬립 스커트")],
+    heroes: [h("top", "리본 블라우스"), h("bottom", "플리츠 스커트"), h("outer", "크롭 가디건"), h("shoes", "메리제인"), h("accessory", "리본 헤어핀"), h("bottom", "슬립 스커트")],
     palettes: [["파우더 핑크", "크림", "라벤더", "펄"], ["버터 옐로우", "아이보리", "라이트 그레이", "골드"], ["더스티 로즈", "베이지", "화이트", "펄"]],
     bottoms: ["플리츠 스커트", "슬립 스커트", "A라인 스커트"],
     cue: "허리선을 살짝 드러내고, 끝단이 흔들리는 소재로 움직임을 만들기",
@@ -108,12 +108,12 @@ export const DIRECTIONS: StyleDirection[] = [
     cue: "거친 소재(가죽) 하나에 부드러운 소재(실크·니트) 하나를 섞어 균형",
   },
   {
-    key: "tweed", name: "레이디 트위드", vibe: "트위드와 진주로 우아하게 차려입은 클래식 룩",
+    key: "tweed", name: "레이디 트위드", vibe: "트위드 재킷에 골드 포인트로 단정하게 차려입은 클래식 룩",
     occ: ["F", "D", "S", "P"],
-    heroes: [h("outer", "트위드 자켓"), h("accessory", "진주 목걸이"), h("shoes", "슬링백 힐"), h("bottom", "A라인 스커트"), h("accessory", "체인 숄더백")],
+    heroes: [h("outer", "트위드 자켓"), h("accessory", "골드 이어링"), h("shoes", "슬링백 힐"), h("bottom", "A라인 스커트"), h("accessory", "체인 숄더백")],
     palettes: [["핑크", "블랙", "크림", "골드"], ["네이비", "화이트", "베이지", "골드"], ["블랙", "그레이", "아이보리", "펄"]],
     bottoms: ["A라인 스커트", "와이드 슬랙스", "스트레이트 데님"],
-    cue: "트위드 하나로 충분하니 나머지는 무지로, 진주는 목이나 귀 한 곳에만",
+    cue: "트위드 하나로 충분하니 나머지는 무지로, 액세서리는 귀나 목 한 곳에만",
   },
   {
     key: "colorpop", name: "컬러 포인트", vibe: "차분한 바탕에 선명한 색 한 가지로 기분을 끌어올리는 룩",
@@ -192,7 +192,7 @@ const ACCS: Pick[] = [
   { name: "가죽 벨트", occ: ["C", "S", "D", "A"] },
   { name: "골드 후프 이어링", occ: ["C", "D", "P", "S"] },
   { name: "레이어드 체인 목걸이", occ: ["C", "D", "P"] },
-  { name: "진주 목걸이", occ: ["F", "S", "P", "D"] },
+  { name: "실버 체인 목걸이", occ: ["F", "S", "P", "D"] },
   { name: "드롭 이어링", occ: ["F", "P", "D"] },
   { name: "베레모", occ: ["C", "D"], not: ["summer"] },
   { name: "버킷햇", occ: ["C", "A"] },

@@ -81,7 +81,7 @@ export const BODY_GUIDE: Record<BodyType, BodyGuide> = {
         avoid: "둥근코·장식 많은 신발, 흐물거리는 가방",
       },
       accessory: {
-        good: "큼직하고 심플한 골드·진주, 짧은~중간 길이 목걸이 한 개",
+        good: "큼직하고 심플한 골드·실버 메탈, 짧은~중간 길이 목걸이 한 개",
         avoid: "자잘한 레이어드 — 상체가 복잡해짐",
       },
     },
@@ -139,7 +139,7 @@ export const BODY_GUIDE: Record<BodyType, BodyGuide> = {
         avoid: "투박한 워커, 큰 토트백 — 무거워 보임",
       },
       accessory: {
-        good: "자잘하고 화사한 레이어드, 진주, 가는 체인",
+        good: "자잘하고 화사한 레이어드, 가는 체인, 작은 링 귀걸이",
         avoid: "무겁고 큰 메탈 — 상체가 눌림",
       },
     },
@@ -268,7 +268,7 @@ export type CrossKey = `${BodyType}-${ColorType}`;
 export const CROSS_GUIDE: Partial<Record<CrossKey, { persona: string; signature: string }>> = {
   "straight-winter": { persona: "도시적이고 또렷한 카리스마", signature: "블랙 V넥 + 네이비 슬랙스 + 실버 액세서리" },
   "straight-autumn": { persona: "고급스러운 미니멀 베이식", signature: "카멜 셔츠 + 브라운 슬랙스 + 골드 포인트" },
-  "wave-summer":     { persona: "부드럽고 사랑스러운 파스텔", signature: "로즈 크롭 가디건 + 하이웨스트 플레어 + 진주" },
+  "wave-summer":     { persona: "부드럽고 사랑스러운 파스텔", signature: "로즈 크롭 가디건 + 하이웨스트 플레어 + 실버\u00a0플랫" },
   "wave-spring":     { persona: "화사하고 발랄한 러블리", signature: "코랄 퍼프 블라우스 + 아이보리 스커트" },
   "natural-autumn":  { persona: "멋스러운 빈티지 캐주얼", signature: "올리브 오버셔츠 + 인디고 와이드 + 워커" },
   "natural-summer":  { persona: "편안하고 시원한 내추럴", signature: "소프트그레이 박시 니트 + 라이트 데님" },
