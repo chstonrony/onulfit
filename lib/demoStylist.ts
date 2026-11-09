@@ -10,6 +10,7 @@ import type { OutfitRecommendation, ClothingItem } from "./types";
 import type { BodyType, ColorType } from "./profile";
 import { BODY_GUIDE, COLOR_GUIDE } from "./styleGuide";
 import { currentSeason, type Season } from "./lookRecipes";
+import { pickStyleBrief } from "./styleDirections";
 
 /* ── 자리 ── C 일상 · S 단정(회의·학부모) · F 격식(하객) · D 데이트 · P 파티·공연 · A 야외·활동 · M 조문 */
 type Occ = "C" | "S" | "F" | "D" | "P" | "A" | "M";
@@ -237,6 +238,41 @@ export function composeOutfit(situation: string, bodyType?: BodyType, colorType?
   // 상황에 계절이 적혀 있으면 그 계절로(예: "봄 소풍")
   const season: Season =
     /여름|휴가|바캉스|해변/.test(text) ? "summer" : /겨울|크리스마스|눈 오는/.test(text) ? "winter" : /봄|벚꽃/.test(text) ? "spring" : /가을|단풍/.test(text) ? "autumn" : currentSeason(now);
+  /* 조문이 아니면 AI와 같은 코디 방향(핀터레스트·29CM 스트릿 데일리)으로 짠다 (2026-11-09) */
+  const brief = pickStyleBrief(occ.id, season, bodyType, colorType);
+  if (brief) {
+    const lines = [...occ.line].sort(() => Math.random() - 0.5);
+    const solid = brief.base.filter((c) => !c.includes("데님"));
+    const denim = brief.base.find((c) => c.includes("데님")) ?? "중청 데님";
+    const n = (i: number) => solid[i % Math.max(solid.length, 1)] ?? "그레이";
+    const metal = colorType === "spring" || colorType === "autumn" ? "골드" : "실버";
+    const isJewel = /목걸이|이어링|귀걸이|반지|뱅글/.test(brief.items.accessory);
+    const pointCat = brief.point && !(brief.point.cat === "accessory" && isJewel) ? brief.point.cat : brief.point ? "top" : null;
+    const colorFor: Record<keyof typeof ROLE, string> = {
+      outer: n(0),
+      top: n(1),
+      bottom: /데님|청/.test(brief.items.bottom) ? denim : n(2),
+      shoes: brief.shoesColor,
+      accessory: isJewel ? metal : brief.bagColor,
+    };
+    if (pointCat && brief.point) colorFor[pointCat] = brief.point.color;
+    const make = (cat: keyof typeof ROLE, i: number): ClothingItem => ({
+      name: brief.items[cat],
+      color: colorFor[cat],
+      description: `${colorFor[cat]} 컬러가 ${ROLE[cat]}. ${lines[i % lines.length]}`,
+      searchKeyword: brief.items[cat].replace(/^(슬림|베이직|파인 게이지)\s/, ""),
+    });
+    const tip = [`${brief.cue}만 해도 훨씬 감각 있어 보여요.`];
+    if (bodyType && BODY_GUIDE[bodyType]) tip.push(`골격 포인트 — ${BODY_GUIDE[bodyType].principle}`);
+    return {
+      situation: short(situation.trim().replace(/\s+/g, " "), 30),
+      mood: `${pickOne(occ.mood)} · ${brief.direction.name}`,
+      items: { top: make("top", 0), bottom: make("bottom", 1), outer: make("outer", 2), shoes: make("shoes", 3), accessory: make("accessory", 4) },
+      stylingTip: tip.join(" "),
+      overallLook: `${brief.direction.vibe}. ${pickOne(occ.look)}`,
+    };
+  }
+
   const pal = pickPalette(occ.id, feel, colorType);
   // 퍼스널컬러에서 피할 색은 무난한 색으로 바꾼다
   const worst = colorType ? COLOR_GUIDE[colorType].worstColors : [];

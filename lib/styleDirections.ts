@@ -1,290 +1,305 @@
-/* ── 코디 방향 라이브러리 (2026-11-07) ──
-   AI에게 그냥 "코디해 줘"라고 하면 늘 가장 무난한 답(아이보리 터틀넥 · 차콜 와이드 슬랙스 · 카멜 롱코트 · 로퍼)으로 모인다.
-   그래서 매번 아래에서 스타일 방향 하나 · 주인공 아이템 하나 · 팔레트 하나 · 하의 형태 하나를 무작위로 골라 함께 건넨다.
-   방향은 핀터레스트·패션 매거진에서 20대 후반 여성에게 꾸준히 쓰이는 스타일 갈래를 우리 말로 정리한 것(이미지·문구를 가져오지 않음).
-   아이템 이름은 옷 사진(GarmentArt)이 알아보는 말로 쓴다 — 트위드 자켓·메리제인·플리츠 스커트 등. */
+/* ── 코디 방향 라이브러리 (2026-11-09 다시 짬) ──
+   AI에게 그냥 "코디해 줘"라고 하면 늘 가장 무난한 답으로 모인다. 그래서 매번 스타일 방향 하나와
+   상의·하의·아우터·신발·액세서리를 정해서 함께 건넨다.
+
+   2026-11-09 사용자 피드백: "코트 + 라벤더 보트넥 니트 + 로즈 체크 플리츠 + 핑크 로퍼 + 하늘색 스카프"가 나와서
+   "스타일리시하지도, 노멀하지도 않다. 핀터레스트·29CM 감성을 해 달라고 했는데 왜 이런 게 나오냐".
+   원인 세 가지를 고쳤다.
+   1) 예전 방향이 프렌치 시크·클래식 프레피(체크 플리츠)·소프트 페미닌(리본·펄)·콰이어트 럭셔리·레이디 트위드처럼
+      화보·교복·마담 쪽이었다 → 핀터레스트 OOTD·29CM 룩북에 실제로 나오는 스트릿 데일리 방향으로 바꿈
+   2) 상의·신발·액세서리를 방향과 상관없이 따로 뽑아서 서로 안 어울리는 것끼리 붙었다
+      → 방향마다 그 방향에 맞는 상의·하의·아우터·신발·액세서리 후보를 따로 둔다
+   3) 퍼스널컬러가 있으면 "모든 아이템을 베스트 컬러로" 칠해서 파스텔 5색이 됐다
+      → 바탕은 그 사람에게 맞는 무채색·데님, 베스트 컬러는 포인트 한 곳에만
+
+   기준(사용자 레퍼런스, 2026-11-08): 루즈한 중청·연청 데님(바닥에 살짝 끌리는 길이), 단순한 상의 하나,
+   슬림한 로퍼·스웨이드 스니커즈, 브라운 가죽 숄더백·블랙 크로스백, 무채색+청색, 아이템 적은 꾸안꾸.
+   아이템 이름은 옷 사진(GarmentArt)이 알아보는 말로 쓴다. */
 
 import type { Season } from "./lookRecipes";
-import type { BodyType } from "./profile";
+import type { BodyType, ColorType } from "./profile";
 
 /** 자리 — C 일상 · S 단정 · F 격식 · D 데이트 · P 특별한 저녁 · A 야외 · M 조문 */
 export type Occ = "C" | "S" | "F" | "D" | "P" | "A" | "M";
 
 type Cat = "top" | "bottom" | "outer" | "shoes" | "accessory";
-type Hero = { cat: Cat; name: string };
+/** not: 이 계절엔 안 씀 · nob: 이 골격엔 안 씀 */
+type Pick = { name: string; not?: Season[]; nob?: BodyType[] };
 
 export interface StyleDirection {
   key: string;
   name: string;
   vibe: string;
   occ: Occ[];
-  heroes: Hero[];
-  palettes: string[][];
-  bottoms: string[];
-  cue: string;
+  top: Pick[];
+  bottom: Pick[];
+  outer: Pick[];
+  shoes: Pick[];
+  accessory: Pick[];
+  /** 퍼스널컬러가 없을 때 쓰는 색: 바탕 색들 + 포인트 하나(없으면 무채색만) */
+  palettes: { base: string[]; point?: string }[];
+  /** 인플루언서식 스타일링 디테일 후보 */
+  cues: string[];
 }
 
-const h = (cat: Cat, name: string): Hero => ({ cat, name });
+const p = (name: string, o: Omit<Pick, "name"> = {}): Pick => ({ name, ...o });
+const S: Season[] = ["summer"];
+const W: Season[] = ["winter"];
+const SW: Season[] = ["summer", "winter"];
+const COLD: Season[] = ["summer", "spring"]; // 패딩·롱부츠처럼 추울 때만
+
+/* 골격별로 빠지는 것 (styleGuide의 피할 것) */
+const WIDE = { nob: ["straight"] as BodyType[] };            // 통 넓은 하의 — 스트레이트는 부피가 늘어 보임
+const OVER = { nob: ["straight", "wave"] as BodyType[] };    // 오버핏·박시 상의
+const CROP = { nob: ["straight", "natural"] as BodyType[] }; // 크롭 기장
 
 export const DIRECTIONS: StyleDirection[] = [
   {
-    key: "french", name: "프렌치 시크", vibe: "힘을 뺀 듯 무심하지만 선이 깔끔한 파리지앵 무드",
-    occ: ["C", "D", "P", "S"],
-    heroes: [h("top", "스트라이프 보트넥 티셔츠"), h("outer", "트렌치 코트"), h("shoes", "발레 플랫"), h("bottom", "스트레이트 데님"), h("accessory", "실크 스카프"), h("accessory", "베레모")],
-    palettes: [["네이비", "화이트", "데님", "레드 포인트"], ["블랙", "크림", "데님", "카멜"]],
-    bottoms: ["스트레이트 데님", "미디 스커트", "크롭 슬랙스"],
-    cue: "한 군데만 힘주기(레드 립 색 소품 하나), 소매를 걷거나 셔츠 앞자락만 넣어 무심한 디테일",
+    key: "denim-daily", name: "데님 데일리", vibe: "루즈한 데님에 단순한 상의 하나, 힘 뺀 듯 정돈된 핀터레스트 OOTD",
+    occ: ["C", "A", "D"],
+    top: [p("케이블 니트", { not: S, nob: ["straight"] }), p("크루넥 니트", { not: S }), p("오버핏 셔츠", OVER), p("스트라이프 셔츠"), p("베이직 티셔츠", { not: W }), p("브이넥 니트", { not: S })],
+    bottom: [p("와이드 데님", WIDE), p("스트레이트 데님", { nob: ["wave"] }), p("부츠컷 데님")],
+    outer: [p("울 코트", { not: S }), p("레더 자켓", { not: S }), p("숏 패딩", { not: COLD }), p("크롭 가디건", { not: W, ...CROP }), p("트렌치 코트", { not: SW })],
+    shoes: [p("슬림 로퍼"), p("스웨이드 스니커즈"), p("발레 플랫", { not: W }), p("레더 스니커즈")],
+    accessory: [p("가죽 숄더백"), p("크로스백"), p("볼캡"), p("실버 레이어드 목걸이")],
+    palettes: [
+      { base: ["블랙", "화이트", "중청 데님"], point: "브라운" },
+      { base: ["크림", "그레이", "연청 데님"], point: "블랙" },
+      { base: ["네이비", "화이트", "중청 데님"] },
+    ],
+    cues: ["상의 앞자락만 살짝 넣어 입기", "니트 아래로 흰 티를 살짝 보이게 레이어드", "데님은 신발을 덮을 만큼 길게, 바닥에 살짝 끌리는 기장", "셔츠 소매를 한두 번 걷기"],
   },
   {
-    key: "quiet", name: "콰이어트 럭셔리", vibe: "로고 없이 소재와 핏으로 고급스러움을 말하는 차분한 룩",
-    occ: ["S", "F", "D", "C"],
-    heroes: [h("top", "실크 블라우스"), h("outer", "더블 코트"), h("shoes", "슬링백"), h("top", "캐시미어 브이넥 니트"), h("accessory", "미니멀 토트백"), h("bottom", "테일러드 슬랙스")],
-    palettes: [["오트밀", "초콜릿 브라운", "크림", "골드"], ["그레이지", "네이비", "아이보리", "실버"], ["토프", "블랙", "크림", "골드"]],
-    bottoms: ["테일러드 슬랙스", "롱 플리츠 스커트", "스트레이트 팬츠"],
-    cue: "같은 계열 색으로 위아래를 이어 길어 보이게, 장신구는 작고 단단한 것 하나",
-  },
-  {
-    key: "soft", name: "소프트 페미닌", vibe: "부드러운 소재와 곡선으로 다정해 보이는 룩",
-    occ: ["D", "C", "F"],
-    heroes: [h("top", "리본 블라우스"), h("bottom", "플리츠 스커트"), h("outer", "크롭 가디건"), h("shoes", "메리제인"), h("accessory", "리본 헤어핀"), h("bottom", "슬립 스커트")],
-    palettes: [["파우더 핑크", "크림", "라벤더", "펄"], ["버터 옐로우", "아이보리", "라이트 그레이", "골드"], ["더스티 로즈", "베이지", "화이트", "펄"]],
-    bottoms: ["플리츠 스커트", "슬립 스커트", "A라인 스커트"],
-    cue: "허리선을 살짝 드러내고, 끝단이 흔들리는 소재로 움직임을 만들기",
-  },
-  {
-    key: "mono", name: "미니멀 모노톤", vibe: "검정·회색·흰색만으로 또렷하게 정리한 도시적인 룩",
-    occ: ["S", "P", "C", "F"],
-    heroes: [h("outer", "블랙 롱 코트"), h("shoes", "첼시 부츠"), h("top", "블랙 터틀넥"), h("bottom", "블랙 슬립 스커트"), h("accessory", "실버 이어링"), h("outer", "그레이 블레이저")],
-    palettes: [["블랙", "차콜", "화이트", "실버"], ["그레이", "블랙", "아이보리", "실버"]],
-    bottoms: ["부츠컷 슬랙스", "슬립 스커트", "와이드 데님"],
-    cue: "색을 줄인 대신 소재를 섞기(니트·가죽·울), 실루엣은 하나만 크게",
-  },
-  {
-    key: "city", name: "시티 캐주얼", vibe: "편하게 걷기 좋은데 대충 입은 것 같지 않은 주말 룩",
+    key: "street", name: "꾸안꾸 스트릿", vibe: "맨투맨·볼캡·스니커즈로 편하게, 그런데 대충은 아닌 서울 스트릿 룩",
     occ: ["C", "A"],
-    heroes: [h("top", "그레이 맨투맨"), h("outer", "바시티 재킷"), h("shoes", "스니커즈"), h("accessory", "미니 숄더백"), h("bottom", "데님 스커트"), h("outer", "크롭 가디건")],
-    palettes: [["멜란지 그레이", "데님", "네이비", "화이트"], ["카키", "크림", "블랙", "데님"]],
-    bottoms: ["데님 스커트", "롱 플리츠 스커트", "와이드 데님"],
-    cue: "맨투맨·스니커즈 같은 캐주얼에 스커트·주얼리 같은 여성스러운 아이템을 하나 섞어 정돈",
+    top: [p("맨투맨", OVER), p("그래픽 티셔츠", { not: W }), p("크롭 니트", { not: S, ...CROP }), p("오버핏 셔츠", OVER), p("크루넥 니트", { not: S })],
+    bottom: [p("와이드 데님", WIDE), p("카고 팬츠", { nob: ["straight", "wave"] }), p("데님 스커트"), p("부츠컷 데님")],
+    outer: [p("바시티 재킷", { not: S }), p("숏 패딩", { not: COLD }), p("데님 재킷", { not: W }), p("후드 집업", { not: SW, ...OVER }), p("나일론 바람막이", { not: W })],
+    shoes: [p("스니커즈"), p("스웨이드 스니커즈"), p("어글리 스니커즈")],
+    accessory: [p("볼캡"), p("비니", { not: S }), p("크로스백"), p("실버 체인 목걸이")],
+    palettes: [
+      { base: ["멜란지 그레이", "블랙", "중청 데님"], point: "화이트" },
+      { base: ["네이비", "화이트", "연청 데님"], point: "그레이" },
+      { base: ["블랙", "그레이", "진청 데님"], point: "카키" },
+    ],
+    cues: ["모자 하나로 꾸민 티 내기", "실버 목걸이·반지로 캐주얼에 반짝임 하나", "흰 양말을 살짝 보이게", "크로스백 끈을 짧게 메기"],
   },
   {
-    key: "preppy", name: "클래식 프레피", vibe: "단정한 학교 교복에서 온 지적이고 반듯한 룩",
-    occ: ["S", "C"],
-    heroes: [h("top", "카라 니트"), h("outer", "네이비 블레이저"), h("bottom", "체크 플리츠 스커트"), h("outer", "브이넥 가디건"), h("shoes", "메리제인"), h("top", "리본 블라우스")],
-    palettes: [["네이비", "포레스트 그린", "크림", "버건디"], ["카멜", "네이비", "화이트", "그린"]],
-    bottoms: ["체크 플리츠 스커트", "A라인 스커트", "스트레이트 데님"],
-    cue: "셔츠 깃을 니트 위로 꺼내 레이어드, 양말·벨트 같은 작은 클래식 소품",
+    key: "neutral", name: "미니멀 뉴트럴", vibe: "그레이·크림·블랙만으로 정리한, 29CM 룩북 같은 담백한 룩",
+    occ: ["C", "S", "D", "F", "P"],
+    top: [p("브이넥 니트", { not: S }), p("크루넥 니트", { not: S }), p("코튼 셔츠", { nob: ["wave"] }), p("반팔 니트", { not: W }), p("터틀넥 니트", { not: S, nob: ["straight"] })],
+    bottom: [p("와이드 슬랙스", WIDE), p("스트레이트 데님", { nob: ["wave"] }), p("롱 스커트"), p("부츠컷 슬랙스")],
+    outer: [p("발마칸 코트", { not: S }), p("오버핏 블레이저", { not: W, nob: ["wave"] }), p("니트 가디건", { not: W }), p("울 코트", { not: S })],
+    shoes: [p("슬림 로퍼"), p("발레 플랫", { not: W }), p("레더 스니커즈"), p("앵클 부츠", { not: S })],
+    accessory: [p("가죽 숄더백"), p("실버 이어링"), p("미니 토트백"), p("가죽 벨트")],
+    palettes: [
+      { base: ["그레이", "크림", "블랙"] },
+      { base: ["오트밀", "아이보리", "브라운"], point: "블랙" },
+      { base: ["차콜", "화이트", "라이트 그레이"] },
+    ],
+    cues: ["같은 계열 색으로 위아래를 이어 길어 보이게", "벨트로 허리선 한 번 잡기", "가방·신발 색을 맞춰 정돈", "니트를 어깨에 둘러 레이어드"],
   },
   {
-    key: "office", name: "모던 테일러링", vibe: "어깨선이 반듯한 재킷으로 신뢰를 주는 일하는 사람의 룩",
-    occ: ["S", "F"],
-    heroes: [h("outer", "테일러드 블레이저"), h("top", "실크 셔츠"), h("shoes", "포인티드 펌프스"), h("bottom", "핀스트라이프 슬랙스"), h("accessory", "구조적인 숄더백")],
-    palettes: [["차콜", "스카이 블루", "화이트", "실버"], ["네이비", "아이보리", "카멜", "골드"], ["그레이", "블랙", "라이트 블루", "실버"]],
-    bottoms: ["스트레이트 슬랙스", "펜슬 스커트", "와이드 슬랙스"],
-    cue: "재킷과 하의를 같은 색 셋업으로, 안쪽만 밝게 해 얼굴을 환하게",
+    key: "black-leather", name: "블랙 & 레더", vibe: "블랙 아이템에 가죽 하나, 살짝 쿨한 인스타 무드",
+    occ: ["C", "D", "P"],
+    top: [p("파인 게이지 니트", { not: S }), p("베이직 티셔츠", { not: W }), p("슬리브리스 니트", { not: ["winter", "autumn"] }), p("크롭 니트", { not: S, ...CROP })],
+    bottom: [p("와이드 데님", WIDE), p("부츠컷 데님"), p("슬립 스커트"), p("스트레이트 데님", { nob: ["wave"] })],
+    outer: [p("레더 자켓", { not: S }), p("롱 코트", { not: S }), p("오버핏 블레이저", { not: W, nob: ["wave"] })],
+    shoes: [p("앵클 부츠", { not: S }), p("슬림 로퍼"), p("스트랩 샌들", { not: ["winter", "autumn"] })],
+    accessory: [p("실버 체인 목걸이"), p("숄더백"), p("실버 후프 이어링"), p("가죽 벨트")],
+    palettes: [
+      { base: ["블랙", "화이트", "진청 데님"] },
+      { base: ["블랙", "그레이", "중청 데님"], point: "실버" },
+    ],
+    cues: ["거친 가죽 하나에 부드러운 니트 하나로 균형", "실버 액세서리를 두세 개 겹치기", "가죽 자켓 소매를 살짝 밀어 올리기"],
   },
   {
-    key: "natural", name: "빈티지 내추럴", vibe: "자연 소재와 흙빛 색으로 편안하고 따뜻한 룩",
-    occ: ["C", "A"],
-    heroes: [h("top", "코튼 셔츠"), h("bottom", "롱 플리츠 스커트"), h("outer", "니트 베스트"), h("shoes", "스웨이드 부츠"), h("accessory", "라탄 백"), h("accessory", "버킷햇")],
-    palettes: [["올리브", "브라운", "크림", "머스타드"], ["세이지 그린", "에크루", "카멜", "브라운"]],
-    bottoms: ["롱 스커트", "와이드 코튼 팬츠", "스트레이트 데님"],
-    cue: "질감이 느껴지는 소재 두 가지를 섞고, 금속 대신 나무·가죽 소품",
+    key: "knit-skirt", name: "니트 & 롱스커트", vibe: "포근한 니트에 롱스커트, 여자 인플루언서 데일리처럼 편하고 예쁜 룩",
+    occ: ["C", "D", "F"],
+    top: [p("크롭 니트", { not: S, ...CROP }), p("브이넥 가디건", { not: S }), p("케이블 니트", { not: S, nob: ["straight"] }), p("반팔 니트", { not: W }), p("크루넥 니트", { not: S })],
+    bottom: [p("롱 스커트"), p("데님 롱스커트"), p("슬립 스커트")],
+    outer: [p("울 코트", { not: S }), p("숏 패딩", { not: COLD }), p("크롭 가디건", { not: W, ...CROP }), p("스웨이드 재킷", { not: SW })],
+    shoes: [p("롱부츠", { not: COLD }), p("발레 플랫", { not: W }), p("스웨이드 스니커즈"), p("슬림 로퍼")],
+    accessory: [p("가죽 숄더백"), p("울 머플러", { not: COLD }), p("골드 후프 이어링"), p("캔버스 토트백", { not: W })],
+    palettes: [
+      { base: ["크림", "그레이", "블랙"] },
+      { base: ["오트밀", "브라운", "아이보리"] },
+      { base: ["블랙", "차콜", "화이트"], point: "브라운" },
+    ],
+    cues: ["니트 앞자락을 스커트에 살짝 넣어 허리선 만들기", "스커트와 신발 색을 이어 길어 보이게", "머리는 로우번이나 집게핀으로 가볍게"],
   },
   {
-    key: "cozy", name: "스칸디 코지", vibe: "포근한 니트와 털 소재로 겨울을 즐기는 북유럽 무드",
-    occ: ["C", "A"],
-    heroes: [h("top", "케이블 니트"), h("outer", "숏 무스탕"), h("accessory", "니트 비니"), h("shoes", "스웨이드 부츠"), h("top", "니트 원피스"), h("outer", "숏 패딩")],
-    palettes: [["오트밀", "그레이", "크림", "카키"], ["크림", "브라운", "베이지", "블랙"]],
-    bottoms: ["니트 스커트", "스트레이트 데님", "와이드 팬츠"],
-    cue: "부피 큰 니트엔 곧은 하의, 같은 톤의 모자·머플러로 얼굴 주변을 따뜻하게",
-  },
-  {
-    key: "rock", name: "록시크", vibe: "가죽과 블랙으로 살짝 날을 세운 쿨한 룩",
-    occ: ["P", "D", "C"],
-    heroes: [h("outer", "레더 자켓"), h("shoes", "앵클 부츠"), h("bottom", "블랙 슬립 스커트"), h("accessory", "실버 체인 목걸이"), h("bottom", "부츠컷 데님")],
-    palettes: [["블랙", "버건디", "실버", "화이트"], ["블랙", "데님", "그레이", "실버"]],
-    bottoms: ["슬립 스커트", "부츠컷 데님", "레더 팬츠"],
-    cue: "거친 소재(가죽) 하나에 부드러운 소재(실크·니트) 하나를 섞어 균형",
-  },
-  {
-    key: "tweed", name: "레이디 트위드", vibe: "트위드 재킷에 골드 포인트로 단정하게 차려입은 클래식 룩",
-    occ: ["F", "D", "S", "P"],
-    heroes: [h("outer", "트위드 자켓"), h("accessory", "골드 이어링"), h("shoes", "슬링백 힐"), h("bottom", "A라인 스커트"), h("accessory", "체인 숄더백")],
-    palettes: [["핑크", "블랙", "크림", "골드"], ["네이비", "화이트", "베이지", "골드"], ["블랙", "그레이", "아이보리", "펄"]],
-    bottoms: ["A라인 스커트", "와이드 슬랙스", "스트레이트 데님"],
-    cue: "트위드 하나로 충분하니 나머지는 무지로, 액세서리는 귀나 목 한 곳에만",
-  },
-  {
-    key: "colorpop", name: "컬러 포인트", vibe: "차분한 바탕에 선명한 색 한 가지로 기분을 끌어올리는 룩",
-    occ: ["P", "C", "D"],
-    heroes: [h("top", "코발트 블루 니트"), h("accessory", "레드 숄더백"), h("bottom", "그린 미디 스커트"), h("shoes", "버건디 메리제인"), h("outer", "코랄 가디건")],
-    palettes: [["코발트 블루", "크림", "그레이", "실버"], ["레드", "카멜", "블랙", "골드"], ["그린", "네이비", "아이보리", "골드"]],
-    bottoms: ["미디 스커트", "와이드 슬랙스", "스트레이트 데님"],
-    cue: "선명한 색은 딱 한 군데, 나머지는 그 색이 돋보이는 뉴트럴",
-  },
-  {
-    key: "denim", name: "데님 온 데님", vibe: "청을 위아래로 겹쳐 입는 자연스럽고 경쾌한 룩",
-    occ: ["C", "A"],
-    heroes: [h("top", "데님 셔츠"), h("bottom", "데님 스커트"), h("outer", "데님 재킷"), h("bottom", "와이드 데님")],
-    palettes: [["데님", "화이트", "브라운", "골드"], ["진청", "연청", "크림", "블랙"]],
-    bottoms: ["데님 스커트", "와이드 데님", "스트레이트 데님"],
-    cue: "위아래 청의 진하기를 다르게, 가죽 벨트·로퍼 대신 다른 신발로 끊어 주기",
-  },
-  {
-    key: "sporty", name: "애슬레저", vibe: "움직이기 편한 운동복 소재를 단정하게 정리한 룩",
+    key: "athleisure", name: "애슬레저 데일리", vibe: "운동복 소재를 일상복과 섞은, 걷기 편한 주말 룩",
     occ: ["A", "C"],
-    heroes: [h("outer", "패딩 베스트"), h("shoes", "러닝 스니커즈"), h("bottom", "플리츠 스커트"), h("top", "크롭 하프 집업"), h("accessory", "미니 크로스백")],
-    palettes: [["네이비", "그레이", "화이트", "라임 포인트"], ["블랙", "크림", "카키", "화이트"]],
-    bottoms: ["플리츠 스커트", "레깅스", "와이드 조거 팬츠"],
-    cue: "운동복 하나에 스커트·작은 가방·주얼리 같은 여성스러운 일상복 하나를 섞어, 운동하러 온 느낌은 빼기",
+    top: [p("하프 집업", { not: S }), p("맨투맨", OVER), p("베이직 티셔츠", { not: W }), p("크롭 니트", { not: S, ...CROP })],
+    bottom: [p("와이드 트랙 팬츠", WIDE), p("와이드 데님", WIDE), p("부츠컷 데님"), p("플리츠 스커트", { nob: ["straight"] })],
+    outer: [p("숏 패딩", { not: COLD }), p("패딩 베스트", { not: S }), p("나일론 바람막이", { not: W }), p("후리스 재킷", { not: S })],
+    shoes: [p("러닝 스니커즈"), p("스니커즈"), p("어글리 스니커즈")],
+    accessory: [p("볼캡"), p("크로스백"), p("비니", { not: S }), p("나일론 숄더백")],
+    palettes: [
+      { base: ["그레이", "블랙", "화이트"] },
+      { base: ["네이비", "크림", "연청 데님"] },
+      { base: ["블랙", "화이트", "중청 데님"], point: "카키" },
+    ],
+    cues: ["운동복 하나에 데님이나 스커트처럼 일상복 하나 섞기", "작은 크로스백으로 손을 가볍게", "볼캡 아래로 로우 포니테일"],
   },
   {
-    key: "tonal", name: "브라운 톤온톤", vibe: "초콜릿부터 베이지까지 한 계열로 깊이 있게 쌓은 룩",
-    occ: ["C", "S", "D"],
-    heroes: [h("top", "초콜릿 브라운 니트"), h("outer", "스웨이드 재킷"), h("bottom", "모카 브라운 스커트"), h("shoes", "브라운 롱부츠"), h("accessory", "브라운 호보백")],
-    palettes: [["초콜릿 브라운", "모카", "베이지", "골드"], ["카멜", "코냑", "크림", "골드"]],
-    bottoms: ["미디 스커트", "와이드 슬랙스", "부츠컷 팬츠"],
-    cue: "같은 색 계열 3단계(진함·중간·연함)로 위에서 아래로 흐르게",
+    key: "smart-casual", name: "스마트 캐주얼", vibe: "셔츠·블레이저를 데님이나 슬랙스와 편하게 섞은, 딱딱하지 않은 단정한 룩",
+    occ: ["S", "F", "C"],
+    top: [p("코튼 셔츠", { nob: ["wave"] }), p("스트라이프 셔츠"), p("브이넥 니트", { not: S }), p("크루넥 니트", { not: S }), p("반팔 니트", { not: W })],
+    bottom: [p("와이드 슬랙스", WIDE), p("스트레이트 슬랙스"), p("스트레이트 데님", { nob: ["wave"] }), p("롱 스커트")],
+    outer: [p("오버핏 블레이저", { not: W, nob: ["wave"] }), p("발마칸 코트", { not: S }), p("트렌치 코트", { not: SW }), p("니트 가디건", { not: W })],
+    shoes: [p("슬림 로퍼"), p("발레 플랫", { not: W }), p("레더 스니커즈"), p("앵클 부츠", { not: S })],
+    accessory: [p("가죽 숄더백"), p("미니 토트백"), p("실버 이어링"), p("가죽 벨트")],
+    palettes: [
+      { base: ["네이비", "화이트", "그레이"] },
+      { base: ["블랙", "크림", "중청 데님"] },
+      { base: ["차콜", "라이트 블루", "화이트"] },
+    ],
+    cues: ["블레이저는 단추를 풀고 소매를 살짝 걷기", "셔츠 깃을 니트 위로 꺼내기", "정장처럼 위아래 맞추지 말고 데님·니트로 풀기"],
   },
   {
-    key: "romantic", name: "로맨틱 이브닝", vibe: "은은한 광택과 드레이프로 특별한 저녁을 위한 룩",
+    key: "evening", name: "모던 이브닝", vibe: "블랙 베이스에 은은한 광택 하나, 저녁 약속에 맞게 한 단계 힘준 룩",
     occ: ["P", "D", "F"],
-    heroes: [h("bottom", "새틴 슬립 스커트"), h("top", "드레이프 블라우스"), h("shoes", "스트랩 힐"), h("accessory", "드롭 이어링"), h("accessory", "미니 클러치")],
-    palettes: [["와인", "블랙", "샴페인 베이지", "골드"], ["네이비", "실버", "아이보리", "펄"], ["에메랄드", "블랙", "크림", "골드"]],
-    bottoms: ["새틴 슬립 스커트", "와이드 슬랙스", "플리츠 스커트"],
-    cue: "광택 소재는 한 가지만, 귀걸이로 얼굴 가까이에 빛을",
+    top: [p("파인 게이지 니트", { not: S }), p("새틴 셔츠"), p("슬리브리스 니트", { not: ["winter", "autumn"] }), p("오프숄더 니트", { not: S })],
+    bottom: [p("슬립 스커트"), p("와이드 슬랙스", WIDE), p("부츠컷 데님"), p("롱 스커트")],
+    outer: [p("롱 코트", { not: S }), p("레더 자켓", { not: S }), p("오버핏 블레이저", { not: W, nob: ["wave"] })],
+    shoes: [p("앵클 부츠", { not: S }), p("스트랩 힐"), p("슬링백")],
+    accessory: [p("실버 드롭 이어링"), p("미니 숄더백"), p("실버 체인 목걸이")],
+    palettes: [
+      { base: ["블랙", "차콜", "실버"] },
+      { base: ["블랙", "아이보리", "진청 데님"], point: "와인" },
+    ],
+    cues: ["광택 소재는 딱 하나만", "귀걸이로 얼굴 가까이에 빛을", "블랙끼리도 소재를 다르게(니트·새틴·가죽)"],
   },
 ];
 
-/* 계절에 맞지 않는 아이템은 주인공에서 뺀다 */
-const SUMMER_ONLY = /샌들|슬리브리스|민소매|반팔|쇼츠|린넨|라탄/;
-const WINTER_ONLY = /패딩|무스탕|시어링|비니|롱부츠|코트|니트 원피스|케이블|캐시미어/;
+/* ── 퍼스널컬러별 색 계획 ──
+   바탕(아우터·하의·신발·가방)은 그 사람에게 어울리는 무채색·데님·뉴트럴로,
+   베스트 컬러는 얼굴 가까운 곳 한 군데에만 포인트로. (모두 베스트 컬러로 칠하면 파스텔 무지개가 됨) */
+export const COLOR_PLAN: Record<ColorType, { base: string[]; points: string[]; small: string[]; note: string }> = {
+  spring: {
+    base: ["아이보리", "크림", "웜베이지", "카멜", "라이트 브라운", "연청 데님", "중청 데님"],
+    points: ["코랄", "피치", "버터 옐로우", "애플 그린", "터콰이즈"],
+    small: ["카멜", "라이트 브라운", "아이보리", "탄"],
+    note: "블랙·차콜 대신 브라운·카멜로 바탕을 잡기",
+  },
+  summer: {
+    base: ["소프트 그레이", "멜란지 그레이", "오프화이트", "네이비", "연청 데님", "중청 데님", "그레이시 베이지"],
+    points: ["라벤더", "스카이 블루", "로즈", "베이비 핑크", "민트"],
+    small: ["블랙", "그레이", "화이트", "네이비"],
+    note: "브라운·카멜 대신 그레이·네이비로 바탕을 잡기, 블랙은 신발·가방 같은 작은 아이템에만",
+  },
+  autumn: {
+    base: ["크림", "브라운", "카멜", "카키", "올리브", "오트밀", "진청 데님", "중청 데님"],
+    points: ["테라코타", "머스타드", "딥 그린", "와인"],
+    small: ["브라운", "다크 브라운", "카멜", "블랙"],
+    note: "차가운 그레이·퓨어 화이트 대신 크림·브라운으로 바탕을 잡기, 블랙은 신발·가방 같은 작은 아이템에만",
+  },
+  winter: {
+    base: ["블랙", "퓨어 화이트", "차콜", "그레이", "네이비", "진청 데님"],
+    points: ["버건디", "로열 블루", "에메랄드", "아이시 핑크"],
+    small: ["블랙", "화이트", "실버 그레이"],
+    note: "베이지·카멜 대신 블랙·화이트·그레이로 또렷하게",
+  },
+};
+
+/* 포인트 색을 줄 자리 — 얼굴 가까운 상의가 가장 효과가 크다.
+   가방·모자·머플러일 때만 액세서리에 (스카이 블루 가죽 자켓·핑크 벨트처럼 어색한 조합 방지) */
+function pointSlot(items: Record<Cat, string>): Cat {
+  const accOk = /백|캡|비니|머플러/.test(items.accessory);
+  return accOk && Math.random() < 0.3 ? "accessory" : "top";
+}
+
+/* 스타일링 디테일이 고른 아이템과 맞을 때만 (니트를 골랐는데 "셔츠 소매 걷기"가 나오지 않게) */
+const CUE_NEEDS: [string, RegExp][] = [
+  ["셔츠", /셔츠/], ["니트", /니트|가디건/], ["블레이저", /블레이저/], ["가죽", /레더|가죽/],
+  ["귀걸이", /이어링/], ["모자", /캡|비니/], ["볼캡", /캡/], ["크로스백", /크로스백/], ["스커트", /스커트/], ["데님", /데님/],
+  ["운동복", /트랙|집업|바람막이|러닝|후리스|패딩 베스트/], ["벨트", /./], ["가방", /백/], ["실버", /./],
+];
+function cueFits(cue: string, items: Record<Cat, string>): boolean {
+  const all = Object.values(items).join(" ");
+  return CUE_NEEDS.every(([kw, re]) => !cue.includes(kw) || re.test(all));
+}
 
 const pick = <T,>(a: T[]): T => a[Math.floor(Math.random() * a.length)];
-
-/* ── 신발·액세서리도 매번 다르게 (2026-11-07) ──
-   AI에게 맡기면 신발은 메리제인·슬링백, 액세서리는 드롭 이어링으로 늘 모인다.
-   자리(occ)·계절에 맞는 것 중에서 하나씩 무작위로 정해 건넨다. */
-type Pick = { name: string; occ?: Occ[]; not?: Season[]; /** 이 골격엔 주지 않음 */ nob?: BodyType[] };
-const ALL: Occ[] = ["C", "S", "F", "D", "P", "A"];
-const SHOES: Pick[] = [
-  { name: "앵클 부츠", not: ["summer"] },
-  { name: "롱부츠", occ: ["C", "D", "P", "S"], not: ["summer", "spring"] },
-  { name: "첼시 부츠", occ: ["C", "A", "S"], not: ["summer"] },
-  { name: "스웨이드 부츠", occ: ["C", "D", "A"], not: ["summer"] },
-  { name: "로퍼", occ: ["C", "S", "A", "D"] },
-  { name: "스니커즈", occ: ["C", "A"] },
-  { name: "슬링백", occ: ["S", "F", "D", "P", "C"] },
-  { name: "포인티드 펌프스", occ: ["S", "F", "P", "D"] },
-  { name: "스트랩 힐", occ: ["F", "P", "D"] },
-  { name: "뮬", occ: ["C", "D"], not: ["winter"] },
-  { name: "발레 플랫", occ: ["C", "S", "D", "A"] },
-  { name: "메리제인", occ: ["C", "S", "D", "F"] },
-  { name: "스트랩 샌들", occ: ["C", "D", "P"], not: ["winter", "autumn"] },
-];
-const ACCS: Pick[] = [
-  { name: "실크 스카프", occ: ALL },
-  { name: "울 머플러", not: ["summer", "spring"] },
-  { name: "체인 숄더백", occ: ["C", "S", "D", "P", "F"] },
-  { name: "미니 토트백", occ: ["C", "S", "D", "F"] },
-  { name: "호보백", occ: ["C", "D", "A"] },
-  { name: "가죽 벨트", occ: ["C", "S", "D", "A"] },
-  { name: "골드 후프 이어링", occ: ["C", "D", "P", "S"] },
-  { name: "레이어드 체인 목걸이", occ: ["C", "D", "P"] },
-  { name: "실버 체인 목걸이", occ: ["F", "S", "P", "D"] },
-  { name: "드롭 이어링", occ: ["F", "P", "D"] },
-  { name: "베레모", occ: ["C", "D"], not: ["summer"] },
-  { name: "버킷햇", occ: ["C", "A"] },
-  { name: "미니 클러치", occ: ["F", "P", "D"] },
-  { name: "캔버스 토트백", occ: ["C", "A"], not: ["winter"] },
-  { name: "볼드 뱅글", occ: ["C", "D", "P"] },
-];
-/* ── 상의도 매번 다르게 (2026-11-07) ──
-   신발·액세서리처럼 정해 주지 않으면 상의는 늘 "실크 블라우스"로 모였다(라이브 4번 중 4번).
-   골격에 안 맞는 상의(스트레이트에 두꺼운 터틀넥·프릴 등)는 그 골격일 때 빼고 고른다. */
-const TOPS: Pick[] = [
-  { name: "브이넥 니트", not: ["summer"] },
-  { name: "니트 카디건", occ: ["C", "S", "D", "A"] },
-  { name: "터틀넥 니트", occ: ["C", "S", "D", "P"], not: ["summer"], nob: ["straight"] },
-  { name: "케이블 니트", occ: ["C", "A", "D"], not: ["summer"], nob: ["straight"] },
-  { name: "보트넥 니트", occ: ["C", "S", "D"], not: ["summer"] },
-  { name: "폴로 니트", occ: ["C", "S", "A"] },
-  { name: "니트 베스트", occ: ["C", "S"], nob: ["straight"] },
-  { name: "스트라이프 셔츠", occ: ["C", "S", "A"] },
-  { name: "코튼 셔츠", occ: ["C", "S", "A"], nob: ["wave"] },
-  { name: "실크 블라우스", occ: ["S", "F", "P", "D"] },
-  { name: "리본 블라우스", occ: ["S", "F", "D"], nob: ["natural"] },
-  { name: "프릴 블라우스", occ: ["C", "D", "F"], nob: ["straight", "natural"] },
-  { name: "새틴 셔츠", occ: ["F", "P", "D"] },
-  { name: "맨투맨", occ: ["C", "A"], nob: ["wave"] },
-  { name: "스트라이프 티셔츠", occ: ["C", "A"] },
-  { name: "반팔 니트", occ: ["C", "S", "D"], not: ["winter"] },
-  { name: "슬리브리스 니트", occ: ["C", "D", "P"], not: ["winter", "autumn"] },
-];
-function pickFor(list: Pick[], occ: Occ, season: Season, body?: BodyType): string {
-  const ok = list.filter((x) => (x.occ ?? ALL).includes(occ) && !(x.not ?? []).includes(season) && !(body && (x.nob ?? []).includes(body)));
-  return pick(ok.length ? ok : list).name;
+/** 계절·골격에 맞는 것 중 하나 (방금 추천한 품목은 되도록 피함) */
+function pickFor(list: Pick[], season: Season, body?: BodyType, avoid: string[] = []): string {
+  const ok = list.filter((x) => !(x.not ?? []).includes(season) && !(body && (x.nob ?? []).includes(body)));
+  const fresh = ok.filter((x) => !avoid.some((r) => r.includes(x.name) || x.name.includes(r)));
+  return pick(fresh.length ? fresh : ok.length ? ok : list).name;
+}
+function sample<T>(a: T[], n: number): T[] {
+  const c = [...a];
+  const out: T[] = [];
+  while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
+  return out;
 }
 
 export interface StyleBrief {
   direction: StyleDirection;
-  hero: Hero;
-  palette: string[];
-  bottom: string;
-  top: string;
-  shoes: string;
-  accessory: string;
+  items: Record<Cat, string>;
+  /** 바탕 색들 */
+  base: string[];
+  /** 포인트 색과 자리 (없으면 바탕 색만) */
+  point?: { color: string; cat: Cat };
+  /** 신발·가방 색 — 옷과 같은 색으로 칠해 한 벌이 한 색으로 뭉치지 않게 무난한 색에서 따로 고른다 */
+  shoesColor: string;
+  bagColor: string;
+  cue: string;
+  colorNote?: string;
 }
 
-/** 골격에 안 맞는 주인공 아이템 (그 골격일 땐 다른 주인공으로) */
-const HERO_NOT_FOR: Record<BodyType, RegExp> = {
-  straight: /터틀넥|케이블|프릴|러플|티어드/,
-  wave: /오버핏|맨투맨|옥스퍼드|박시/,
-  natural: /프릴|러플|리본/,
-};
-
-export function pickStyleBrief(occ: Occ, season: Season, body?: BodyType): StyleBrief | null {
+export function pickStyleBrief(occ: Occ, season: Season, body?: BodyType, color?: ColorType, recent: string[] = []): StyleBrief | null {
   if (occ === "M") return null; // 조문은 정해진 단정한 검정 차림
   const pool = DIRECTIONS.filter((d) => d.occ.includes(occ));
   const direction = pick(pool.length ? pool : DIRECTIONS);
-  const okHero = direction.heroes.filter((x) =>
-    (season === "summer" ? !WINTER_ONLY.test(x.name) : season === "winter" ? !SUMMER_ONLY.test(x.name) : true) &&
-    !(body && HERO_NOT_FOR[body].test(x.name))
-  );
-  const hero = pick(okHero.length ? okHero : direction.heroes);
+  const cats: Cat[] = ["top", "bottom", "outer", "shoes", "accessory"];
+  const items = Object.fromEntries(cats.map((c) => [c, pickFor(direction[c], season, body, recent)])) as Record<Cat, string>;
+
+  // 웜톤(봄·가을)은 골드, 쿨톤(여름·겨울)은 실버 — 주얼리 이름과 디테일 문구의 금속을 맞춘다
+  const warm = color === "spring" || color === "autumn";
+  const metal = (t: string) => (warm ? t.replace(/실버/g, "골드") : color ? t.replace(/골드/g, "실버") : t);
+  items.accessory = metal(items.accessory);
+  const fitCues = direction.cues.filter((c) => cueFits(c, items));
+  const cue = metal(pick(fitCues.length ? fitCues : ["상의 앞자락만 살짝 넣어 입기"]));
+
+  if (color) {
+    const plan = COLOR_PLAN[color];
+    // 바탕 = 데님 하나 + 데님 아닌 색 둘 (데님 두 개가 뽑혀 한 벌이 다 같은 색이 되지 않게)
+    const base = [...sample(plan.base.filter((c) => !c.includes("데님")), 2), ...sample(plan.base.filter((c) => c.includes("데님")), 1)];
+    const [shoesColor, bagColor] = sample(plan.small, 2);
+    return { direction, items, base, point: { color: pick(plan.points), cat: pointSlot(items) }, cue, colorNote: plan.note, shoesColor, bagColor: bagColor ?? shoesColor };
+  }
+  const pal = pick(direction.palettes);
+  const [shoesColor, bagColor] = sample(["블랙", "브라운", "화이트", "블랙"], 2);
   return {
-    direction, hero, palette: pick(direction.palettes), bottom: pick(direction.bottoms),
-    top: pickFor(TOPS, occ, season, body), shoes: pickFor(SHOES, occ, season), accessory: pickFor(ACCS, occ, season),
+    direction, items, base: pal.base,
+    point: pal.point ? { color: pal.point, cat: pointSlot(items) } : undefined,
+    cue, shoesColor, bagColor,
   };
 }
 
 const CAT_KO: Record<Cat, string> = { top: "상의", bottom: "하의", outer: "아우터", shoes: "신발", accessory: "액세서리" };
 
 /** AI에게 건넬 이번 코디 방향 (user 메시지 끝에 붙인다) */
-export function briefPrompt(b: StyleBrief | null, recent: string[], hasColorProfile: boolean): string {
-  const lines: string[] = ["\n\n## 이번 코디 방향 (반드시 따를 것 — 매번 다른 코디를 위해 무작위로 정해짐)"];
+export function briefPrompt(b: StyleBrief | null, recent: string[]): string {
+  const lines: string[] = ["\n\n## 이번 코디 방향 (반드시 따를 것 — 매번 다른 코디를 위해 정해짐)"];
   lines.push("- 단, 사용자가 상황에 아이템이나 조합을 직접 적었다면(예: \"셔츠 + 일자 슬랙스 조합으로\") 그 아이템을 그대로 쓰고, 아래 방향은 색·분위기 참고로만 쓸 것");
   if (b) {
     lines.push(`- 스타일: ${b.direction.name} — ${b.direction.vibe}`);
-    lines.push(`- 주인공 아이템(${CAT_KO[b.hero.cat]}): "${b.hero.name}" — 이 아이템을 ${CAT_KO[b.hero.cat]}로 그대로 쓰고, 나머지를 여기에 맞출 것`);
-    if (b.hero.cat !== "top") lines.push(`- 상의: "${b.top}" 계열로 (다른 상의로 바꾸지 말 것)`);
-    if (b.hero.cat !== "bottom") lines.push(`- 하의 형태: ${b.bottom}`);
-    if (b.hero.cat !== "shoes") lines.push(`- 신발: "${b.shoes}" 계열로 (다른 신발로 바꾸지 말 것)`);
-    if (b.hero.cat !== "accessory") lines.push(`- 액세서리: "${b.accessory}" 계열로 (다른 액세서리로 바꾸지 말 것)`);
-    lines.push(
-      hasColorProfile
-        ? `- 색: 반드시 위 퍼스널컬러 베스트 컬러 안에서만 고를 것. 무채색(블랙·차콜·그레이·화이트)은 '피할 색'에 없을 때만 쓸 수 있고, 피할 색에 있으면 신발·가방까지 어떤 아이템에도 쓰지 말 것. 주인공 아이템 이름에 색이 들어 있어도 색은 베스트 컬러로 바꿀 것`
-        : `- 색 팔레트: ${b.palette.join(" · ")} (이 안에서 고를 것)`
-    );
-    lines.push(`- 스타일링 포인트: ${b.direction.cue}`);
+    lines.push("- 아이템 (이 품목 그대로 쓸 것. 소재·핏 수식어만 덧붙여도 되고, 다른 품목으로 바꾸지 말 것):");
+    (Object.keys(CAT_KO) as Cat[]).forEach((c) => lines.push(`  · ${CAT_KO[c]}: ${b.items[c]}`));
+    lines.push(`- 색 계획: 바탕 색은 ${b.base.join(" · ")} 안에서 고를 것${b.point ? `. 포인트 색 "${b.point.color}"은 ${CAT_KO[b.point.cat]} 한 곳에만 쓰고, 나머지 네 아이템은 모두 바탕 색으로` : ". 포인트 색 없이 바탕 색만으로"}`);
+    lines.push(`- 신발 색: ${b.shoesColor}${/백|캡|비니|머플러|벨트/.test(b.items.accessory) && b.point?.cat !== "accessory" ? ` · 액세서리 색: ${b.bagColor}` : ""}`);
+    lines.push("- 한 벌의 색은 데님을 빼고 3가지 이하. 파스텔이나 선명한 색을 두 아이템 이상에 쓰지 말 것. 아우터·상의·하의를 전부 같은 색으로 맞추지 말 것");
+    if (b.colorNote) lines.push(`- 퍼스널컬러 메모: ${b.colorNote}. 위 '피할 색'은 어떤 아이템에도 쓰지 말 것`);
+    lines.push(`- 스타일링 디테일 하나: ${b.cue} (stylingTip에 녹일 것)`);
   } else {
     lines.push("- 조문 자리: 검정·짙은 남색 무지, 광택·장식 없이 단정하게");
   }
-  lines.push("- 여성복 코디: 모든 아이템은 여성복(우먼즈) 품목·핏으로. 한 벌 안에 여성스러운 실루엣이나 디테일이 또렷한 요소를 최소 하나 넣을 것(스커트·원피스, 허리선이 들어간 핏, 블라우스 디테일, 위에서 정한 신발·액세서리 등 — 매번 다른 방식으로). 남성복처럼 보이는 조합(옥스퍼드 셔츠+스트레이트 데님+블레이저+페니 로퍼, 맨투맨+조거+볼캡+러닝화 등)은 쓰지 말 것.");
-  lines.push("- 너무 뻔한 조합 금지: '아이보리(크림) 터틀넥 니트 + 차콜 와이드 슬랙스 + 카멜 롱코트 + 로퍼'처럼 무난함만 노린 조합은 쓰지 말 것. 이 중 두 가지 이상을 한 벌에 같이 넣지 말 것(주인공 아이템인 경우만 예외).");
   if (recent.length) {
-    lines.push(`- 이 사용자에게 방금 추천한 아이템(겹치지 말 것, 같은 품목·같은 색 조합 금지): ${recent.join(", ")}`);
+    lines.push(`- 이 사용자에게 방금 추천한 아이템(같은 품목·같은 색 조합 반복 금지): ${recent.join(", ")}`);
   }
   return lines.join("\n");
 }
