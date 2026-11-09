@@ -48,7 +48,9 @@ export default async function ArticlePage({ params }: Props) {
   const a = getArticle(slug);
   if (!a) notFound();
 
-  const related = ARTICLES.filter((x) => x.slug !== a.slug).slice(0, 3);
+  // 같은 주제(체형별 코디·퍼스널컬러) 글을 먼저, 모자라면 나머지 글로 채운다
+  const others = ARTICLES.filter((x) => x.slug !== a.slug);
+  const related = [...others.filter((x) => x.category === a.category), ...others.filter((x) => x.category !== a.category)].slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",
