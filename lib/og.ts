@@ -8,12 +8,3 @@ export const OG_IMAGE = {
   height: 630,
   alt: "오늘 뭐 입지? 그 답은, 오늘핏. 올리브 문 너머 린넨 셔츠 한 벌",
 };
-
-/* 홍보 링크 카드 (2026-11-09) — onulfit.com/go/* 로 뿌리는 링크와 /self-check 미리보기
-   원본: onulfit-kit/2026-11-09_홍보카드/card.html (웨이브·여름 쿨 비포/애프터, AI 연출) */
-export const OG_PROMO = {
-  url: "/og-promo.jpg?v=20261109",
-  width: 1200,
-  height: 630,
-  alt: "같은 사람, 옷만 바꿨어요 — 내 체형·컬러에 맞는 옷은 따로 있어요. 오늘핏 무료 자가진단",
-};
