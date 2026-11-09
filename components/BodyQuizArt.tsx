@@ -7,48 +7,38 @@ type Props = { qid: string; value: string; ink: string; acc: string };
 
 /** 그림 아래 작게 붙는 "이 그림은 무엇인지" 설명 */
 export const BODY_ART_NOTE: Record<string, string> = {
-  wrist: "손등 쪽에서 본 오른손이에요 · 화살표가 손목 바깥쪽 뼈",
+  wrist: "손등 쪽에서 본 오른손이에요 · 동그라미가 손목 바깥쪽 뼈",
   gain: "색칠된 곳이 살이 먼저 붙는 곳이에요",
-  upper: "옆에서 본 모습이에요 · 화살표가 가슴~등 두께",
+  upper: "옆에서 본 모습이에요 · 가슴~등 두께와 엉덩이 쪽을 비교해보세요",
   collar: "목 아래 쇄골과 어깨선이에요",
   compliment: "잘 어울린다는 말을 들었던 옷과 가장 비슷한 것",
 };
 
+/** 그림 대신 일러스트 사진을 쓰는 문항 (2026-11-09, GPT Image 2로 한 번 만든 것 — onulfit-kit/2026-11-09_진단문항그림)
+    public/quiz/{qid}-{straight|wave|natural}.webp, 384×512 (손목은 손등~팔목, 상체는 목~허벅지만 잘라 씀) */
+export const BODY_ART_PHOTO = new Set(["wrist", "upper"]);
+export const bodyArtPhoto = (qid: string, value: string) => `/quiz/${qid}-${value}.webp`;
+
+/** 진단을 열 때 일러스트 사진을 미리 받아둔다 (모두 합쳐 약 30KB) */
+export function prefetchBodyArt() {
+  if (typeof window === "undefined") return;
+  BODY_ART_PHOTO.forEach((qid) => ["straight", "wave", "natural"].forEach((v) => { const i = new Image(); i.src = bodyArtPhoto(qid, v); }));
+}
+
 export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
+  if (BODY_ART_PHOTO.has(qid)) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img src={bodyArtPhoto(qid, value)} alt="" width={96} height={128} decoding="async" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
+    );
+  }
   const line = { fill: "none", stroke: ink, strokeWidth: 1.6, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   const soft = `${acc}33`;
   const v = value as "straight" | "wave" | "natural";
 
   let body: React.ReactNode = null;
 
-  if (qid === "wrist") {
-    // 2026-11-09 다시 그림: 단면도는 알아보기 어렵다는 의견 → 손등 쪽에서 본 오른손.
-    // 새끼손가락 쪽 손목뼈(화살표)가 안 보이는지 / 작게 보이는지 / 크게 튀어나왔는지로 고른다.
-    const hand = {
-      straight: "M25,80 L26,50 Q24,44 24,38 L23,24 Q23,8 40,8 Q57,8 57,24 L56,38 Q56,44 54,50 L55,80 Z",
-      wave: "M29,80 L30,53 Q30,47 27,42 Q24,38 24,32 L23,24 Q23,8 40,8 Q57,8 57,24 L56,32 Q56,38 53,42 Q50,46 50,53 L51,80 Z",
-      natural: "M25,80 L26,54 Q25,47 24,42 L23,24 Q23,8 40,8 Q57,8 57,24 L57,40 Q61,44 61,49 Q60,54 56,55 L55,80 Z",
-    }[v];
-    const bone = {
-      straight: <circle cx="54" cy="47" r="3.6" fill="none" stroke={ink} strokeWidth="1" strokeDasharray="2 2" opacity="0.45" />,
-      wave: <circle cx="50.5" cy="49" r="2.4" fill={acc} />,
-      natural: <circle cx="58.5" cy="48" r="4.2" fill={acc} />,
-    }[v];
-    const tip = { straight: 59, wave: 54, natural: 64 }[v];
-    body = (
-      <>
-        {/* 엄지 — 손바닥 밑에 깔리게 먼저 그린다 */}
-        <path d="M27,42 Q15,37 12,28 Q11,23 15,23 Q20,25 26,31 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
-        <path d={hand} style={{ fill: "var(--t-bg, #F4F1E8)" }} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
-        <path d={hand} fill={soft} />
-        {/* 손가락 사이 */}
-        <path d="M32,9.5 L32,21 M40,8 L40,21 M48,9.5 L48,21" stroke={ink} strokeWidth="1" strokeLinecap="round" opacity="0.45" />
-        {bone}
-        {/* 여기를 보세요 화살표 */}
-        <path d={`M78,48 L${tip},48 M${tip + 4},44 L${tip},48 L${tip + 4},52`} fill="none" stroke={acc} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      </>
-    );
-  } else if (qid === "gain") {
+  if (qid === "gain") {
     // 앞모습 실루엣 + 살이 먼저 붙는 곳 색칠
     const fig = "M34,20 Q40,23 46,20 L54,23 Q57,24 57,28 L58,46 M26,28 Q26,24 29,23 L34,20 M26,28 L25,46 M31,24 L33,42 Q30,50 31,56 L34,76 M49,24 L47,42 Q50,50 49,56 L46,76 M40,58 L40,76";
     const mark = {
@@ -80,27 +70,6 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
         {mark}
         <circle cx="40" cy="11" r="6" {...line} />
         <path d={fig} {...line} />
-      </>
-    );
-  } else if (qid === "upper") {
-    // 2026-11-09 다시 그림: 몸통 덩어리만 있어 사람으로 안 읽힌다는 의견 → 머리~허벅지 옆모습(왼쪽을 봄).
-    // 화살표 = 가슴~등 두께. 스트레이트는 가슴이 높고 두툼, 웨이브는 얇고 엉덩이 쪽에 무게, 내추럴은 각지고 어깨 뼈대가 큼.
-    const fig = {
-      straight: "M37,17 L36,21 Q26,24 25,30 Q25,35 30,37 Q31,40 31,44 Q30,48 30,53 Q30,60 31,66 L33,78 L45,78 L48,64 Q52,58 51,53 Q50,48 47,44 Q50,38 50,32 Q50,24 47,21 L43,17 Z",
-      wave: "M37,17 L36,21 Q31,26 30,33 Q30,37 33,38 Q34,41 34,44 Q32,48 32,53 Q31,60 31,66 L33,78 L46,78 L49,66 Q54,60 52,54 Q50,48 44,44 Q46,38 46,32 Q46,24 45,21 L43,17 Z",
-      natural: "M37,17 L35,21 Q28,23 27,30 L28,38 L30,44 L30,55 L31,66 L33,78 L45,78 L48,66 L50,55 L49,44 L51,32 L51,24 Q49,21 45,20 L43,17 Z",
-    }[v];
-    const [a, b, y] = { straight: [25, 50, 30], wave: [30, 46, 32], natural: [27, 51, 30] }[v];
-    body = (
-      <>
-        <circle cx="40" cy="10" r="6.2" fill={soft} stroke={ink} strokeWidth="1.6" />
-        {/* 묶은 머리(뒤) · 코(앞) — 왼쪽을 보고 선 모습 */}
-        <path d="M45.5,8 Q50,8 50,13" fill="none" stroke={ink} strokeWidth="1.6" strokeLinecap="round" />
-        <path d="M34,9 L32.6,11.4 L34.2,12" fill="none" stroke={ink} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d={fig} fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
-        {v === "natural" && <circle cx="46" cy="22" r="3.4" fill={acc} />}
-        <line x1={a} y1={y} x2={b} y2={y} stroke={acc} strokeWidth="2" />
-        <path d={`M${a + 3},${y - 3} L${a},${y} L${a + 3},${y + 3} M${b - 3},${y - 3} L${b},${y} L${b - 3},${y + 3}`} fill="none" stroke={acc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </>
     );
   } else if (qid === "collar") {

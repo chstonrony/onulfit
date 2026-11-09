@@ -167,7 +167,7 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     id: "wrist",
     short: "손목뼈",
     hint: "손등을 위로 하고, 새끼손가락 쪽 손목에 있는 동그란 뼈를 보세요",
-    prompt: "손목 바깥쪽 뼈(그림의 화살표)는 어떻게 보이나요?",
+    prompt: "손목 바깥쪽 뼈(그림의 동그라미)는 어떻게 보이나요?",
     weight: 1.3,
     options: [
       { label: "거의 안 보이고, 손목이 도톰하다", value: "straight", desc: "살이 탄탄하게 덮여 뼈가 잘 안 보이고, 손목이 둥글고 두께감 있어요" },

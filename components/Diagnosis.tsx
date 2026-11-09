@@ -28,7 +28,7 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
-import BodyQuizArt, { BODY_ART_NOTE } from "./BodyQuizArt";
+import BodyQuizArt, { BODY_ART_NOTE, BODY_ART_PHOTO, prefetchBodyArt } from "./BodyQuizArt";
 import ColorQuizArt, { COLOR_ART_NOTE } from "./ColorQuizArt";
 import BeforeAfterBoard, { prefetchBA } from "./BeforeAfterBoard";
 import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
@@ -89,6 +89,9 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
   const sub = vars["--t-sub"];
   const acc = vars["--t-acc"];
   const bdr = vars["--t-bdr"];
+
+  // 진단을 열면 손목·상체 일러스트를 미리 받아둔다(첫 문항이 바로 뜨게)
+  useEffect(() => { prefetchBodyArt(); }, []);
 
   // 마지막 컬러 문항에 오면, 나올 수 있는 결과 2가지의 비포/애프터 사진을 미리 받아둔다
   // → 결과 화면에서 코디 사진이 기다림 없이 바로 뜬다
@@ -389,7 +392,7 @@ function QuestionView({
             onPointerLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
             {qid ? (
-              <span style={{ flexShrink: 0, width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
+              <span style={{ flexShrink: 0, ...(kind === "body" && BODY_ART_PHOTO.has(qid) ? { width: "96px", height: "128px", overflow: "hidden" } : { width: "96px", height: "96px" }), display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
                 {kind === "body" ? <BodyQuizArt qid={qid} value={o.value} ink={txt} acc={acc} /> : <ColorQuizArt qid={qid} value={o.value} ink={txt} />}
               </span>
             ) : (
