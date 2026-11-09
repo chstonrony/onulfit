@@ -18,6 +18,7 @@
 
 import type { Season } from "./lookRecipes";
 import type { BodyType, ColorType } from "./profile";
+import { getColorHex } from "./colors";
 
 /** 자리 — C 일상 · S 단정 · F 격식 · D 데이트 · P 특별한 저녁 · A 야외 · M 조문 */
 export type Occ = "C" | "S" | "F" | "D" | "P" | "A" | "M";
@@ -229,25 +230,67 @@ function pickFor(list: Pick[], season: Season, body?: BodyType, avoid: string[] 
   const fresh = ok.filter((x) => !avoid.some((r) => r.includes(x.name) || x.name.includes(r)));
   return pick(fresh.length ? fresh : ok.length ? ok : list).name;
 }
-function sample<T>(a: T[], n: number): T[] {
-  const c = [...a];
-  const out: T[] = [];
-  while (c.length && out.length < n) out.push(c.splice(Math.floor(Math.random() * c.length), 1)[0]);
-  return out;
+
+/* ── 아이템마다 색을 정해 준다 (2026-11-09) ──
+   바탕 색 목록만 주고 AI에게 나누게 했더니 "올리브 코트 + 카키 바지", "네이비 코트 + 네이비 바지"처럼
+   아우터와 하의가 같은(비슷한) 색으로 뭉쳐 한 덩어리로 보였다.
+   → 아이템마다 색을 하나씩 정하고, 아우터는 하의와 밝기가 확실히 다른 색으로, 상의는 아우터와 다른 색으로 고른다. */
+const lum = (name: string) => {
+  const h = getColorHex(name).replace("#", "");
+  const [r, g, b] = [0, 2, 4].map((k) => parseInt(h.slice(k, k + 2), 16));
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+};
+/** cands 중 used와 겹치지 않고 기준 색과 밝기 차이가 gap 이상인 것 (없으면 차이가 가장 큰 것) */
+function contrastPick(cands: string[], ref: string | null, gap: number, used: string[]): string {
+  const free = cands.filter((c) => !used.includes(c));
+  const pool = free.length ? free : cands;
+  if (!ref) return pick(pool);
+  const far = pool.filter((c) => Math.abs(lum(c) - lum(ref)) >= gap);
+  if (far.length) return pick(far);
+  return [...pool].sort((a, b) => Math.abs(lum(b) - lum(ref)) - Math.abs(lum(a) - lum(ref)))[0];
 }
+const GENERAL_SOLIDS = ["블랙", "화이트", "그레이", "크림", "네이비", "브라운", "차콜", "오트밀"];
 
 export interface StyleBrief {
   direction: StyleDirection;
   items: Record<Cat, string>;
-  /** 바탕 색들 */
-  base: string[];
-  /** 포인트 색과 자리 (없으면 바탕 색만) */
-  point?: { color: string; cat: Cat };
-  /** 신발·가방 색 — 옷과 같은 색으로 칠해 한 벌이 한 색으로 뭉치지 않게 무난한 색에서 따로 고른다 */
-  shoesColor: string;
-  bagColor: string;
+  /** 아이템마다 정한 색 */
+  colors: Record<Cat, string>;
+  /** 포인트 색이 들어간 자리 (없으면 무채색만) */
+  pointCat?: Cat;
   cue: string;
   colorNote?: string;
+}
+
+function colorize(items: Record<Cat, string>, solids: string[], denims: string[], point: string | undefined, small: string[], metal: string): { colors: Record<Cat, string>; pointCat?: Cat } {
+  const isDenim = /데님|청/.test(items.bottom);
+  // 아우터: 새하얀 코트는 빼고, 가죽은 어두운 색만 (오트밀 레더 자켓 같은 어색한 조합 방지)
+  let outerCands = solids.filter((c) => !/^(퓨어 )?화이트$|^오프화이트$/.test(c));
+  const leather = /레더|가죽/.test(items.outer);
+  if (leather) {
+    const dark = outerCands.filter((c) => lum(c) < 0.45);
+    outerCands = dark.length ? dark : metal === "골드" ? ["다크 브라운", "브라운"] : ["블랙"];
+  }
+  if (!outerCands.length) outerCands = solids;
+  // 가죽처럼 아우터 색이 좁게 정해지면 아우터를 먼저, 아니면 하의를 먼저 정하고 다른 쪽을 밝기 차이로 고른다
+  let bottom: string, outer: string;
+  if (leather) {
+    outer = pick(outerCands);
+    bottom = isDenim ? pick(denims) : contrastPick(solids, outer, 0.3, [outer]);
+  } else {
+    bottom = isDenim ? pick(denims) : pick(solids);
+    outer = contrastPick(outerCands, isDenim ? null : bottom, 0.3, [bottom]);
+  }
+  const pointCat = point ? pointSlot(items) : undefined;
+  let top = pointCat === "top" ? point! : contrastPick(solids, outer, 0.2, [outer, bottom]);
+  if (top === outer) top = contrastPick(solids, outer, 0.2, [outer, bottom]); // 포인트가 무채색이라 아우터와 겹칠 때
+  // 신발: 흰색·밝은 색은 스니커즈만 (흰 부츠·흰 로퍼 방지)
+  const shoeCands = /스니커/.test(items.shoes) ? small : small.filter((c) => lum(c) < 0.7);
+  const shoes = pick(shoeCands.length ? shoeCands : metal === "골드" ? ["브라운"] : ["블랙"]);
+  const bag = pick(small.filter((c) => c !== shoes).length ? small.filter((c) => c !== shoes) : small);
+  const isJewel = /목걸이|이어링|귀걸이|반지|뱅글/.test(items.accessory);
+  const accessory = pointCat === "accessory" ? point! : isJewel ? metal : bag ?? shoes;
+  return { colors: { top, bottom, outer, shoes, accessory }, pointCat };
 }
 
 export function pickStyleBrief(occ: Occ, season: Season, body?: BodyType, color?: ColorType, recent: string[] = []): StyleBrief | null {
@@ -263,21 +306,19 @@ export function pickStyleBrief(occ: Occ, season: Season, body?: BodyType, color?
   items.accessory = metal(items.accessory);
   const fitCues = direction.cues.filter((c) => cueFits(c, items));
   const cue = metal(pick(fitCues.length ? fitCues : ["상의 앞자락만 살짝 넣어 입기"]));
+  const metalName = warm ? "골드" : "실버";
 
   if (color) {
     const plan = COLOR_PLAN[color];
-    // 바탕 = 데님 하나 + 데님 아닌 색 둘 (데님 두 개가 뽑혀 한 벌이 다 같은 색이 되지 않게)
-    const base = [...sample(plan.base.filter((c) => !c.includes("데님")), 2), ...sample(plan.base.filter((c) => c.includes("데님")), 1)];
-    const [shoesColor, bagColor] = sample(plan.small, 2);
-    return { direction, items, base, point: { color: pick(plan.points), cat: pointSlot(items) }, cue, colorNote: plan.note, shoesColor, bagColor: bagColor ?? shoesColor };
+    const solids = plan.base.filter((c) => !c.includes("데님"));
+    const denims = plan.base.filter((c) => c.includes("데님"));
+    return { direction, items, ...colorize(items, solids, denims, pick(plan.points), plan.small, metalName), cue, colorNote: plan.note };
   }
   const pal = pick(direction.palettes);
-  const [shoesColor, bagColor] = sample(["블랙", "브라운", "화이트", "블랙"], 2);
-  return {
-    direction, items, base: pal.base,
-    point: pal.point ? { color: pal.point, cat: pointSlot(items) } : undefined,
-    cue, shoesColor, bagColor,
-  };
+  const palSolids = pal.base.filter((c) => !c.includes("데님") && c !== "실버");
+  const solids = [...palSolids, ...GENERAL_SOLIDS.filter((c) => !palSolids.includes(c))].slice(0, Math.max(palSolids.length + 2, 4));
+  const denims = pal.base.filter((c) => c.includes("데님"));
+  return { direction, items, ...colorize(items, solids, denims.length ? denims : ["중청 데님"], pal.point, ["블랙", "브라운", "화이트", "블랙"], metalName), cue };
 }
 
 const CAT_KO: Record<Cat, string> = { top: "상의", bottom: "하의", outer: "아우터", shoes: "신발", accessory: "액세서리" };
@@ -290,9 +331,8 @@ export function briefPrompt(b: StyleBrief | null, recent: string[]): string {
     lines.push(`- 스타일: ${b.direction.name} — ${b.direction.vibe}`);
     lines.push("- 아이템 (이 품목 그대로 쓸 것. 소재·핏 수식어만 덧붙여도 되고, 다른 품목으로 바꾸지 말 것):");
     (Object.keys(CAT_KO) as Cat[]).forEach((c) => lines.push(`  · ${CAT_KO[c]}: ${b.items[c]}`));
-    lines.push(`- 색 계획: 바탕 색은 ${b.base.join(" · ")} 안에서 고를 것${b.point ? `. 포인트 색 "${b.point.color}"은 ${CAT_KO[b.point.cat]} 한 곳에만 쓰고, 나머지 네 아이템은 모두 바탕 색으로` : ". 포인트 색 없이 바탕 색만으로"}`);
-    lines.push(`- 신발 색: ${b.shoesColor}${/백|캡|비니|머플러|벨트/.test(b.items.accessory) && b.point?.cat !== "accessory" ? ` · 액세서리 색: ${b.bagColor}` : ""}`);
-    lines.push("- 한 벌의 색은 데님을 빼고 3가지 이하. 파스텔이나 선명한 색을 두 아이템 이상에 쓰지 말 것. 아우터·상의·하의를 전부 같은 색으로 맞추지 말 것");
+    lines.push("- 색 (이 색 그대로 쓸 것 — 아우터와 하의를 같은 색·비슷한 색으로 맞추지 말 것):");
+    (Object.keys(CAT_KO) as Cat[]).forEach((c) => lines.push(`  · ${CAT_KO[c]}: ${b.colors[c]}${b.pointCat === c ? " (포인트)" : ""}`));
     if (b.colorNote) lines.push(`- 퍼스널컬러 메모: ${b.colorNote}. 위 '피할 색'은 어떤 아이템에도 쓰지 말 것`);
     lines.push(`- 스타일링 디테일 하나: ${b.cue} (stylingTip에 녹일 것)`);
   } else {
@@ -302,4 +342,17 @@ export function briefPrompt(b: StyleBrief | null, recent: string[]): string {
     lines.push(`- 이 사용자에게 방금 추천한 아이템(같은 품목·같은 색 조합 반복 금지): ${recent.join(", ")}`);
   }
   return lines.join("\n");
+}
+
+/** AI가 색 지시를 어기고 아우터·하의(또는 상의·아우터)를 같은 톤으로 칠했으면 정해 둔 색으로 바꾼다 (데님 하의는 그대로) */
+export function fixToneClash<T>(o: T, b: StyleBrief | null): T {
+  const items = (o as { items?: Record<string, { color?: unknown; name?: unknown }> })?.items;
+  if (!b || !items) return o;
+  const col = (k: Cat) => (typeof items[k]?.color === "string" ? (items[k]!.color as string) : "");
+  const close = (x: string, y: string) => !!x && !!y && (x === y || Math.abs(lum(x) - lum(y)) < 0.15);
+  const next = { ...items };
+  const set = (k: Cat) => { if (next[k]) next[k] = { ...next[k], color: b.colors[k] }; };
+  if (!/데님|청/.test(col("bottom") + String(items.bottom?.name ?? "")) && close(col("outer"), col("bottom"))) { set("outer"); set("bottom"); }
+  if (close(col("top"), String(next.outer?.color ?? ""))) set("top");
+  return { ...(o as object), items: next } as T;
 }

@@ -242,20 +242,7 @@ export function composeOutfit(situation: string, bodyType?: BodyType, colorType?
   const brief = pickStyleBrief(occ.id, season, bodyType, colorType);
   if (brief) {
     const lines = [...occ.line].sort(() => Math.random() - 0.5);
-    const solid = brief.base.filter((c) => !c.includes("데님"));
-    const denim = brief.base.find((c) => c.includes("데님")) ?? "중청 데님";
-    const n = (i: number) => solid[i % Math.max(solid.length, 1)] ?? "그레이";
-    const metal = colorType === "spring" || colorType === "autumn" ? "골드" : "실버";
-    const isJewel = /목걸이|이어링|귀걸이|반지|뱅글/.test(brief.items.accessory);
-    const pointCat = brief.point && !(brief.point.cat === "accessory" && isJewel) ? brief.point.cat : brief.point ? "top" : null;
-    const colorFor: Record<keyof typeof ROLE, string> = {
-      outer: n(0),
-      top: n(1),
-      bottom: /데님|청/.test(brief.items.bottom) ? denim : n(2),
-      shoes: brief.shoesColor,
-      accessory: isJewel ? metal : brief.bagColor,
-    };
-    if (pointCat && brief.point) colorFor[pointCat] = brief.point.color;
+    const colorFor = brief.colors;
     const make = (cat: keyof typeof ROLE, i: number): ClothingItem => ({
       name: brief.items[cat],
       color: colorFor[cat],

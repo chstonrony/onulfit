@@ -3,7 +3,7 @@ import { SYSTEM_PROMPT, buildProfileGuide } from "@/lib/claude";
 import { OutfitRecommendation } from "@/lib/types";
 import { IS_DEMO_MODE } from "@/lib/mockData";
 import { composeOutfit, detectOccasion, detectSeason } from "@/lib/demoStylist";
-import { pickStyleBrief, briefPrompt } from "@/lib/styleDirections";
+import { pickStyleBrief, briefPrompt, fixToneClash } from "@/lib/styleDirections";
 import { parseSafePrefix, stripFence } from "@/lib/partialJson";
 import { cleanOutfit, fixAvoidColors } from "@/lib/cleanOutfit";
 import type { BodyType, ColorType } from "@/lib/profile";
@@ -97,9 +97,11 @@ export async function POST(request: NextRequest) {
     };
 
     // 이름 다듬기 + 퍼스널컬러의 피할 색 막기 (조문 자리는 검정이 정답이라 색은 그대로)
+    // 매번 다른 코디: 스타일 방향·아이템·아이템별 색을 정해 AI에게 건넨다
+    const brief = pickStyleBrief(detectOccasion(situation), detectSeason(situation), bodyType, colorType, recent);
     const polish = <T,>(o: T): T => {
       const c = cleanOutfit(o);
-      return detectOccasion(situation) === "M" ? c : fixAvoidColors(c, colorType);
+      return detectOccasion(situation) === "M" ? c : fixAvoidColors(fixToneClash(c, brief), colorType);
     };
 
     const abort = new AbortController();
@@ -133,8 +135,7 @@ export async function POST(request: NextRequest) {
               situation.trim() +
               buildProfileGuide(bodyType, colorType) +
               seasonNote() +
-              // 매번 다른 코디: 스타일 방향·주인공 아이템·팔레트·하의 형태를 무작위로 정해 건넨다
-              briefPrompt(pickStyleBrief(detectOccasion(situation), detectSeason(situation), bodyType, colorType, recent), recent),
+              briefPrompt(brief, recent),
           },
         ],
       }),
