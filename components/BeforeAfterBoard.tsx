@@ -1,124 +1,137 @@
 "use client";
 
-/* ── 옷 사진 비포 / 애프터 (2026-11-07) ──
-   예전엔 체형마다 사람 사진 1쌍(고정)이었다. 이제 옷 사진(59종)으로 만들어
-   골격 3 × 퍼스널컬러 4 = 12가지가 모두 다르게 나온다.
-   · 비포: 그 골격이 피할 모양 + 그 컬러가 피할 색
-   · 애프터: 그 골격에 어울리는 모양 + 내 베스트 컬러 (넓은 면적은 바탕색, 상의는 포인트 색) */
+/* ── 사람 사진 비포 / 애프터 (2026-11-09) ──
+   골격 3 × 퍼스널컬러 4 = 12쌍. 조합마다 다른 모델(그 골격·컬러가 한눈에 보이는 사람)이고,
+   한 쌍 안에서는 같은 사람이 옷만 바꿨다. AI로 만든 연출 이미지(정적 파일).
+   · 비포: 길에서 흔히 보는 평범한 옷인데, 핏·길이·색이 그 골격·컬러와 안 맞는 옷
+   · 애프터: 그 골격·컬러에 맞춘 핀터레스트 스트릿 룩
+   사진: public/lookbook/ba/{body}_{color}-{before|after}.jpg
+   (예전 옷 그림 보드는 git 기록에, 체형별 사람 사진 1쌍은 BeforeAfter.tsx 에 남아 있음) */
 
-import { useEffect, useRef, useState } from "react";
 import type { BodyType, ColorType } from "@/lib/profile";
 import { BODY_META, COLOR_META } from "@/lib/profile";
-import { GarmentPhoto } from "./GarmentArt";
-import type { GarmentKind } from "@/lib/garmentSizes";
 
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
-type It = { k: GarmentKind; n: string };
-/* 아이템 순서: 상의 · 하의 · 아우터 · 신발 */
-const LOOKS: Record<BodyType, { before: It[]; beforeWhy: string; after: It[]; afterWhy: string }> = {
+const BODY_WHY: Record<BodyType, { before: string; after: string }> = {
   straight: {
-    before: [{ k: "turtleneck", n: "오버핏 터틀넥" }, { k: "wide", n: "통 넓은 와이드 팬츠" }, { k: "padding", n: "부피 큰 패딩" }, { k: "ugly_sneaker", n: "어글리 스니커즈" }],
-    beforeWhy: "목이 막히고 상체에 부피가 더해져 부해 보여요",
-    after: [{ k: "shirt", n: "셔츠" }, { k: "pants", n: "일자 슬랙스" }, { k: "trench", n: "트렌치 코트" }, { k: "heel", n: "포인티드 펌프스" }],
-    afterWhy: "목선이 열리고 I라인이 살아 반듯하고 날씬해 보여요",
+    before: "박시한 오버핏이 상체에 부피를 더해 부해 보이고 허리선이 사라져요",
+    after: "브이넥과 넣어 입은 허리선으로 상체가 슬림해지고 다리가 길어 보여요",
   },
   wave: {
-    before: [{ k: "sweatshirt", n: "박시 맨투맨" }, { k: "cargo_pants", n: "로우웨스트 카고" }, { k: "coat", n: "발목까지 긴 코트" }, { k: "sneaker", n: "투박한 스니커즈" }],
-    beforeWhy: "얇은 상체가 옷에 묻히고 허리선이 내려가 처져 보여요",
-    after: [{ k: "ribbon_blouse", n: "리본 블라우스" }, { k: "pleated_skirt", n: "하이웨스트 플리츠" }, { k: "crop_cardigan", n: "크롭 가디건" }, { k: "maryjane", n: "메리제인" }],
-    afterWhy: "허리선이 올라가 다리가 길어 보이고 곡선이 우아하게 살아나요",
+    before: "뻣뻣하고 긴 옷이 작은 상체를 덮고 허리선이 내려가 키가 작아 보여요",
+    after: "짧고 부드러운 상의와 하이웨이스트로 비율이 살아나 키가 커 보여요",
   },
   natural: {
-    before: [{ k: "tee", n: "몸에 붙는 티셔츠" }, { k: "pants", n: "스키니 팬츠" }, { k: "jacket", n: "짧고 타이트한 재킷" }, { k: "heel", n: "얇은 스틸레토" }],
-    beforeWhy: "옷이 몸에 붙을수록 어깨와 뼈대가 도드라져 딱딱해 보여요",
-    after: [{ k: "cable_knit", n: "오버핏 케이블 니트" }, { k: "wide", n: "와이드 팬츠" }, { k: "coat", n: "롱 코트" }, { k: "boot", n: "앵클 부츠" }],
-    afterWhy: "여유 있는 핏이 골격을 감싸 자연스럽고 멋스러워 보여요",
+    before: "몸에 붙는 옷이 어깨와 관절을 도드라지게 해 앙상하고 딱딱해 보여요",
+    after: "여유 있는 핏이 골격을 감싸 모델처럼 자연스럽고 멋스러워 보여요",
   },
 };
 
-/* 넓은 면적에 쓰는 바탕색(뉴트럴) — DiagnosisVisuals 와 같은 기준 */
-const BASE = new Set(["아이보리", "카멜", "라이트 카키", "피치", "오프화이트", "소프트 그레이", "스카이 블루", "라벤더", "브라운", "카키", "올리브", "블랙", "퓨어 화이트", "네이비", "그레이"]);
+const COLOR_WHY: Record<ColorType, { before: string; after: string }> = {
+  spring: {
+    before: "블랙·차콜처럼 무겁고 어두운 색은 밝은 얼굴을 칙칙하게 만들어요",
+    after: "아이보리·코랄·카멜 같은 따뜻하고 밝은 색에 얼굴이 환해져요",
+  },
+  summer: {
+    before: "머스터드·카멜·브라운은 핑크빛 피부를 누렇고 붉어 보이게 해요",
+    after: "하늘색·그레이·로즈 같은 부드러운 쿨톤에 피부가 맑아 보여요",
+  },
+  autumn: {
+    before: "핑크·하늘색·라벤더 같은 차가운 파스텔은 얼굴을 누렇고 흐리게 해요",
+    after: "브라운·카라멜·러스트 같은 깊고 따뜻한 색에 피부가 윤기 있어 보여요",
+  },
+  winter: {
+    before: "베이지·카멜·올리브는 맑은 피부를 누렇게 만들고 검은 머리만 무거워 보여요",
+    after: "블랙·화이트·진청의 또렷한 대비에 얼굴이 환하고 선명해져요",
+  },
+};
 
-/* 보드 한 장(150×200 기준으로 그리고 칸 너비에 맞춰 확대·축소) — 아우터를 맨 뒤에 */
-const W = 150, H = 200;
-const SLOTS = [
-  { x: 46, y: 18, w: 70, h: 80, r: 4 },    // 상의
-  { x: 92, y: 46, w: 54, h: 116, r: 3 },   // 하의
-  { x: 2, y: 26, w: 80, h: 108, r: -5 },   // 아우터
-  { x: 8, y: 138, w: 70, h: 54, r: -3 },   // 신발
-];
-const DRAW_ORDER = [2, 0, 1, 3];
+/* 사진 속 옷 (생성 프롬프트와 같은 내용) */
+const ITEMS: Record<`${BodyType}_${ColorType}`, { before: string; after: string }> = {
+  straight_spring: {
+    before: "블랙 오버핏 맨투맨 · 블랙 와이드 팬츠 · 블랙 어글리 스니커즈 · 백팩",
+    after: "아이보리 브이넥 가디건 · 연청 롱 스트레이트 데님 · 탄 스웨이드 스니커즈 · 카멜 숄더백",
+  },
+  straight_summer: {
+    before: "머스터드 오버핏 맨투맨 · 브라운 코듀로이 배기 팬츠 · 베이지 스니커즈",
+    after: "연하늘 셔츠(넣어 입기) · 중청 롱 스트레이트 데님 · 그레이 스웨이드 스니커즈 · 로즈 숄더백",
+  },
+  straight_autumn: {
+    before: "베이비 핑크 오버핏 후드티 · 연청 로우라이즈 배기진 · 흰 운동화 · 라벤더 에코백",
+    after: "브라운 가죽 재킷 · 카라멜 브이넥 니트 · 롱 스트레이트 데님 · 브라운 플랫",
+  },
+  straight_winter: {
+    before: "베이지 롱 니트 가디건 · 올리브 카고 팬츠 · 베이지 운동화 · 카멜 토트백",
+    after: "블랙 가죽 재킷 · 화이트 스쿱넥 티 · 진청 롱 와이드 데님 · 블랙 발레 플랫",
+  },
+  wave_spring: {
+    before: "블랙 오버핏 바람막이 · 차콜 와이드 트랙 팬츠 · 블랙 운동화 · 백팩",
+    after: "코랄 크롭 가디건 · 에크루 하이웨이스트 부츠컷 · 탄 발레 플랫 · 카멜 미니백",
+  },
+  wave_summer: {
+    before: "머스터드 박시 워크 재킷 · 브라운 카고 팬츠 · 브라운 등산화풍 운동화",
+    after: "하늘색 크롭 가디건 · 연청 하이웨이스트 부츠컷 · 실버 발레 플랫 · 그레이 미니백",
+  },
+  wave_autumn: {
+    before: "하늘색 오버핏 청재킷 · 핑크 후드티 · 연청 배기진 · 라벤더 에코백",
+    after: "러스트 터틀넥 · 초콜릿 스웨이드 미디 스커트 · 브라운 플랫 · 코냑 숄더백",
+  },
+  wave_winter: {
+    before: "종아리까지 오는 카멜 롱코트 · 베이지 후드티 · 올리브 와이드 팬츠 · 베이지 운동화",
+    after: "블랙 스퀘어넥 티 · 진청 하이웨이스트 부츠컷 · 블랙 발레 플랫 · 버건디 미니백",
+  },
+  natural_spring: {
+    before: "몸에 붙는 블랙 골지 티 · 블랙 스키니진 · 블랙 플랫 · 블랙 미니 크로스백",
+    after: "크림 꽈배기 니트 + 흰 셔츠 레이어드 · 연청 롱 와이드 데님 · 탄 스웨이드 스니커즈",
+  },
+  natural_summer: {
+    before: "머스터드 짧은 골지 가디건 · 브라운 스키니 팬츠 · 카멜 플랫 · 카멜 에나멜 백",
+    after: "연하늘 스트라이프 오버 셔츠 · 연청 롱 와이드 데님 · 그레이 스웨이드 스니커즈",
+  },
+  natural_autumn: {
+    before: "연핑크 짧은 골지 가디건 · 하늘색 스키니진 · 흰 플랫 · 라벤더 미니 크로스백",
+    after: "초콜릿 코듀로이 셔츠 재킷 · 크림 티 · 중청 롱 와이드 데님 · 코냑 토트백",
+  },
+  natural_winter: {
+    before: "몸에 붙는 베이지 골지 티 · 올리브 스키니 팬츠 · 베이지 플랫 · 카멜 미니 크로스백",
+    after: "블랙 오버핏 니트 + 흰 셔츠 레이어드 · 진청 롱 와이드 데님 · 블랙 숄더백",
+  },
+};
 
-function Board({ items, colors, dim }: { items: It[]; colors: string[]; dim?: boolean }) {
-  const box = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-  useEffect(() => {
-    const el = box.current;
-    if (!el) return;
-    const fit = () => setScale(el.clientWidth / W);
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-  return (
-    <div ref={box} style={{ width: "100%", height: H * scale, borderRadius: "2px", overflow: "hidden", background: "#F2EDE5" }}>
-      <div style={{ position: "relative", width: W, height: H, transform: `scale(${scale})`, transformOrigin: "0 0", filter: dim ? "saturate(.85)" : undefined }}>
-        {DRAW_ORDER.map((i) => {
-          const s = SLOTS[i];
-          const it = items[i];
-          return (
-            <div key={i} style={{ position: "absolute", left: s.x, top: s.y, width: s.w, height: s.h, display: "flex", alignItems: "center", justifyContent: "center", transform: `rotate(${s.r}deg)`, filter: "drop-shadow(0 5px 6px rgba(50,35,20,.18))" }}>
-              <GarmentPhoto kind={it.k} hex={colors[i]} width={s.w} height={s.h} />
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-export default function BeforeAfterBoard({ body, color, best, worst, hex, txt, sub, bdr, acc }: {
-  body: BodyType; color: ColorType; best: string[]; worst: string[]; hex: (n: string) => string;
-  txt: string; sub: string; bdr: string; acc: string;
+export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
+  body: BodyType; color: ColorType; txt: string; sub: string; bdr: string; acc: string;
 }) {
-  const look = LOOKS[body];
-  const base = best.filter((c) => BASE.has(c));
-  const point = best.filter((c) => !BASE.has(c));
-  // 애프터: 상의 = 포인트 색(없으면 바탕색), 하의·아우터·신발 = 바탕색
-  const afterNames = [point[0] ?? base[0], base[0] ?? best[0], base[1] ?? best[1], base[2] ?? base[0] ?? best[2]];
-  // 비포 색: 피할 색 중 실제 옷으로 있을 만한 것(형광색은 빼고)
-  const w = worst.filter((n) => n !== "형광색");
-  const beforeNames = [w[0], w[1] ?? w[0], w[2] ?? w[0], w[3] ?? w[1] ?? w[0]];
-  const cm = COLOR_META[color];
+  const key = `${body}_${color}` as const;
+  const items = ITEMS[key];
 
   const col = (kind: "before" | "after") => {
     const isAfter = kind === "after";
-    const items = isAfter ? look.after : look.before;
-    const names = isAfter ? afterNames : beforeNames;
+    const src = `/lookbook/ba/${key}-${kind}.jpg`;
     return (
       <figure style={{ margin: 0, minWidth: 0 }}>
-        <div style={{ position: "relative", border: `1px solid ${isAfter ? txt : bdr}`, borderRadius: "2px", overflow: "hidden" }}>
-          <Board items={items} colors={names.map(hex)} dim={!isAfter} />
-          <span style={{ position: "absolute", left: 8, top: 8, fontFamily: sans, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.08em", color: isAfter ? "#F4EFE7" : "#6B655E", background: isAfter ? "#191614" : "rgba(255,255,255,.85)", padding: "3px 8px", borderRadius: "999px" }}>
+        <a href={src} target="_blank" rel="noopener" style={{ display: "block", position: "relative", border: `1px solid ${isAfter ? txt : bdr}`, borderRadius: "2px", overflow: "hidden", background: "#EDE7DE" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={src}
+            alt={`${BODY_META[body].label} 체형 · ${COLOR_META[color].label} ${isAfter ? "애프터: 어울리는 옷" : "비포: 안 어울리는 옷"}`}
+            loading="lazy"
+            decoding="async"
+            style={{ display: "block", width: "100%", aspectRatio: "3 / 4", objectFit: "cover", objectPosition: "center top" }}
+          />
+          <span style={{ position: "absolute", left: 8, top: 8, fontFamily: sans, fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.08em", color: isAfter ? "#F4EFE7" : "#6B655E", background: isAfter ? "#191614" : "rgba(255,255,255,.88)", padding: "3px 8px", borderRadius: "999px" }}>
             {isAfter ? "AFTER" : "BEFORE"}
           </span>
-        </div>
+        </a>
         <figcaption style={{ marginTop: "9px" }}>
           <span style={{ display: "block", fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: isAfter ? txt : sub, lineHeight: 1.45, wordBreak: "keep-all" }}>
-            {isAfter ? look.afterWhy : look.beforeWhy}
+            {BODY_WHY[body][kind]}
           </span>
-          <span style={{ display: "block", fontFamily: sans, fontSize: "11px", color: sub, lineHeight: 1.55, marginTop: "5px", wordBreak: "keep-all" }}>
-            {items.map((it) => it.n).join(" · ")}
+          <span style={{ display: "block", fontFamily: sans, fontSize: "12px", color: isAfter ? txt : sub, lineHeight: 1.5, marginTop: "4px", wordBreak: "keep-all" }}>
+            {COLOR_WHY[color][kind]}
           </span>
-          <span style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "4px", marginTop: "6px" }}>
-            {[...new Set(names)].map((n) => (
-              <span key={n} style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: sans, fontSize: "10.5px", color: isAfter ? txt : sub }}>
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: hex(n), boxShadow: "inset 0 0 0 1px rgba(0,0,0,.1)" }} />
-                {n}
-              </span>
-            ))}
+          <span style={{ display: "block", fontFamily: sans, fontSize: "11px", color: sub, lineHeight: 1.55, marginTop: "6px", wordBreak: "keep-all" }}>
+            {items[kind]}
           </span>
         </figcaption>
       </figure>
@@ -129,15 +142,18 @@ export default function BeforeAfterBoard({ body, color, best, worst, hex, txt, s
     <div style={{ border: `1px solid ${bdr}`, borderTop: `1px solid ${txt}`, borderRadius: "2px", padding: "20px", marginBottom: "14px", backgroundColor: "var(--t-card)" }}>
       <p className="ed-label" style={{ color: acc, marginBottom: "10px" }}>LOOKBOOK · 비포 / 애프터</p>
       <p style={{ fontFamily: "var(--font-gowun), 'Batang', serif", fontSize: "20px", fontWeight: 600, color: txt, margin: "0 0 4px", wordBreak: "keep-all" }}>
-        같은 {BODY_META[body].label} 체형, 옷만 바꿨어요
+        같은 사람, 옷만 바꿨어요
       </p>
       <p style={{ fontFamily: sans, fontSize: "12px", color: sub, lineHeight: 1.6, margin: "0 0 14px", wordBreak: "keep-all" }}>
-        모양은 골격에 맞게, 색은 {cm.label} 베스트 컬러로 바꾼 한 벌이에요.
+        {BODY_META[body].label} 체형 · {COLOR_META[color].label}. 흔히 입는 옷이라도 골격과 컬러에 안 맞으면 이렇게 달라 보여요.
       </p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
         {col("before")}
         {col("after")}
       </div>
+      <p style={{ fontFamily: sans, fontSize: "10.5px", color: sub, lineHeight: 1.55, margin: "12px 0 0", wordBreak: "keep-all" }}>
+        * AI로 만든 연출 이미지예요. 같은 사람이 옷만 바꿨을 때의 차이를 보여드리려고 만들었어요.
+      </p>
     </div>
   );
 }
