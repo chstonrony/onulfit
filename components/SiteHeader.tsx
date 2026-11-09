@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { track } from "@/lib/track";
+import { INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/consult";
 
 /* ── 모든 화면 공통 상단 메뉴 ──
    · 로고: 누르면 맨 처음 화면으로 (홈에서는 대화·결과를 비우고 첫 화면으로)
    · ←  : 홈이 아닌 화면에서 이전 화면으로 (이전 기록이 없으면 홈으로)
-   · 메뉴: 자가진단 · 가이드 · 1:1 진단 — 꼭 필요한 것만 */
+   · 메뉴: 자가진단 · 가이드 · 1:1 진단 — 꼭 필요한 것만
+   · 맨 오른쪽 인스타그램 아이콘 (2026-11-09: PC 홈은 오른쪽 칸만 스크롤돼서 푸터 링크가 잘 안 보였다) */
 
 const INK = "var(--t-txt, #1D1F16)";
 const ACC = "var(--t-acc, #5A6122)";
@@ -110,6 +112,22 @@ export default function SiteHeader({
             </Link>
           );
         })}
+        <a
+          href={INSTAGRAM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`오늘핏 인스타그램 @${INSTAGRAM_HANDLE}`}
+          title={`@${INSTAGRAM_HANDLE}`}
+          onClick={() => track("instagram_click", { where: "header" })}
+          style={{ display: "flex", alignItems: "center", gap: "6px", color: INK, padding: "4px 0", textDecoration: "none" }}
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" />
+            <circle cx="12" cy="12" r="4.2" />
+            <circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none" />
+          </svg>
+          <span className="ed-label hidden lg:inline" style={{ whiteSpace: "nowrap", textTransform: "none", letterSpacing: "0.02em" }}>@{INSTAGRAM_HANDLE}</span>
+        </a>
       </nav>
     </header>
   );
