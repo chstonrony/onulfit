@@ -1,0 +1,28 @@
+/* 비포/애프터 사진의 아주 작은 미리보기(12px, 흐리게 늘려 씀) — 사진이 뜨기 전 자리를 채운다.
+   public/lookbook/ba/*.jpg 에서 자동 생성 (2026-11-09). 사진을 바꾸면 다시 만든다. */
+export const BA_BLUR: Record<string, string> = {
+  "natural_autumn-after": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoMABAAAsBMJZQCdAEKy2Y3JGgAAP6JvDPg+wpWNZ5D98w7UOw+V+DFdztuuxVQI9T8nDQeqLzbHXNnOHm0NxGphEMdeLOuLotGoCfZJNuy/WwnuZ0IoKPQrWgAAA==",
+  "natural_autumn-before": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAwAgCdASoMABAAAsBMJZQCdADdZ1v/t6cTAAD+rRTSUuVPqI8CEvAxyaZrP5MJyy4KGHi8tTpTxa2oYOt1hoHzgMQkK5oP8TVVEILNW/2KgVARyYHFlYv5wAA=",
+  "natural_spring-after": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQAgCdASoMABAAAsBMJYwCdAD8KYR8Su8AAPw4Fy2iUG9DNxt/6b5KprOAOqdoG+x+ncDJNtdql9j4Q2iyVnL3z9Pcm0elKBUicKdzZcSwo46WlhLfOKD0y1QAAA==",
+  "natural_spring-before": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwAgCdASoMABAAAsBMJZQCdAEondjIrndRwAD8O1K+75qY4qkTdwpchE9YiqdXEmKSGj2nmXmWG9fuLCD+1DgaPSLpUXr+yVlIkpWHNztX82/phKdXi1yzHckDxE8uoXhIuAAA",
+  "natural_summer-after": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADQAQCdASoMABAAAsBMJZwAAmhZ1Eum6AD+wNh5q9B9dE9zMQVVjzjFtlr1sqV5QGEkmv4l57Qk1796wFb42dho2aX7AqS0q6jUYlGGRsaiwAAA",
+  "natural_summer-before": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoMABAAAsBMJZQC7ADZYggQ4QAA/r4a/weM+cbRGVcJdv3nFaZN4zqUhCFsZJgCm7LOy89m9AkvXpMibwSRA9dlDitAh+1t5DMKyVDE3GF2FgOcWgAAAA==",
+  "natural_winter-after": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQAQCdASoMABAAAsBMJZwAAl0QTvRaQAD+T5tO2ge0LO5vIYZC61uh7GidAgVSFE9fBopf4NzysXt89/SbkXdhUurGMXyFKlhp3X5APhK+lU6Yz8npDWcyWAgNkOYQAAA=",
+  "natural_winter-before": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAQCdASoMABAAAsBMJZwAAlejm0X6AAD+T5tO2gTCBe91gx8QZqqrUCvw0iZiDMMvwnGZANj/Y56LlfgCfOP1ulKYKt2C5E9avODvQEoEBc790DwAAA==",
+  "straight_autumn-after": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQAgCdASoMABAAAsBMJZQCdAYwTUhrELxFDgAA/q1P7RccREj14M7RmTa0vI6jGXAPy86KXrOqBgZO5kHghnzcYCDofjJf+aN/M2NXVfM/V6QrSyrhQFUH9VO9WHXT4MAAAA==",
+  "straight_autumn-before": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADwAQCdASoMABAAAsBMJYwCdAYuG7fbbwAA/q1P7tfj39wn8lSTH9mB5GIfIy3W0wkmZwPfP86+LdH2o9MtQwLzTNWLcVMq/0stLYBIIG7B9Mmi3NSk4UTEc+7AZAAA",
+  "straight_spring-after": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAQCdASoMABAAAsBMJZQCdADaNFdHgAAA/m0OKSwPguXUHXDaHgaNPz/ZpZidCzrDadpRfZf45yx0HYlCEm+/mKAFwp7okRfDjY0pNkDSq36cAAA=",
+  "straight_spring-before": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoMABAAAsBMJZwCdADdD/cpq5wAAP6cIfYe0NGvXurLuL0TP7Q1TTaIeBxJCi1dPKau9h0zlnolsjEZALOybEk/bcIGQXJ7csRAl8aL3NjY7fjDu0etlsjTGBAAAA==",
+  "straight_summer-after": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACwAQCdASoMABAAAsBMJZwAAjwfIwAgAP6tAhqw715apL5f+Hd/eQkf769rT9gty4v/ZxwPn1nRDcoNUTzeg82JxS44qtJA2lhZRnRttQoAAA==",
+  "straight_summer-before": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADQAQCdASoMABAAAsBMJYwC7ACPbUpAAAD+rYo+yY+HxfDKr9q0aeNeb2U8n+KW3iJsSwlNWQxEMsGjn0MVxEur93Z+Lp3hkEYbwz5myojcELPMlvk00wPYp6Td96eAAAA=",
+  "straight_winter-after": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwAgCdASoMABAAAsBMJZwAD5Pw9jlpVGY7AAD9xyYzeN4BdoxavZ8eJ+K+EBf26WyGQYhXG1H8qahJnvOYIhd8Yo6vgWUxoQNkJ7oPaj7EtFDq4PgAHF/XQDNfjUfxUXevQAAA",
+  "straight_winter-before": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAAAQAgCdASoMABAAAsBMJZwC7ACRGbY3+xHAAPw80BfHe142rmnke4rPD9JaCDNjfsNfku9cgjIsX7efk37mVqlIoWDdmAyvsxcBetubEyt3BsSaE2mZ99zgAAA=",
+  "wave_autumn-after": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAADwAQCdASoMABAAAsBMJZQCw7DbgH4Ma6gA9Fjf+31uhSFH8lx19vCVMKfbS5AwGgKqQ8bTtAofKsD5AjcBV1Q/PNFuLoks0bsEjswRgPI6JQwZv1DIC0AiMsqJAAAA",
+  "wave_autumn-before": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAADQAQCdASoMABAAAsBMJZwAAlbQQwmYAAD0WN/7fWtG3/OcLBft1ukcnur0QXu/ZvXjmqGHsXXTi7shODE4LbvPZzQjG0+Xi0AnrYyn2ht7NBjg2QAAAA==",
+  "wave_spring-after": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAQAgCdASoMABAAAsBMJQBOgBuUPf6PdnQAAPa7etvx8zE2nOKb7RcHwiH1zPw2xQ01rt/GXtiyOk0nAPER/XS4IMqRTBmJwa8HFoOdOH4TbbT0dxgHcqb77vmGAAAA",
+  "wave_spring-before": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwAgCdASoMABAAAsBMJZwCdADbal8oRCuSAAD2u3rb8d7cX4Ly0HhP9fNLycpuXEZK57iScCo6fgWLSD8CLrZozru2g43BgnzATgDd5ylRWx4J0Vrwde6w3LZ4YXik1AAAAA==",
+  "wave_summer-after": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAACwAQCdASoMABAAAsBMJZwAAlbHAHAAAM4/CuovvDu73COyxMZztK2dfywvuNR/TB31W5P7x0Mp2aFiESrh8WGBTnwzd8VMMb5LnhQ4Z7T8yq7CoFAAAA==",
+  "wave_summer-before": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAQCdASoMABAAAsBMJYwCw7Dcm2hw54AAzj8K6i/p7x0JtRCC8M52lYe5c+ShUXlU7OfS7cnbR8Fx+ERDCTMd8FHELz0LgxsYUiWi/CDNleN+adisBJdvh/27ySB9aAA=",
+  "wave_winter-after": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQAgCdASoMABAAAsBMJZwAGyA4N7RsdNcEAP5NXfZ7MzdzzKykvWtx0UsjPGXYbGMRzFyqw95z1bnMm6uuK4xmutnR8VaSvC2GmLtEHZFFnepYBhGJ+TP5ZJTC9YpX6gAAAA==",
+  "wave_winter-before": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADwAQCdASoMABAAAsBMJZwCdAEWPPOi5AAA/k1eHJsUDB76+awcWYu5Zk+oi5JliytLhxHaoNgd5mxGiMcWgD99VtJDRGUeF6CFEOlCzorvx14xWe58HvNmKKAAAA==",
+};

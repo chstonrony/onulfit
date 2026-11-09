@@ -9,6 +9,7 @@
    (예전 옷 그림 보드는 git 기록에, 체형별 사람 사진 1쌍은 BeforeAfter.tsx 에 남아 있음) */
 
 import type { BodyType, ColorType } from "@/lib/profile";
+import { BA_BLUR } from "@/lib/baBlur";
 import { BODY_META, COLOR_META } from "@/lib/profile";
 import { get29cmRefUrl, getZigzagRefUrl, getWConceptUrl } from "@/lib/shopping";
 import { track } from "@/lib/track";
@@ -123,6 +124,23 @@ const MALLS = [
   { key: "wconcept", label: "W컨셉", url: getWConceptUrl, sponsored: true },
 ] as const;
 
+/** 화면용 사진(600px WebP, 약 35KB). 크게 보기 링크는 원본 JPG */
+export const baSrc = (key: string, kind: "before" | "after") => `/lookbook/ba/${key}-${kind}.webp`;
+
+/** 진단 결과가 나오기 전에 비포/애프터 사진을 미리 받아둔다 (같은 사진은 한 번만) */
+const prefetched = new Set<string>();
+export function prefetchBA(keys: string[]) {
+  if (typeof window === "undefined") return;
+  keys.forEach((key) => (["after", "before"] as const).forEach((kind) => {
+    const src = baSrc(key, kind);
+    if (prefetched.has(src)) return;
+    prefetched.add(src);
+    const img = new Image();
+    img.decoding = "async";
+    img.src = src;
+  }));
+}
+
 export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
   body: BodyType; color: ColorType; txt: string; sub: string; bdr: string; acc: string;
 }) {
@@ -131,15 +149,18 @@ export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
 
   const col = (kind: "before" | "after") => {
     const isAfter = kind === "after";
-    const src = `/lookbook/ba/${key}-${kind}.jpg`;
+    const src = baSrc(key, kind);
+    const blur = BA_BLUR[`${key}-${kind}`];
     return (
       <figure style={{ margin: 0, minWidth: 0 }}>
-        <a href={src} target="_blank" rel="noopener" style={{ display: "block", position: "relative", border: `1px solid ${isAfter ? txt : bdr}`, borderRadius: "2px", overflow: "hidden", background: "#EDE7DE" }}>
+        <a href={`/lookbook/ba/${key}-${kind}.jpg`} target="_blank" rel="noopener" style={{ display: "block", position: "relative", border: `1px solid ${isAfter ? txt : bdr}`, borderRadius: "2px", overflow: "hidden", background: blur ? `#EDE7DE url(${blur}) center top / cover no-repeat` : "#EDE7DE" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
+            // 결과 화면의 핵심 사진 — 미리 받아두고, 스크롤 전에도 바로 받는다
+            fetchPriority="high"
             alt={`${BODY_META[body].label} 체형 · ${COLOR_META[color].label} ${isAfter ? "애프터: 어울리는 옷" : "비포: 안 어울리는 옷"}`}
-            loading="lazy"
+            loading="eager"
             decoding="async"
             style={{ display: "block", width: "100%", aspectRatio: "3 / 4", objectFit: "cover", objectPosition: "center top" }}
           />

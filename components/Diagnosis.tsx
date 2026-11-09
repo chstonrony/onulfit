@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import StoryCard from "./StoryCard";
 import ConsultCTA from "./ConsultCTA";
@@ -30,7 +30,7 @@ import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
 import BodyQuizArt, { BODY_ART_NOTE } from "./BodyQuizArt";
 import ColorQuizArt, { COLOR_ART_NOTE } from "./ColorQuizArt";
-import BeforeAfterBoard from "./BeforeAfterBoard";
+import BeforeAfterBoard, { prefetchBA } from "./BeforeAfterBoard";
 import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
 type Step = "intro" | "body" | "half" | "color" | "result";
@@ -89,6 +89,15 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
   const sub = vars["--t-sub"];
   const acc = vars["--t-acc"];
   const bdr = vars["--t-bdr"];
+
+  // 마지막 컬러 문항에 오면, 나올 수 있는 결과 2가지의 비포/애프터 사진을 미리 받아둔다
+  // → 결과 화면에서 코디 사진이 기다림 없이 바로 뜬다
+  useEffect(() => {
+    if (step !== "color" || qIdx !== COLOR_QUESTIONS.length - 1) return;
+    const body = scoreBody(bodyAns);
+    const keys = (["light", "deep", "unsure"] as const).map((last) => `${body}_${scoreColor([...colorAns, last])}`);
+    prefetchBA([...new Set(keys)]);
+  }, [step, qIdx, bodyAns, colorAns]);
 
   function pickBody(v: BodyAnswer) {
     const next = [...bodyAns, v];

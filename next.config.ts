@@ -14,6 +14,12 @@ const nextConfig: NextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
         ],
       },
+      /* 코디 사진·옷 사진은 휴대폰에 하루 보관 (2026-11-09) — 다시 진단하거나 다시 들어올 때 새로 받지 않는다.
+         파일 이름을 그대로 두고 사진을 바꿔도 최대 하루 뒤엔 새 사진이 보인다 */
+      ...["/lookbook/:path*", "/garments/:path*"].map((source) => ({
+        source,
+        headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
+      })),
     ];
   },
   /* 옛 주소(stylefit-pearl.vercel.app)로 들어오면 onulfit.com 같은 페이지로 영구 이동 */
