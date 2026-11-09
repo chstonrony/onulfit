@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import SelfCheckLanding from "@/components/SelfCheckLanding";
-import { OG_IMAGE } from "@/lib/og";
+import { OG_PROMO } from "@/lib/og";
 
 const URL = "https://onulfit.com/self-check";
 const TITLE = "무료 체형·퍼스널컬러 자가진단 테스트 — 1분, 사진 없이 | 오늘핏";
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   title: TITLE,
   description: DESC,
   alternates: { canonical: URL },
-  openGraph: { type: "website", title: TITLE, description: DESC, url: URL, siteName: "오늘핏 OnulFit", locale: "ko_KR", images: [OG_IMAGE] },
+  openGraph: { type: "website", title: TITLE, description: DESC, url: URL, siteName: "오늘핏 OnulFit", locale: "ko_KR", images: [OG_PROMO] },
+  twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: [OG_PROMO.url] },
 };
 
 export default function SelfCheckPage() {
