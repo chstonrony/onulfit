@@ -70,3 +70,14 @@ export function get29cmUrl(keyword: string): string {
   const kw = encodeURIComponent(normalizeKeyword(keyword));
   return withAffiliate(`https://www.29cm.co.kr/store/search?keyword=${kw}&sort=RECOMMENDED`);
 }
+
+/* ── 제휴 제안용 유입 표시 (2026-11-09) ──
+   29CM·지그재그는 아직 제휴 전이라 수수료는 없다. 대신 링크에 utm 을 달아
+   그쪽 분석 도구에서도 "오늘핏에서 온 방문"이 보이게 한다(제안서 근거). */
+const UTM = "utm_source=onulfit&utm_medium=referral&utm_campaign=diag_result";
+export function get29cmRefUrl(keyword: string): string {
+  return `${get29cmUrl(keyword)}&${UTM}`;
+}
+export function getZigzagRefUrl(keyword: string): string {
+  return `${getZigzagUrl(keyword)}&${UTM}`;
+}

@@ -10,6 +10,8 @@
 
 import type { BodyType, ColorType } from "@/lib/profile";
 import { BODY_META, COLOR_META } from "@/lib/profile";
+import { get29cmRefUrl, getZigzagRefUrl, getWConceptUrl } from "@/lib/shopping";
+import { track } from "@/lib/track";
 
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
@@ -99,6 +101,28 @@ const ITEMS: Record<`${BodyType}_${ColorType}`, { before: string; after: string 
   },
 };
 
+/* 애프터 룩 아이템 → 쇼핑몰 검색어 (사진 속 옷과 같은 품목, 검색 결과가 잘 나오는 짧은 말로) */
+const AFTER_SHOP: Record<`${BodyType}_${ColorType}`, string[]> = {
+  straight_spring: ["아이보리 브이넥 가디건", "연청 스트레이트 데님", "베이지 스웨이드 스니커즈", "카멜 숄더백"],
+  straight_summer: ["하늘색 셔츠", "중청 스트레이트 데님", "그레이 스웨이드 스니커즈", "핑크 숄더백"],
+  straight_autumn: ["브라운 가죽 재킷", "카멜 브이넥 니트", "스트레이트 데님", "브라운 플랫슈즈"],
+  straight_winter: ["블랙 가죽 재킷", "화이트 스쿱넥 티셔츠", "진청 와이드 데님", "블랙 발레 플랫"],
+  wave_spring: ["코랄 가디건", "아이보리 부츠컷 팬츠", "베이지 발레 플랫", "카멜 미니백"],
+  wave_summer: ["하늘색 크롭 가디건", "연청 부츠컷", "실버 플랫슈즈", "그레이 미니백"],
+  wave_autumn: ["브라운 터틀넥", "브라운 스웨이드 스커트", "브라운 플랫슈즈", "브라운 숄더백"],
+  wave_winter: ["블랙 스퀘어넥 티셔츠", "진청 부츠컷 데님", "블랙 발레 플랫", "버건디 미니백"],
+  natural_spring: ["크림 꽈배기 니트", "화이트 셔츠", "연청 와이드 팬츠", "베이지 스웨이드 스니커즈"],
+  natural_summer: ["스트라이프 오버핏 셔츠", "연청 와이드 팬츠", "그레이 스웨이드 스니커즈"],
+  natural_autumn: ["브라운 코듀로이 셔츠", "크림 티셔츠", "중청 와이드 팬츠", "브라운 토트백"],
+  natural_winter: ["블랙 오버핏 니트", "화이트 셔츠", "진청 와이드 데님", "블랙 숄더백"],
+};
+
+const MALLS = [
+  { key: "29cm", label: "29CM", url: get29cmRefUrl, sponsored: false },
+  { key: "zigzag", label: "지그재그", url: getZigzagRefUrl, sponsored: false },
+  { key: "wconcept", label: "W컨셉", url: getWConceptUrl, sponsored: true },
+] as const;
+
 export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
   body: BodyType; color: ColorType; txt: string; sub: string; bdr: string; acc: string;
 }) {
@@ -151,8 +175,35 @@ export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
         {col("before")}
         {col("after")}
       </div>
+      {/* 애프터 룩 아이템 찾기 — 29CM·지그재그·W컨셉 검색. 어느 조합에서 어느 쇼핑몰을 누르는지 GA로 잰다(제휴 제안 근거) */}
+      <div style={{ marginTop: "16px", paddingTop: "14px", borderTop: `1px solid ${bdr}` }}>
+        <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 700, color: txt, margin: "0 0 10px", wordBreak: "keep-all" }}>
+          애프터 룩 아이템 찾아보기
+        </p>
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+          {AFTER_SHOP[key].map((q) => (
+            <li key={q} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
+              <span style={{ fontFamily: sans, fontSize: "12.5px", color: txt, wordBreak: "keep-all" }}>{q}</span>
+              <span style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                {MALLS.map((m) => (
+                  <a
+                    key={m.key}
+                    href={m.url(q)}
+                    target="_blank"
+                    rel={m.sponsored ? "noopener noreferrer sponsored" : "noopener noreferrer"}
+                    onClick={() => track("shop_click", { mall: m.key, category: "ba_after", combo: key, item: q })}
+                    style={{ fontFamily: sans, fontSize: "11px", fontWeight: 600, color: txt, textDecoration: "none", border: `1px solid ${bdr}`, borderRadius: "999px", padding: "5px 10px", lineHeight: 1, whiteSpace: "nowrap", minHeight: "26px", display: "inline-flex", alignItems: "center" }}
+                  >
+                    {m.label}
+                  </a>
+                ))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
       <p style={{ fontFamily: sans, fontSize: "10.5px", color: sub, lineHeight: 1.55, margin: "12px 0 0", wordBreak: "keep-all" }}>
-        * AI로 만든 연출 이미지예요. 같은 사람이 옷만 바꿨을 때의 차이를 보여드리려고 만들었어요.
+        * AI로 만든 연출 이미지예요. 같은 사람이 옷만 바꿨을 때의 차이를 보여드리려고 만들었어요. 아이템 버튼은 각 쇼핑몰 검색 결과로 이동해요. W컨셉은 링크를 통한 구매 시 오늘핏에 일정 수수료가 적립될 수 있어요.
       </p>
     </div>
   );
