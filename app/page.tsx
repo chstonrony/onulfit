@@ -10,7 +10,7 @@ import LoadingState from "@/components/LoadingState";
 import OutfitCard from "@/components/OutfitCard";
 import DraftOutfit, { type DraftOutfitData } from "@/components/DraftOutfit";
 import SituationSelector from "@/components/SituationSelector";
-import Diagnosis from "@/components/Diagnosis";
+import dynamic from "next/dynamic";
 import ApplyCTA from "@/components/ApplyCTA";
 import SelfCheckGuide from "@/components/SelfCheckGuide";
 import { Reveal, GyeolSymbol, SectionHead, Marquee } from "@/components/Editorial";
@@ -20,6 +20,11 @@ import SiteFooter from "@/components/SiteFooter";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
 import { FREE_DAILY, freeLeft, spendFree } from "@/lib/freeQuota";
+
+/* 자가진단 화면은 크다(결과 사진·도표·이미지 저장 기능). 첫 화면 코드에서 빼서 따로 받고,
+   첫 화면이 다 뜬 뒤 쉬는 시간에 미리 받아 둔다 → 버튼을 누르면 바로 열림 */
+const loadDiagnosis = () => import("@/components/Diagnosis");
+const Diagnosis = dynamic(loadDiagnosis, { ssr: false });
 
 type MobileTab = "chat" | "outfit";
 
@@ -59,6 +64,18 @@ export default function Home() {
     if (messages.length === 0) return;
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
+
+  // 첫 화면이 뜬 뒤 쉬는 시간에 자가진단 코드를 미리 받아 둔다
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const go = () => { loadDiagnosis().catch(() => {}); };
+    // 첫 화면 영상과 데이터를 다투지 않게 몇 초 뒤, 화면이 한가할 때
+    const t = window.setTimeout(() => {
+      if (w.requestIdleCallback) w.requestIdleCallback(go, { timeout: 3000 });
+      else go();
+    }, 6000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   // 저장된 골격·컬러 프로필 로드
   useEffect(() => {

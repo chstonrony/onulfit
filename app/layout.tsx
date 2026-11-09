@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter_Tight, Fraunces, Geist, JetBrains_Mono } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Analytics from "@/components/Analytics";
 import KakaoInit from "@/components/KakaoInit";
 import KakaoFloat from "@/components/KakaoFloat";
 import { OG_IMAGE } from "@/lib/og";
@@ -25,6 +25,7 @@ const accentSerif = Fraunces({
   style: ["normal", "italic"],
   axes: ["SOFT", "opsz"],
   display: "swap",
+  preload: false, // 첫 화면에 안 쓰임 — 미리 받지 않음(모바일 첫 화면 속도)
 });
 
 /* 오늘의 코디 보드(OutfitBoard) 전용 — 제목 onulfit(Geist), 라벨 테이프 영문(JetBrains Mono) */
@@ -33,12 +34,14 @@ const boardTitle = Geist({
   subsets: ["latin"],
   weight: ["600"],
   display: "swap",
+  preload: false,
 });
 const labelMono = JetBrains_Mono({
   variable: "--font-label-mono",
   subsets: ["latin"],
   weight: ["500", "700"],
   display: "swap",
+  preload: false,
 });
 
 const PRETENDARD ='"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
@@ -127,6 +130,8 @@ export default function RootLayout({
       } as React.CSSProperties}
     >
       <head>
+        {/* 한글 글꼴 서버에 미리 연결 (모바일에서 연결 시간 단축) */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
         <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
@@ -154,7 +159,7 @@ export default function RootLayout({
         <KakaoFloat />
       </body>
       <KakaoInit />
-      <GoogleAnalytics gaId="G-01XNX2CRQD" />
+      <Analytics gaId="G-01XNX2CRQD" />
     </html>
   );
 }

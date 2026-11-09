@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { sendGAEvent } from "@next/third-parties/google";
+import { track } from "@/lib/track";
 import Link from "next/link";
 import { WEB3FORMS_KEY, IS_APPLY_READY, CONSULT_INFO, PRIVACY, PRIVACY_VERSION } from "@/lib/consult";
 import { Wordmark } from "@/components/Editorial";
@@ -77,9 +77,9 @@ export default function ApplyPage() {
       if (data.success) {
         // GA4 추천 이벤트 — 애널리틱스 관리 > 주요 이벤트에서 표시하면 전환으로 집계된다.
         // 이름·연락처 같은 개인정보는 보내지 않는다(나이대만).
-        sendGAEvent("event", "generate_lead", {
+        track("generate_lead", {
           form_name: "onulfit_apply",
-          age_group: fd.get("age") || "미선택",
+          age_group: String(fd.get("age") || "미선택"),
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
       }

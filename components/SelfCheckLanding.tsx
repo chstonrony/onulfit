@@ -7,10 +7,14 @@ import { useEffect, useState } from "react";
 import { THEMES, DEFAULT_MOOD } from "@/lib/themes";
 import { getProfile, BODY_META, COLOR_META, type Profile } from "@/lib/profile";
 import { track } from "@/lib/track";
-import Diagnosis from "./Diagnosis";
+import dynamic from "next/dynamic";
 import SelfCheckGuide from "./SelfCheckGuide";
 import ConsultCTA from "./ConsultCTA";
 import { Wordmark, SectionHead, Reveal, BlockButton } from "./Editorial";
+
+/* 자가진단 화면은 따로 받고, 첫 화면이 뜬 뒤 쉬는 시간에 미리 받아 둔다 (app/page.tsx 와 같음) */
+const loadDiagnosis = () => import("./Diagnosis");
+const Diagnosis = dynamic(loadDiagnosis, { ssr: false });
 
 /* ── /self-check 자가진단 랜딩 ──
    검색("체형 자가진단 테스트", "무슨 톤인지 아는 법")과 블로그 링크가 도착하는 곳.
@@ -22,6 +26,17 @@ export default function SelfCheckLanding() {
   const vars = THEMES[DEFAULT_MOOD].vars;
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const go = () => { loadDiagnosis().catch(() => {}); };
+    // 첫 화면 영상과 데이터를 다투지 않게 몇 초 뒤, 화면이 한가할 때
+    const t = window.setTimeout(() => {
+      if (w.requestIdleCallback) w.requestIdleCallback(go, { timeout: 3000 });
+      else go();
+    }, 6000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     setProfile(getProfile());

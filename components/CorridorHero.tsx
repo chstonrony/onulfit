@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { preload } from "react-dom";
 import s from "./CorridorHero.module.css";
 
 /* ── 메인 첫 화면: 어두운 올리브 문 복도 → 끝 문이 반쯤 열리고, 흰 셔츠가 보일 듯 말 듯 ──
@@ -8,7 +9,7 @@ import s from "./CorridorHero.module.css";
    0–4.9s 복도를 따라 전진 · 4.6–6.6s 끝 문이 46%까지 올라감 · 이후 셔츠가 살짝 흔들리다 멈춤
    0.3s 첫 문구 등장 → 4.3s 사라짐 → 6.3s 마지막 문구 등장
    - videoSrc 를 주면 3D 장면 대신 영상을 깔고, 문구는 영상 재생 시간에 맞춰 바뀐다.
-   - 움직임 줄이기 설정 · 느린 연결 · 2.5초 안에 재생이 안 되면 마지막 장면을 바로 보여 준다.
+   - 움직임 줄이기 설정 · 느린 연결 · 6.5초 안에 영상을 다 못 받으면 마지막 장면을 바로 보여 준다.
    - 첫 문구와 버튼은 영상을 기다리지 않고 처음부터 보인다. */
 
 const CAM_END = 2100;
@@ -35,6 +36,9 @@ export default function CorridorHero({
   /** 영상 마지막 장면 (움직임 줄이기 · 자동재생이 막혔을 때) */
   endSrc?: string;
 }) {
+  /* 첫 장면 사진을 가장 먼저 받도록 (휴대폰 첫 화면이 빨리 채워지게) */
+  if (posterSrc) preload(posterSrc, { as: "image", fetchPriority: "high" });
+
   const stageRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -64,11 +68,12 @@ export default function CorridorHero({
 
     if (videoSrc && video) {
       // 마지막 장면에서 멈춘 상태로 보여 주기 (움직임 줄이기 · 자동재생 막힘 · 영상 오류)
+      let started = false;
       const showEnd = () => {
         cancelAnimationFrame(raf);
         video.pause();
         if (endSrc) video.poster = endSrc;
-        if (video.readyState < 2) {
+        if (!started || video.readyState < 2) {
           // 아직 못 받은 영상은 받기를 멈춘다 (느린 데이터를 붙잡지 않게)
           video.removeAttribute("src");
           video.load();
@@ -91,16 +96,54 @@ export default function CorridorHero({
         if (!video.ended) raf = requestAnimationFrame(tick);
         else at(T_END);
       };
-      raf = requestAnimationFrame(tick);
-      video.play().catch(showEnd);
-      // 2.5초 안에 영상이 움직이지 않으면(버퍼링) 기다리지 않고 마지막 장면으로
+      at(0);
+      // 다 받은 뒤에 시작한다 (받으면서 재생하다 멈추는 '버퍼링' 방지)
+      let watch = 0;
+      const start = () => {
+        if (started) return;
+        started = true;
+        window.clearTimeout(guard);
+        raf = requestAnimationFrame(tick);
+        video.play().catch(showEnd);
+        // 재생을 눌렀는데도 2.5초 동안 안 움직이면 마지막 장면으로
+        watch = window.setTimeout(() => {
+          if (video.currentTime < 0.05) showEnd();
+        }, 2500);
+      };
+      // 영상이 작아서(약 340KB) 끝까지 다 받은 뒤 재생한다.
+      // 브라우저의 '이 정도면 끊김 없음' 판단(canplaythrough)은 느린 데이터에서 너무 일찍 와서 재생 직후 멈췄다.
+      const bufferedEnd = () => (video.buffered.length ? video.buffered.end(video.buffered.length - 1) : 0);
+      const tryStart = () => {
+        if (!started && video.duration && bufferedEnd() >= video.duration - 0.15) start();
+      };
+      // 브라우저가 받기를 멈췄을 때: 아무것도 안 받았으면(미리 받기를 안 하는 일부 아이폰) 재생해야 받기 시작 → 바로 재생
+      const onSuspend = () => {
+        if (started) return;
+        if (video.buffered.length === 0) start();
+        else tryStart();
+      };
+      // 6.5초 안에 다 못 받으면 기다리지 않고 마지막 장면으로 (받기도 멈춤). 그동안은 첫 장면 사진과 문구·버튼이 보인다
       const guard = window.setTimeout(() => {
-        if (video.currentTime < 0.05) showEnd();
-      }, 2500);
+        if (started) return;
+        if (video.buffered.length === 0) start();
+        else showEnd();
+      }, 6500);
+      video.addEventListener("progress", tryStart);
+      video.addEventListener("canplaythrough", tryStart);
+      video.addEventListener("suspend", onSuspend);
       video.addEventListener("error", showEnd);
+      if (video.readyState >= 4) tryStart();
+      if (!started) {
+        video.preload = "auto";
+        video.load();
+      }
       return () => {
         cancelAnimationFrame(raf);
         window.clearTimeout(guard);
+        window.clearTimeout(watch);
+        video.removeEventListener("progress", tryStart);
+        video.removeEventListener("canplaythrough", tryStart);
+        video.removeEventListener("suspend", onSuspend);
         video.removeEventListener("error", showEnd);
       };
     }
@@ -176,7 +219,8 @@ export default function CorridorHero({
 
       {!videoSrc && <div className={s.bloom} aria-hidden />}
       <div className={s.vignette} aria-hidden />
-      <div className={s.grain} aria-hidden />
+      {/* 필름 입자: 영상 위에 겹치면 휴대폰이 매 장면 다시 섞어 그려야 해서 끊긴다 → 3D 장면에서만 */}
+      {!videoSrc && <div className={s.grain} aria-hidden />}
       <div className={s.veil} aria-hidden />
 
       <div className={`${s.copy} ${s.A} ${ending ? s.off : ""}`} aria-hidden={ending}>
