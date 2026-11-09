@@ -165,26 +165,26 @@ export interface DiagQuestion {
 export const BODY_QUESTIONS: DiagQuestion[] = [
   {
     id: "wrist",
-    short: "손목",
-    hint: "엄지와 중지로 반대쪽 손목을 가볍게 감싸 쥐어보세요",
-    prompt: "손목을 감싸 쥐었을 때, 손목의 모양은?",
+    short: "손목뼈",
+    hint: "손등을 위로 하고, 새끼손가락 쪽 손목에 있는 동그란 뼈를 보세요",
+    prompt: "손목 바깥쪽 뼈(그림의 화살표)는 어떻게 보이나요?",
     weight: 1.3,
     options: [
-      { label: "둥글고 도톰하다", value: "straight", desc: "단면이 동그랗고 살이 탄탄하게 차 있어 뼈가 잘 안 느껴져요" },
-      { label: "납작하고 가늘다", value: "wave", desc: "앞뒤로 얇고 납작해서 손가락이 여유 있게 겹쳐요" },
-      { label: "크고 각진 뼈가 도드라진다", value: "natural", desc: "바깥쪽 손목뼈가 크게 튀어나와 각이 만져져요" },
+      { label: "거의 안 보이고, 손목이 도톰하다", value: "straight", desc: "살이 탄탄하게 덮여 뼈가 잘 안 보이고, 손목이 둥글고 두께감 있어요" },
+      { label: "작게 살짝 보이고, 손목이 가늘다", value: "wave", desc: "작은 뼈가 살짝 보이고, 손목이 가늘고 납작해요" },
+      { label: "크게 툭 튀어나와 있다", value: "natural", desc: "뼈가 크고 단단하게 튀어나와 손목이 각져 보여요" },
     ],
   },
   {
     id: "upper",
     short: "상체 두께",
-    hint: "거울에 옆모습을 비춰 가슴~등 두께를 보세요",
-    prompt: "옆에서 본 상체(가슴~등) 두께는?",
+    hint: "거울 옆으로 서서, 가슴~등 두께를 보세요",
+    prompt: "옆으로 서서 거울을 보면, 내 상체는?",
     weight: 1.2,
     options: [
-      { label: "두껍고 입체적이다", value: "straight", desc: "가슴과 등이 앞뒤로 두툼해서 옆모습이 입체적이에요" },
-      { label: "얇은 편이다", value: "wave", desc: "앞뒤가 얇아서 옆에서 보면 몸이 납작해요" },
-      { label: "보통인데 어깨 프레임이 크다", value: "natural", desc: "두께는 보통이지만 어깨 뼈대가 크고 넓어요" },
+      { label: "두툼하고 입체적이다", value: "straight", desc: "가슴이 높고 등도 두툼해요. 티셔츠를 입으면 상체가 꽉 차 보여요" },
+      { label: "얇고 납작하다", value: "wave", desc: "앞뒤가 얇아 상체는 옷이 남고, 엉덩이·허벅지 쪽이 더 꽉 껴요" },
+      { label: "두께보다 어깨 뼈대가 크다", value: "natural", desc: "두께는 보통인데, 어깨와 갈비뼈 프레임이 넓고 단단해요" },
     ],
   },
   {

@@ -98,7 +98,7 @@ export default function ColorQuizArt({ qid, value, ink }: Props) {
   }
 
   return (
-    <svg width="76" height="76" viewBox="0 0 80 80" aria-hidden="true">
+    <svg width="88" height="88" viewBox="0 0 80 80" aria-hidden="true">
       {body}
     </svg>
   );

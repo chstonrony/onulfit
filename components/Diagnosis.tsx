@@ -389,7 +389,7 @@ function QuestionView({
             onPointerLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
             {qid ? (
-              <span style={{ flexShrink: 0, width: "84px", height: "84px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
+              <span style={{ flexShrink: 0, width: "96px", height: "96px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
                 {kind === "body" ? <BodyQuizArt qid={qid} value={o.value} ink={txt} acc={acc} /> : <ColorQuizArt qid={qid} value={o.value} ink={txt} />}
               </span>
             ) : (

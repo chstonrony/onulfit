@@ -7,9 +7,9 @@ type Props = { qid: string; value: string; ink: string; acc: string };
 
 /** 그림 아래 작게 붙는 "이 그림은 무엇인지" 설명 */
 export const BODY_ART_NOTE: Record<string, string> = {
-  wrist: "그림은 손목을 자른 단면이에요 · 점선은 감싸 쥔 손가락",
+  wrist: "손등 쪽에서 본 오른손이에요 · 화살표가 손목 바깥쪽 뼈",
   gain: "색칠된 곳이 살이 먼저 붙는 곳이에요",
-  upper: "옆에서 본 모습이에요 · 화살표가 상체 두께",
+  upper: "옆에서 본 모습이에요 · 화살표가 가슴~등 두께",
   collar: "목 아래 쇄골과 어깨선이에요",
   compliment: "잘 어울린다는 말을 들었던 옷과 가장 비슷한 것",
 };
@@ -22,23 +22,30 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
   let body: React.ReactNode = null;
 
   if (qid === "wrist") {
-    // 손목 단면: 점선 원(감싸 쥔 손) 안에 손목 모양
-    const shape = {
-      // 2026-11-09 바로잡음: 스트레이트=둥글고 도톰, 웨이브=납작하고 가늘다
-      straight: <circle cx="40" cy="40" r="20" fill={soft} stroke={ink} strokeWidth="1.6" />,
-      wave: <ellipse cx="40" cy="40" rx="20" ry="10" fill={soft} stroke={ink} strokeWidth="1.6" />,
-      natural: <path d="M20,30 Q22,22 34,22 L50,23 Q56,18 62,24 Q66,30 60,36 L60,50 Q58,58 46,58 L30,58 Q20,57 20,48 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />,
+    // 2026-11-09 다시 그림: 단면도는 알아보기 어렵다는 의견 → 손등 쪽에서 본 오른손.
+    // 새끼손가락 쪽 손목뼈(화살표)가 안 보이는지 / 작게 보이는지 / 크게 튀어나왔는지로 고른다.
+    const hand = {
+      straight: "M25,80 L26,50 Q24,44 24,38 L23,24 Q23,8 40,8 Q57,8 57,24 L56,38 Q56,44 54,50 L55,80 Z",
+      wave: "M29,80 L30,53 Q30,47 27,42 Q24,38 24,32 L23,24 Q23,8 40,8 Q57,8 57,24 L56,32 Q56,38 53,42 Q50,46 50,53 L51,80 Z",
+      natural: "M25,80 L26,54 Q25,47 24,42 L23,24 Q23,8 40,8 Q57,8 57,24 L57,40 Q61,44 61,49 Q60,54 56,55 L55,80 Z",
     }[v];
-    const bones = {
-      straight: [<circle key="a" cx="33" cy="40" r="3.5" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" />, <circle key="b" cx="47" cy="40" r="3" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" />],
-      wave: [<ellipse key="a" cx="31" cy="40" rx="4" ry="2.6" fill="none" stroke={ink} strokeWidth="1" opacity="0.5" />, <ellipse key="b" cx="49" cy="40" rx="3.5" ry="2.4" fill="none" stroke={ink} strokeWidth="1" opacity="0.5" />],
-      natural: [<circle key="a" cx="31" cy="42" r="5" fill="none" stroke={ink} strokeWidth="1.3" />, <circle key="b" cx="55" cy="28" r="5.5" fill={acc} opacity="0.85" />],
+    const bone = {
+      straight: <circle cx="54" cy="47" r="3.6" fill="none" stroke={ink} strokeWidth="1" strokeDasharray="2 2" opacity="0.45" />,
+      wave: <circle cx="50.5" cy="49" r="2.4" fill={acc} />,
+      natural: <circle cx="58.5" cy="48" r="4.2" fill={acc} />,
     }[v];
+    const tip = { straight: 59, wave: 54, natural: 64 }[v];
     body = (
       <>
-        <circle cx="40" cy="40" r="31" fill="none" stroke={ink} strokeWidth="1" strokeDasharray="3 3" opacity="0.55" />
-        {shape}
-        {bones}
+        {/* 엄지 — 손바닥 밑에 깔리게 먼저 그린다 */}
+        <path d="M27,42 Q15,37 12,28 Q11,23 15,23 Q20,25 26,31 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
+        <path d={hand} style={{ fill: "var(--t-bg, #F4F1E8)" }} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
+        <path d={hand} fill={soft} />
+        {/* 손가락 사이 */}
+        <path d="M32,9.5 L32,21 M40,8 L40,21 M48,9.5 L48,21" stroke={ink} strokeWidth="1" strokeLinecap="round" opacity="0.45" />
+        {bone}
+        {/* 여기를 보세요 화살표 */}
+        <path d={`M78,48 L${tip},48 M${tip + 4},44 L${tip},48 L${tip + 4},52`} fill="none" stroke={acc} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </>
     );
   } else if (qid === "gain") {
@@ -76,21 +83,24 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
       </>
     );
   } else if (qid === "upper") {
-    // 옆모습 상체 — 앞뒤 두께
-    const torso = {
-      straight: "M36,20 Q28,24 29,36 Q30,48 33,62 L50,62 Q54,50 56,40 Q60,30 52,24 Q48,21 44,20",
-      wave: "M37,20 Q33,26 34,38 Q35,50 36,62 L46,62 Q47,50 48,42 Q50,30 46,23 Q44,21 43,20",
-      natural: "M35,20 Q31,24 31,36 Q32,48 34,62 L48,62 Q50,50 51,42 Q53,30 49,24 Q46,21 43,20",
+    // 2026-11-09 다시 그림: 몸통 덩어리만 있어 사람으로 안 읽힌다는 의견 → 머리~허벅지 옆모습(왼쪽을 봄).
+    // 화살표 = 가슴~등 두께. 스트레이트는 가슴이 높고 두툼, 웨이브는 얇고 엉덩이 쪽에 무게, 내추럴은 각지고 어깨 뼈대가 큼.
+    const fig = {
+      straight: "M37,17 L36,21 Q26,24 25,30 Q25,35 30,37 Q31,40 31,44 Q30,48 30,53 Q30,60 31,66 L33,78 L45,78 L48,64 Q52,58 51,53 Q50,48 47,44 Q50,38 50,32 Q50,24 47,21 L43,17 Z",
+      wave: "M37,17 L36,21 Q31,26 30,33 Q30,37 33,38 Q34,41 34,44 Q32,48 32,53 Q31,60 31,66 L33,78 L46,78 L49,66 Q54,60 52,54 Q50,48 44,44 Q46,38 46,32 Q46,24 45,21 L43,17 Z",
+      natural: "M37,17 L35,21 Q28,23 27,30 L28,38 L30,44 L30,55 L31,66 L33,78 L45,78 L48,66 L50,55 L49,44 L51,32 L51,24 Q49,21 45,20 L43,17 Z",
     }[v];
-    const [a, b] = { straight: [29, 57], wave: [34, 49], natural: [31, 52] }[v];
+    const [a, b, y] = { straight: [25, 50, 30], wave: [30, 46, 32], natural: [27, 51, 30] }[v];
     body = (
       <>
-        <circle cx="40" cy="11" r="6" {...line} />
-        <path d="M38,17 L37,21 M42,17 L43,21" {...line} />
-        <path d={torso} fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
-        {v === "natural" && <circle cx="40" cy="24" r="5" fill={acc} opacity="0.85" />}
-        <line x1={a} y1="38" x2={b} y2="38" stroke={acc} strokeWidth="2" />
-        <path d={`M${a + 3},35 L${a},38 L${a + 3},41 M${b - 3},35 L${b},38 L${b - 3},41`} fill="none" stroke={acc} strokeWidth="2" strokeLinecap="round" />
+        <circle cx="40" cy="10" r="6.2" fill={soft} stroke={ink} strokeWidth="1.6" />
+        {/* 묶은 머리(뒤) · 코(앞) — 왼쪽을 보고 선 모습 */}
+        <path d="M45.5,8 Q50,8 50,13" fill="none" stroke={ink} strokeWidth="1.6" strokeLinecap="round" />
+        <path d="M34,9 L32.6,11.4 L34.2,12" fill="none" stroke={ink} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={fig} fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
+        {v === "natural" && <circle cx="46" cy="22" r="3.4" fill={acc} />}
+        <line x1={a} y1={y} x2={b} y2={y} stroke={acc} strokeWidth="2" />
+        <path d={`M${a + 3},${y - 3} L${a},${y} L${a + 3},${y + 3} M${b - 3},${y - 3} L${b},${y} L${b - 3},${y + 3}`} fill="none" stroke={acc} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </>
     );
   } else if (qid === "collar") {
@@ -150,7 +160,7 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
   }
 
   return (
-    <svg width="76" height="76" viewBox="0 0 80 80" aria-hidden="true">
+    <svg width="88" height="88" viewBox="0 0 80 80" aria-hidden="true">
       {body}
     </svg>
   );
