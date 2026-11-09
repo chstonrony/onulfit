@@ -15,6 +15,21 @@ const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
 const BASE_URL = "https://onulfit.com";
 
+/** 본문 속 [보이는 글](/guide/slug) → 다른 가이드 글 링크 */
+function inline(text: string) {
+  const parts = text.split(/(\[[^\]]+\]\(\/[^)\s]+\))/g);
+  return parts.map((part, i) => {
+    const m = part.match(/^\[([^\]]+)\]\((\/[^)\s]+)\)$/);
+    return m ? (
+      <Link key={i} href={m[2]} style={{ color: ACC, fontWeight: 700, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+        {m[1]}
+      </Link>
+    ) : (
+      part
+    );
+  });
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
 }
@@ -33,6 +48,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `${BASE_URL}/guide/${a.slug}` },
     openGraph: {
       type: "article",
+      publishedTime: a.date,
+      modifiedTime: a.updated ?? a.date,
       title: a.seoTitle,
       description: a.seoDescription,
       url: `${BASE_URL}/guide/${a.slug}`,
@@ -60,6 +77,9 @@ export default async function ArticlePage({ params }: Props) {
     url: `${BASE_URL}/guide/${a.slug}`,
     inLanguage: "ko",
     datePublished: a.date,
+    dateModified: a.updated ?? a.date,
+    image: `${BASE_URL}${OG_IMAGE.url}`,
+    mainEntityOfPage: `${BASE_URL}/guide/${a.slug}`,
     author: { "@type": "Organization", name: "오늘핏" },
     publisher: { "@type": "Organization", name: "오늘핏", url: BASE_URL },
   };
@@ -72,7 +92,7 @@ export default async function ArticlePage({ params }: Props) {
 
         <header style={{ margin: "28px 0 34px" }}>
           <p className="ed-label" style={{ color: ACC, marginBottom: "14px" }}>
-            {a.category} · {a.readingTime}분 읽기
+            {a.category} · {a.readingTime}분 읽기{a.updated ? ` · ${a.updated.replaceAll("-", ".")} 고침` : ""}
           </p>
           <h1 style={{ fontFamily: sans, fontSize: "clamp(29px, 7.5vw, 42px)", fontWeight: 800, letterSpacing: "-0.055em", color: INK, lineHeight: 1.16, marginBottom: "14px", wordBreak: "keep-all" }}>
             {a.title}
@@ -92,13 +112,13 @@ export default async function ArticlePage({ params }: Props) {
               <ul key={i} style={{ margin: "0 0 14px", paddingLeft: "18px" }}>
                 {p.split("\n").map((li, j) => (
                   <li key={j} style={{ fontFamily: sans, fontSize: "16px", color: BODY, lineHeight: 1.85, letterSpacing: "-0.015em", wordBreak: "keep-all" }}>
-                    {li.replace(/^- /, "")}
+                    {inline(li.replace(/^- /, ""))}
                   </li>
                 ))}
               </ul>
             ) : (
               <p key={i} style={{ fontFamily: sans, fontSize: "16px", color: BODY, lineHeight: 1.9, letterSpacing: "-0.015em", margin: "0 0 18px", wordBreak: "keep-all" }}>
-                {p}
+                {inline(p)}
               </p>
             )
           )}
