@@ -10,7 +10,8 @@ import s from "./CorridorHero.module.css";
    0.3s 첫 문구 등장 → 4.3s 사라짐 → 6.3s 마지막 문구 등장
    - videoSrc 를 주면 3D 장면 대신 영상을 깔고, 문구는 영상 재생 시간에 맞춰 바뀐다.
    - 움직임 줄이기 설정 · 느린 연결 · 6.5초 안에 영상을 다 못 받으면 마지막 장면을 바로 보여 준다.
-   - 첫 문구와 버튼은 영상을 기다리지 않고 처음부터 보인다. */
+   - 첫 문구와 버튼은 영상을 기다리지 않고 처음부터 보인다.
+   - 2026-11-09: PC는 1080p 고화질(약 1.4MB), 휴대폰은 720p(약 340KB). 연결이 느린 PC는 720p. */
 
 const CAM_END = 2100;
 const T_END = 11; // 셔츠 흔들림이 잦아들 때까지
@@ -26,11 +27,16 @@ const sway = (t: number) => {
 export default function CorridorHero({
   onStart,
   videoSrc,
+  videoSrcHd,
   posterSrc,
   endSrc,
+  endSrcHd,
 }: {
   onStart: () => void;
   videoSrc?: string;
+  /** PC(가로 1024px 이상)용 고화질 영상 — 휴대폰용(720p)을 큰 화면에 늘리면 뭉개져 보여서 따로 둔다 */
+  videoSrcHd?: string;
+  endSrcHd?: string;
   /** 영상 첫 장면 (불러오는 동안) */
   posterSrc?: string;
   /** 영상 마지막 장면 (움직임 줄이기 · 자동재생이 막혔을 때) */
@@ -67,12 +73,18 @@ export default function CorridorHero({
     const video = videoRef.current;
 
     if (videoSrc && video) {
+      // PC 큰 화면이면 고화질 영상. 데이터 절약·3G 이하만 720p
+      // (downlink 값은 처음 열 때 실제보다 낮게(약 1.7) 나와 믿을 수 없어서 쓰지 않는다)
+      const netInfo = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+      const wide = window.matchMedia("(min-width: 1024px)").matches;
+      const hd = wide && !!videoSrcHd && !(netInfo?.saveData || /(^|-)2g|3g/.test(netInfo?.effectiveType ?? ""));
+      const end = hd && endSrcHd ? endSrcHd : endSrc;
       // 마지막 장면에서 멈춘 상태로 보여 주기 (움직임 줄이기 · 자동재생 막힘 · 영상 오류)
       let started = false;
       const showEnd = () => {
         cancelAnimationFrame(raf);
         video.pause();
-        if (endSrc) video.poster = endSrc;
+        if (end) video.poster = end;
         if (!started || video.readyState < 2) {
           // 아직 못 받은 영상은 받기를 멈춘다 (느린 데이터를 붙잡지 않게)
           video.removeAttribute("src");
@@ -135,6 +147,7 @@ export default function CorridorHero({
       if (video.readyState >= 4) tryStart();
       if (!started) {
         video.preload = "auto";
+        video.src = hd ? videoSrcHd! : videoSrc;
         video.load();
       }
       return () => {
@@ -161,12 +174,13 @@ export default function CorridorHero({
     };
     raf = requestAnimationFrame(step);
     return () => cancelAnimationFrame(raf);
-  }, [videoSrc, endSrc]);
+  }, [videoSrc, videoSrcHd, endSrc, endSrcHd]);
 
   return (
     <section ref={stageRef} className={s.stage} aria-label="오늘핏 — 오늘 뭐 입지?">
       {videoSrc ? (
-        <video ref={videoRef} className={s.video} src={videoSrc} poster={posterSrc} muted playsInline preload="none" disablePictureInPicture aria-hidden />
+        // src 는 화면 크기를 보고 effect 에서 정한다 (PC 고화질 / 휴대폰 720p)
+        <video ref={videoRef} className={s.video} poster={posterSrc} muted playsInline preload="none" disablePictureInPicture aria-hidden />
       ) : (
         <div ref={worldRef} className={s.world} aria-hidden>
           <div className={s.ceil} />

@@ -476,7 +476,7 @@ function WelcomeGuide({
 
       {/* ── 01 첫 화면: 올리브 문 복도 (채팅 열의 여백을 넘어 가장자리까지) ── */}
       <div className="-mx-5 lg:-mx-6 -mt-6 lg:-mt-7">
-        <CorridorHero onStart={onDiagnose} videoSrc="/hero/corridor.mp4" posterSrc="/hero/corridor-poster.jpg" endSrc="/hero/corridor-end.jpg" />
+        <CorridorHero onStart={onDiagnose} videoSrc="/hero/corridor.mp4" videoSrcHd="/hero/corridor-hd.mp4" posterSrc="/hero/corridor-poster.jpg" endSrc="/hero/corridor-end.jpg" endSrcHd="/hero/corridor-end-hd.jpg" />
       </div>
 
       <div>
