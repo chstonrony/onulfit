@@ -137,6 +137,17 @@ export const COLOR_META: Record<ColorType, ColorMeta> = {
 };
 
 /* ── 자가진단 설문 ────────────────────────────────────── */
+/* 2026-11-09 전문가 관점 재점검
+   - 손목: 일본식 골격진단 기준으로 바로잡음 (스트레이트=둥글고 도톰, 웨이브=납작하고 가늘다)
+   - 어울렸던 옷: 정장 느낌 → 20대 데일리 옷으로
+   - 컬러: 믿기 어려운 핏줄 문항을 빼고 립 컬러를 넣음. 명도 문항을 2개로(검정 옷·눈동자)
+   - 모든 문항에 "잘 모르겠어요"(점수 0) — 억지로 고르면 결과가 더 흔들린다
+   - 동점일 때는 믿을 만한 문항(손목·흰옷) 답을 따른다 */
+
+export type BodyAnswer = BodyType | "unsure";
+export type ColorValue = "warm" | "cool" | "light" | "deep";
+export type ColorAnswer = ColorValue | "unsure";
+
 export interface DiagQuestion {
   id: string;
   /** 한눈에 보기용 짧은 이름 (예: "손목") */
@@ -144,32 +155,24 @@ export interface DiagQuestion {
   /** 어떻게 확인하는지 한 줄 */
   hint: string;
   prompt: string;
-  /** 답마다 쉬운 설명 한 줄 (골격 문항) */
-  options: { label: string; value: BodyType | "warm" | "cool" | "light" | "deep"; desc?: string }[];
+  /** 점수 가중치 — 판단이 확실한 문항일수록 크다 */
+  weight: number;
+  /** 답마다 쉬운 설명 한 줄 */
+  options: { label: string; value: BodyType | ColorValue; desc?: string }[];
 }
 
-/** 골격 진단 (5문항 → 최다 득표 타입) */
+/** 골격 진단 (5문항 → 가중 득표) */
 export const BODY_QUESTIONS: DiagQuestion[] = [
   {
     id: "wrist",
     short: "손목",
-    hint: "반대 손으로 손목을 가볍게 감싸 쥐어보세요",
-    prompt: "손목을 반대 손으로 감싸 쥐었을 때, 만져지는 느낌은?",
+    hint: "엄지와 중지로 반대쪽 손목을 가볍게 감싸 쥐어보세요",
+    prompt: "손목을 감싸 쥐었을 때, 손목의 모양은?",
+    weight: 1.3,
     options: [
-      { label: "납작하고 단단하다", value: "straight", desc: "살이 탄탄하게 감싸서 뼈가 잘 안 느껴지고, 단면이 넓적해요" },
-      { label: "동그랗고 가늘다", value: "wave", desc: "가늘고 둥글어서 손가락이 여유 있게 겹쳐요" },
+      { label: "둥글고 도톰하다", value: "straight", desc: "단면이 동그랗고 살이 탄탄하게 차 있어 뼈가 잘 안 느껴져요" },
+      { label: "납작하고 가늘다", value: "wave", desc: "앞뒤로 얇고 납작해서 손가락이 여유 있게 겹쳐요" },
       { label: "크고 각진 뼈가 도드라진다", value: "natural", desc: "바깥쪽 손목뼈가 크게 튀어나와 각이 만져져요" },
-    ],
-  },
-  {
-    id: "gain",
-    short: "살 붙는 곳",
-    hint: "살이 찔 때 어디부터 변했는지 떠올려보세요",
-    prompt: "살이 찌면 주로 어디부터 변하나요?",
-    options: [
-      { label: "상체·얼굴부터, 탄탄하게", value: "straight", desc: "얼굴·팔뚝·가슴 같은 상체에 먼저 붙고, 살이 단단해요" },
-      { label: "하체·아랫배부터", value: "wave", desc: "엉덩이·허벅지·아랫배에 먼저 붙고, 살이 말랑해요" },
-      { label: "티 안 나고 골격이 먼저 도드라진다", value: "natural", desc: "살보다 어깨·무릎 같은 뼈마디가 먼저 눈에 띄어요" },
     ],
   },
   {
@@ -177,6 +180,7 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     short: "상체 두께",
     hint: "거울에 옆모습을 비춰 가슴~등 두께를 보세요",
     prompt: "옆에서 본 상체(가슴~등) 두께는?",
+    weight: 1.2,
     options: [
       { label: "두껍고 입체적이다", value: "straight", desc: "가슴과 등이 앞뒤로 두툼해서 옆모습이 입체적이에요" },
       { label: "얇은 편이다", value: "wave", desc: "앞뒤가 얇아서 옆에서 보면 몸이 납작해요" },
@@ -188,6 +192,7 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     short: "쇄골·어깨",
     hint: "거울 앞에서 쇄골과 어깨뼈가 보이는 정도",
     prompt: "쇄골과 어깨를 보면?",
+    weight: 1.1,
     options: [
       { label: "쇄골이 잘 안 보이고 어깨가 둥글다", value: "straight", desc: "살에 덮여 쇄골이 희미하고, 어깨선이 둥글게 떨어져요" },
       { label: "쇄골이 가늘게 비친다", value: "wave", desc: "가는 쇄골이 살짝 보이고, 어깨가 좁고 비스듬해요" },
@@ -195,95 +200,128 @@ export const BODY_QUESTIONS: DiagQuestion[] = [
     ],
   },
   {
+    id: "gain",
+    short: "살 붙는 곳",
+    hint: "살이 찔 때 어디부터 변했는지 떠올려보세요",
+    prompt: "살이 찌면 주로 어디부터 변하나요?",
+    weight: 1,
+    options: [
+      { label: "상체·윗배부터, 탄탄하게", value: "straight", desc: "얼굴·팔뚝·가슴·윗배에 먼저 붙고, 살이 단단해요" },
+      { label: "하체·아랫배부터", value: "wave", desc: "엉덩이·허벅지·아랫배에 먼저 붙고, 살이 말랑해요" },
+      { label: "티 안 나고 골격이 먼저 도드라진다", value: "natural", desc: "살보다 어깨·무릎 같은 뼈마디가 먼저 눈에 띄어요" },
+    ],
+  },
+  {
     id: "compliment",
     short: "어울렸던 옷",
     hint: "‘잘 어울린다’는 말을 들었던 옷을 떠올려보세요",
     prompt: "\"잘 어울린다\"는 말을 들었던 옷은?",
+    weight: 0.8,
     options: [
-      { label: "심플하고 고급스러운 정장 느낌", value: "straight", desc: "셔츠·테일러드 재킷처럼 깔끔하고 각 잡힌 옷" },
-      { label: "부드럽고 하늘하늘한 여성스러운 옷", value: "wave", desc: "프릴 블라우스·플레어 스커트처럼 부드러운 옷" },
-      { label: "캐주얼하고 편한 오버핏", value: "natural", desc: "오버핏 셔츠·루즈 니트처럼 크고 편안한 옷" },
+      { label: "깔끔한 베이직", value: "straight", desc: "셔츠·브이넥 니트·일자 데님처럼 군더더기 없는 옷" },
+      { label: "부드럽고 여리여리한 옷", value: "wave", desc: "크롭 가디건·블라우스·플레어 스커트처럼 부드러운 옷" },
+      { label: "툭 걸친 오버핏", value: "natural", desc: "오버핏 셔츠·와이드 데님·루즈 니트처럼 크고 편한 옷" },
     ],
   },
 ];
 
-/** 퍼스널컬러 진단 (웜/쿨 4문항 + 명도 2문항 → 4계절) */
+/** 퍼스널컬러 진단 (웜/쿨 3문항 + 밝기 2문항 → 4계절) */
 export const COLOR_QUESTIONS: DiagQuestion[] = [
-  {
-    id: "vein",
-    short: "핏줄 색",
-    hint: "밝은 곳에서 손목 안쪽 핏줄 색을 보세요",
-    prompt: "손목 안쪽 핏줄 색에 가까운 것은?",
-    options: [
-      { label: "초록빛이 돈다", value: "warm" },
-      { label: "푸른빛·보랏빛이 돈다", value: "cool" },
-    ],
-  },
   {
     id: "metal",
     short: "금·은",
-    hint: "금색·은색 액세서리를 얼굴 가까이 대보세요",
-    prompt: "얼굴에 대보면 더 화사해지는 액세서리는?",
+    hint: "금색·은색 액세서리(없으면 숟가락·포일)를 턱 밑에 대보세요",
+    prompt: "얼굴 가까이 대보면 피부가 더 화사해지는 쪽은?",
+    weight: 1,
     options: [
-      { label: "골드(금색)", value: "warm" },
-      { label: "실버(은색)", value: "cool" },
+      { label: "골드(금색)", value: "warm", desc: "금색을 대면 생기가 돌고, 은색은 얼굴이 떠 보여요" },
+      { label: "실버(은색)", value: "cool", desc: "은색을 대면 피부가 맑아지고, 금색은 누래 보여요" },
     ],
   },
   {
     id: "white",
     short: "흰옷",
-    hint: "아이보리와 새하얀 옷 중 얼굴이 맑아 보이는 쪽",
-    prompt: "흰옷을 입으면?",
+    hint: "아이보리 옷과 새하얀 옷(흰 종이도 OK)을 번갈아 얼굴 밑에 대보세요",
+    prompt: "얼굴 밑에 대봤을 때 피부가 더 맑아 보이는 흰색은?",
+    weight: 1.3,
     options: [
-      { label: "아이보리·크림색이 더 잘 받는다", value: "warm" },
-      { label: "새하얀 순백이 더 잘 받는다", value: "cool" },
+      { label: "아이보리·크림색", value: "warm", desc: "새하얀 색은 얼굴이 창백하고 푸석해 보여요" },
+      { label: "새하얀 순백", value: "cool", desc: "아이보리는 얼굴이 누렇고 텁텁해 보여요" },
     ],
   },
   {
-    id: "face",
-    short: "화사한 색",
-    hint: "입었을 때 얼굴이 환해졌던 색 계열",
-    prompt: "얼굴이 유독 화사해 보이는 색 계열은?",
+    id: "lip",
+    short: "립 컬러",
+    hint: "‘오늘 생기 있어 보인다’는 말을 들었던 립·블러셔를 떠올려보세요",
+    prompt: "바르면 혈색이 확 살아나는 립 색은?",
+    weight: 1.1,
     options: [
-      { label: "코랄·카멜·올리브", value: "warm" },
-      { label: "핑크·블루·라벤더", value: "cool" },
+      { label: "코랄·오렌지·브릭", value: "warm", desc: "핑크 계열은 입술만 동동 떠 보여요" },
+      { label: "로즈·핑크·플럼", value: "cool", desc: "오렌지 계열은 얼굴이 노랗게 떠 보여요" },
     ],
   },
   {
-    id: "depth",
-    short: "밝기",
-    hint: "밝은 색과 깊은 색 중 칭찬받은 쪽",
-    prompt: "어울린다는 말을 더 많이 들은 쪽은?",
+    id: "black",
+    short: "검정 옷",
+    hint: "검정 니트나 티셔츠를 입고 거울을 봤던 때를 떠올려보세요",
+    prompt: "검정 옷을 입으면 내 얼굴은?",
+    weight: 1.2,
     options: [
-      { label: "밝고 맑은 색", value: "light" },
-      { label: "선명하거나 깊은 색", value: "deep" },
+      { label: "칙칙하고 그늘져 보인다", value: "light", desc: "다크서클·잡티가 도드라져서 밝은 색이 더 편해요" },
+      { label: "또렷하고 세련돼 보인다", value: "deep", desc: "이목구비가 선명해지고 얼굴이 작아 보여요" },
+    ],
+  },
+  {
+    id: "eye",
+    short: "눈동자",
+    hint: "밝은 곳에서 거울을 가까이 — 눈썹·염색 전 머리색도 같이 보세요",
+    prompt: "거울로 본 내 눈동자 색은?",
+    weight: 1,
+    options: [
+      { label: "밝은 갈색, 부드러운 인상", value: "light", desc: "갈색빛이 돌고 흰자와의 경계가 부드러워요" },
+      { label: "짙은 흑갈색, 또렷한 인상", value: "deep", desc: "검정에 가깝고 흰자와 대비가 선명해요" },
     ],
   },
 ];
 
-/** 골격 답안 → 타입별 개수 */
-export function bodyTally(answers: BodyType[]): Record<BodyType, number> {
+/** 골격 답안 → 타입별 개수 ("잘 모르겠어요"는 빼고 센다) */
+export function bodyTally(answers: BodyAnswer[]): Record<BodyType, number> {
   const tally: Record<BodyType, number> = { straight: 0, wave: 0, natural: 0 };
-  answers.forEach((a) => { tally[a] += 1; });
+  answers.forEach((a) => { if (a !== "unsure") tally[a] += 1; });
   return tally;
 }
 
-/** 골격 답안 → BodyType (최다 득표, 동점 시 우선순위 straight>wave>natural) */
-export function scoreBody(answers: BodyType[]): BodyType {
-  const tally: Record<BodyType, number> = { straight: 0, wave: 0, natural: 0 };
-  answers.forEach((a) => { tally[a] += 1; });
-  const order: BodyType[] = ["straight", "wave", "natural"];
-  return order.reduce((best, t) => (tally[t] > tally[best] ? t : best), order[0]);
+/** 골격 답안(문항 순서대로) → BodyType. 가중 득표, 동점이면 앞 문항(손목→상체→쇄골…) 답을 따른다 */
+export function scoreBody(answers: BodyAnswer[]): BodyType {
+  const score: Record<BodyType, number> = { straight: 0, wave: 0, natural: 0 };
+  answers.forEach((a, i) => { if (a !== "unsure") score[a] += BODY_QUESTIONS[i]?.weight ?? 1; });
+  const max = Math.max(score.straight, score.wave, score.natural);
+  const tied = (Object.keys(score) as BodyType[]).filter((t) => Math.abs(score[t] - max) < 1e-9);
+  if (tied.length === 1) return tied[0];
+  const first = answers.find((a): a is BodyType => a !== "unsure" && tied.includes(a));
+  return first ?? tied[0];
 }
 
-/** 컬러 답안(warm/cool + light/deep) → ColorType */
-export function scoreColor(answers: ("warm" | "cool" | "light" | "deep")[]): ColorType {
-  const warm = answers.filter((a) => a === "warm").length;
-  const cool = answers.filter((a) => a === "cool").length;
-  const isWarm = warm >= cool;
-  const isLight = answers.includes("light") && !answers.includes("deep")
-    ? true
-    : answers.lastIndexOf("light") >= answers.lastIndexOf("deep");
+/** 컬러 답안 → 웜/쿨·밝기 가중 점수 (결과 화면 막대에도 씀) */
+export function colorScores(answers: ColorAnswer[]) {
+  const s = { warm: 0, cool: 0, light: 0, deep: 0 };
+  answers.forEach((a, i) => { if (a !== "unsure") s[a] += COLOR_QUESTIONS[i]?.weight ?? 1; });
+  return s;
+}
+
+/** 컬러 답안(문항 순서대로) → ColorType.
+    웜/쿨 동점(모두 모름 등)이면 흰옷 → 립 → 금은 순으로 답을 따르고, 그래도 없으면 웜.
+    밝기 동점이면 밝은 쪽(봄·여름) — 부드러운 색은 틀려도 덜 어색하다 */
+export function scoreColor(answers: ColorAnswer[]): ColorType {
+  const s = colorScores(answers);
+  let isWarm: boolean;
+  if (s.warm !== s.cool) isWarm = s.warm > s.cool;
+  else {
+    const byId = (id: string) => answers[COLOR_QUESTIONS.findIndex((q) => q.id === id)];
+    const pick = ["white", "lip", "metal"].map(byId).find((a) => a === "warm" || a === "cool");
+    isWarm = pick ? pick === "warm" : true;
+  }
+  const isLight = s.light >= s.deep;
   if (isWarm) return isLight ? "spring" : "autumn";
   return isLight ? "summer" : "winter";
 }

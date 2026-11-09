@@ -6,13 +6,13 @@ import { BODY_QUESTIONS, COLOR_QUESTIONS } from "@/lib/profile";
    variant="full"   : 항목 + 확인 방법 한 줄
    variant="compact": 항목 이름만 칩으로 */
 
-/* 컬러 항목 옆에 보여줄 비교 스와치 (웜 쪽 / 쿨 쪽) */
+/* 컬러 항목 옆에 보여줄 비교 스와치 (웜 쪽 / 쿨 쪽, 밝기 문항은 밝은 쪽 / 깊은 쪽) */
 const COLOR_PAIR: Record<string, [string, string]> = {
-  vein: ["#6F8F5A", "#6C7FB8"],
   metal: ["#D4AF37", "#C0C4C8"],
-  white: ["#F1E8D6", "#FFFFFF"],
-  face: ["#F08A6E", "#E7A2BE"],
-  depth: ["#F4D6C4", "#5A2E3A"],
+  white: ["#F1E4C8", "#FFFFFF"],
+  lip: ["#E8735A", "#C85A7C"],
+  black: ["#EBD9C8", "#1E1D1C"],
+  eye: ["#9A6A43", "#231A16"],
 };
 
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";

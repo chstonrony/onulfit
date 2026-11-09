@@ -7,7 +7,7 @@ type Props = { qid: string; value: string; ink: string; acc: string };
 
 /** 그림 아래 작게 붙는 "이 그림은 무엇인지" 설명 */
 export const BODY_ART_NOTE: Record<string, string> = {
-  wrist: "그림은 손목을 자른 단면이에요 · 점선은 감싸 쥔 손",
+  wrist: "그림은 손목을 자른 단면이에요 · 점선은 감싸 쥔 손가락",
   gain: "색칠된 곳이 살이 먼저 붙는 곳이에요",
   upper: "옆에서 본 모습이에요 · 화살표가 상체 두께",
   collar: "목 아래 쇄골과 어깨선이에요",
@@ -24,13 +24,14 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
   if (qid === "wrist") {
     // 손목 단면: 점선 원(감싸 쥔 손) 안에 손목 모양
     const shape = {
-      straight: <ellipse cx="40" cy="40" rx="25" ry="17" fill={soft} stroke={ink} strokeWidth="1.6" />,
-      wave: <circle cx="40" cy="40" r="15" fill={soft} stroke={ink} strokeWidth="1.6" />,
+      // 2026-11-09 바로잡음: 스트레이트=둥글고 도톰, 웨이브=납작하고 가늘다
+      straight: <circle cx="40" cy="40" r="20" fill={soft} stroke={ink} strokeWidth="1.6" />,
+      wave: <ellipse cx="40" cy="40" rx="20" ry="10" fill={soft} stroke={ink} strokeWidth="1.6" />,
       natural: <path d="M20,30 Q22,22 34,22 L50,23 Q56,18 62,24 Q66,30 60,36 L60,50 Q58,58 46,58 L30,58 Q20,57 20,48 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />,
     }[v];
     const bones = {
-      straight: [<circle key="a" cx="31" cy="40" r="4" fill="none" stroke={ink} strokeWidth="1" opacity="0.45" />, <circle key="b" cx="49" cy="40" r="3.5" fill="none" stroke={ink} strokeWidth="1" opacity="0.45" />],
-      wave: [<circle key="a" cx="34" cy="40" r="3.5" fill="none" stroke={ink} strokeWidth="1" opacity="0.45" />, <circle key="b" cx="46" cy="40" r="3" fill="none" stroke={ink} strokeWidth="1" opacity="0.45" />],
+      straight: [<circle key="a" cx="33" cy="40" r="3.5" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" />, <circle key="b" cx="47" cy="40" r="3" fill="none" stroke={ink} strokeWidth="1" opacity="0.35" />],
+      wave: [<ellipse key="a" cx="31" cy="40" rx="4" ry="2.6" fill="none" stroke={ink} strokeWidth="1" opacity="0.5" />, <ellipse key="b" cx="49" cy="40" rx="3.5" ry="2.4" fill="none" stroke={ink} strokeWidth="1" opacity="0.5" />],
       natural: [<circle key="a" cx="31" cy="42" r="5" fill="none" stroke={ink} strokeWidth="1.3" />, <circle key="b" cx="55" cy="28" r="5.5" fill={acc} opacity="0.85" />],
     }[v];
     body = (
@@ -121,16 +122,15 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
     // 잘 어울렸던 옷
     body = {
       straight: (
-        // 테일러드 재킷
+        // 브이넥 니트 — 군더더기 없는 베이직
         <>
-          <path d="M28,14 L40,30 L52,14 L62,18 Q66,20 66,26 L66,66 L14,66 L14,26 Q14,20 18,18 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
-          <path d="M28,14 L34,34 L40,30 M52,14 L46,34 L40,30 M40,30 L40,66" {...line} />
-          <circle cx="40" cy="46" r="1.6" fill={ink} />
-          <circle cx="40" cy="55" r="1.6" fill={ink} />
+          <path d="M26,14 L40,34 L54,14 L64,18 Q68,20 69,26 L72,44 L62,46 L60,34 L60,68 L20,68 L20,34 L18,46 L8,44 L11,26 Q12,20 16,18 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M29,14 L40,30 L51,14" {...line} />
+          <path d="M20,64 L60,64" {...line} opacity="0.6" />
         </>
       ),
       wave: (
-        // 프릴 블라우스
+        // 프릴 블라우스·크롭 가디건처럼 부드러운 옷
         <>
           <path d="M30,14 Q40,22 50,14 L60,20 Q64,30 58,34 L56,32 L56,62 Q48,66 40,62 Q32,66 24,62 L24,32 L22,34 Q16,30 20,20 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
           <path d="M33,17 Q36,22 40,21 Q44,22 47,17" {...line} />
@@ -139,7 +139,7 @@ export default function BodyQuizArt({ qid, value, ink, acc }: Props) {
         </>
       ),
       natural: (
-        // 오버핏 셔츠
+        // 툭 걸친 오버핏 셔츠
         <>
           <path d="M30,12 L50,12 L66,20 L74,48 L64,50 L60,34 L60,68 L20,68 L20,34 L16,50 L6,48 L14,20 Z" fill={soft} stroke={ink} strokeWidth="1.6" strokeLinejoin="round" />
           <path d="M30,12 L40,22 L50,12 M40,22 L40,68 M20,28 L20,34 M60,28 L60,34" {...line} />

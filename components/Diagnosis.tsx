@@ -15,7 +15,10 @@ import {
   scoreBody,
   scoreColor,
   bodyTally,
+  colorScores,
   saveProfile,
+  type BodyAnswer,
+  type ColorAnswer,
   type BodyType,
   type ColorType,
   type Profile,
@@ -26,10 +29,11 @@ import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
 import BodyQuizArt, { BODY_ART_NOTE } from "./BodyQuizArt";
+import ColorQuizArt, { COLOR_ART_NOTE } from "./ColorQuizArt";
 import BeforeAfterBoard from "./BeforeAfterBoard";
 import { BodyForms, BodyDoDont, SeasonMap, ToneCompare, SwatchBoard, FormulaBoards, ColorShop } from "./DiagnosisVisuals";
 
-type Step = "intro" | "body" | "color" | "result";
+type Step = "intro" | "body" | "half" | "color" | "result";
 
 /* 색 이름 → 실제 hex (퍼스널컬러 칩·옷 사진에 입히는 색)
    2026-11-07: 화면용 원색이 아니라 실제 옷감에서 나오는 톤으로 다듬음(채도를 낮추고 깊이를 줌) */
@@ -76,8 +80,8 @@ interface Props {
 
 export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
   const [step, setStep] = useState<Step>("intro");
-  const [bodyAns, setBodyAns] = useState<BodyType[]>([]);
-  const [colorAns, setColorAns] = useState<("warm" | "cool" | "light" | "deep")[]>([]);
+  const [bodyAns, setBodyAns] = useState<BodyAnswer[]>([]);
+  const [colorAns, setColorAns] = useState<ColorAnswer[]>([]);
   const [qIdx, setQIdx] = useState(0);
   const [result, setResult] = useState<{ body: BodyType; color: ColorType } | null>(null);
 
@@ -86,15 +90,16 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
   const acc = vars["--t-acc"];
   const bdr = vars["--t-bdr"];
 
-  function pickBody(v: BodyType) {
+  function pickBody(v: BodyAnswer) {
     const next = [...bodyAns, v];
     if (qIdx + 1 < BODY_QUESTIONS.length) {
       setBodyAns(next);
       setQIdx(qIdx + 1);
     } else {
+      // 골격 끝 → 중간 쉼표 화면(결과는 가려두고 컬러로 이어가게)
       setBodyAns(next);
       setQIdx(0);
-      setStep("color");
+      setStep("half");
     }
   }
 
@@ -104,19 +109,18 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
       if (qIdx === 0) { setStep("intro"); return; }
       setBodyAns(bodyAns.slice(0, -1));
       setQIdx(qIdx - 1);
+    } else if (step === "half") {
+      setBodyAns(bodyAns.slice(0, -1));
+      setQIdx(BODY_QUESTIONS.length - 1);
+      setStep("body");
     } else if (step === "color") {
-      if (qIdx === 0) {
-        setBodyAns(bodyAns.slice(0, -1));
-        setQIdx(BODY_QUESTIONS.length - 1);
-        setStep("body");
-        return;
-      }
+      if (qIdx === 0) { setStep("half"); return; }
       setColorAns(colorAns.slice(0, -1));
       setQIdx(qIdx - 1);
     }
   }
 
-  function pickColor(v: "warm" | "cool" | "light" | "deep") {
+  function pickColor(v: ColorAnswer) {
     const next = [...colorAns, v];
     if (qIdx + 1 < COLOR_QUESTIONS.length) {
       setColorAns(next);
@@ -181,7 +185,7 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
               {GYEOL.diagIntro}
             </p>
             <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: sub, wordBreak: "keep-all", marginBottom: "18px" }}>
-              이렇게 10가지를 살펴봐요. 거울 하나와 밝은 곳이면 충분해요.
+              이렇게 10가지를 살펴봐요. 거울 하나와 밝은 창가면 충분해요. 컬러는 맨얼굴일수록 정확해요.
             </p>
             <div style={{ marginBottom: "22px" }}>
               <SelfCheckGuide />
@@ -205,6 +209,7 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
             kind="body"
             qid={BODY_QUESTIONS[qIdx].id}
             options={BODY_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, desc: o.desc, onClick: () => pickBody(o.value as BodyType) }))}
+            onUnsure={() => pickBody("unsure")}
             vars={vars}
           />
         )}
@@ -216,9 +221,15 @@ export default function Diagnosis({ vars, onComplete, onClose, onAsk }: Props) {
             question={COLOR_QUESTIONS[qIdx].prompt}
             hint={COLOR_QUESTIONS[qIdx].hint}
             kind="color"
-            options={COLOR_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, onClick: () => pickColor(o.value as "warm" | "cool" | "light" | "deep") }))}
+            qid={COLOR_QUESTIONS[qIdx].id}
+            options={COLOR_QUESTIONS[qIdx].options.map((o) => ({ label: o.label, value: o.value, desc: o.desc, onClick: () => pickColor(o.value as ColorAnswer) }))}
+            onUnsure={() => pickColor("unsure")}
             vars={vars}
           />
+        )}
+
+        {step === "half" && (
+          <HalfwayView body={scoreBody(bodyAns)} vars={vars} onNext={() => { setQIdx(0); setStep("color"); }} onBack={goBack} />
         )}
 
         {step === "result" && result && (
@@ -292,6 +303,7 @@ function QuestionView({
   kind,
   qid,
   options,
+  onUnsure,
   vars,
 }: {
   kicker: string;
@@ -299,9 +311,11 @@ function QuestionView({
   question: string;
   hint?: string;
   kind: "body" | "color";
-  /** 골격 문항 id — 문항별 그림을 고른다 */
+  /** 문항 id — 문항별 그림을 고른다 */
   qid?: string;
   options: { label: string; value: string; desc?: string; onClick: () => void }[];
+  /** "잘 모르겠어요" — 점수 없이 다음 문항으로 */
+  onUnsure?: () => void;
   vars: Record<string, string>;
 }) {
   const txt = vars["--t-txt"];
@@ -329,9 +343,9 @@ function QuestionView({
           {hint}
         </p>
       )}
-      {kind === "body" && qid && BODY_ART_NOTE[qid] && (
+      {qid && (kind === "body" ? BODY_ART_NOTE[qid] : COLOR_ART_NOTE[qid]) && (
         <p style={{ fontFamily: sans, fontSize: "11.5px", color: sub, marginBottom: "10px", wordBreak: "keep-all" }}>
-          {BODY_ART_NOTE[qid]}
+          {kind === "body" ? BODY_ART_NOTE[qid] : COLOR_ART_NOTE[qid]}
         </p>
       )}
       <div className="flex flex-col gap-3">
@@ -361,12 +375,13 @@ function QuestionView({
             }}
             onMouseDown={(e) => { e.currentTarget.style.transform = "scale(0.99)"; }}
             onMouseUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = txt; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
+            // 휴대폰에서 탭한 자리의 테두리가 다음 문항에 남지 않게, 마우스일 때만 강조
+            onPointerEnter={(e) => { if (e.pointerType === "mouse") e.currentTarget.style.borderColor = txt; }}
+            onPointerLeave={(e) => { e.currentTarget.style.borderColor = bdr; }}
           >
-            {kind === "body" && qid ? (
+            {qid ? (
               <span style={{ flexShrink: 0, width: "84px", height: "84px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--t-bg)", borderRadius: "2px" }}>
-                <BodyQuizArt qid={qid} value={o.value} ink={txt} acc={acc} />
+                {kind === "body" ? <BodyQuizArt qid={qid} value={o.value} ink={txt} acc={acc} /> : <ColorQuizArt qid={qid} value={o.value} ink={txt} />}
               </span>
             ) : (
               <span style={{ flexShrink: 0, width: "52px", height: "60px", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -384,6 +399,58 @@ function QuestionView({
           </button>
         ))}
       </div>
+      {onUnsure && (
+        <button
+          onClick={onUnsure}
+          style={{ display: "block", margin: "16px auto 0", background: "none", border: "none", padding: "8px 12px", cursor: "pointer", fontFamily: sans, fontSize: "13px", color: sub, textDecoration: "underline", textUnderlineOffset: "3px" }}
+        >
+          잘 모르겠어요 · 건너뛰기
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* 골격 5문항을 마친 뒤 쉼표 화면 — 골격 결과를 흐리게 보여주고 컬러로 이어가게 한다 */
+function HalfwayView({ body, vars, onNext, onBack }: { body: BodyType; vars: Record<string, string>; onNext: () => void; onBack: () => void }) {
+  const txt = vars["--t-txt"];
+  const sub = vars["--t-sub"];
+  const acc = vars["--t-acc"];
+  const bdr = vars["--t-bdr"];
+  const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
+  const serif = "var(--font-gowun), 'Batang', serif";
+  return (
+    <div style={{ animation: "cardEnter 450ms cubic-bezier(0.16,1,0.3,1) both" }}>
+      <button
+        onClick={onBack}
+        style={{ background: "none", border: "none", padding: "4px 0", marginBottom: "18px", cursor: "pointer", fontFamily: sans, fontSize: "12.5px", color: sub }}
+      >
+        ← 이전
+      </button>
+      <p className="ed-label" style={{ color: acc, marginBottom: "14px" }}>골격 5 / 5 · 완료</p>
+      <p style={{ fontFamily: serif, fontSize: "26px", lineHeight: 1.35, color: txt, marginBottom: "18px", wordBreak: "keep-all" }}>
+        골격 결과가 나왔어요.
+        <br />
+        이제 어울리는 색만 남았어요.
+      </p>
+      <div style={{ position: "relative", border: `1px solid ${bdr}`, borderTop: `1px solid ${txt}`, backgroundColor: "var(--t-card)", padding: "18px 18px 16px", marginBottom: "14px" }}>
+        <p style={{ fontFamily: sans, fontSize: "12px", color: sub, margin: "0 0 6px" }}>내 골격 타입</p>
+        <p aria-hidden style={{ fontFamily: serif, fontSize: "30px", color: txt, margin: "0 0 4px", filter: "blur(9px)", userSelect: "none" }}>
+          {BODY_META[body].label}
+        </p>
+        <p aria-hidden style={{ fontFamily: sans, fontSize: "12.5px", color: sub, margin: 0, filter: "blur(6px)", userSelect: "none" }}>
+          {BODY_META[body].tagline}
+        </p>
+        <span style={{ position: "absolute", right: "14px", top: "16px", fontFamily: sans, fontSize: "11.5px", color: acc, border: `1px solid ${acc}`, borderRadius: "999px", padding: "3px 10px" }}>
+          컬러까지 마치면 공개
+        </span>
+      </div>
+      <p style={{ fontFamily: sans, fontSize: "13px", lineHeight: 1.7, color: sub, marginBottom: "22px", wordBreak: "keep-all" }}>
+        골격(옷의 모양) × 퍼스널컬러(옷의 색)를 합쳐야 나에게 맞는 한 벌이 완성돼요. 5문항, 30초면 끝나요.
+      </p>
+      <button onClick={onNext} style={ctaStyle()}>
+        퍼스널컬러 이어서 하기 →
+      </button>
     </div>
   );
 }
@@ -430,8 +497,8 @@ function ResultView({
 }: {
   body: BodyType;
   color: ColorType;
-  bodyAns: BodyType[];
-  colorAns: ("warm" | "cool" | "light" | "deep")[];
+  bodyAns: BodyAnswer[];
+  colorAns: ColorAnswer[];
   vars: Record<string, string>;
   onDone: () => void;
   onAsk?: (situation: string) => void;
@@ -669,8 +736,8 @@ function ResultSummary({
 }: {
   body: BodyType;
   color: ColorType;
-  bodyAns: BodyType[];
-  colorAns: ("warm" | "cool" | "light" | "deep")[];
+  bodyAns: BodyAnswer[];
+  colorAns: ColorAnswer[];
   vars: Record<string, string>;
 }) {
   const txt = vars["--t-txt"];
@@ -689,7 +756,14 @@ function ResultSummary({
 
   const warm = colorAns.filter((a) => a === "warm").length;
   const cool = colorAns.filter((a) => a === "cool").length;
-  const colorMixed = warm === cool;
+  const light = colorAns.filter((a) => a === "light").length;
+  const deep = colorAns.filter((a) => a === "deep").length;
+  const isWarm = color === "spring" || color === "autumn";
+  const isLight = color === "spring" || color === "summer";
+  const cs = colorScores(colorAns);
+  // 웜·쿨 가중 점수 차가 한 문항 이하이면 "섞였다"로 본다
+  const colorMixed = Math.abs(cs.warm - cs.cool) < 1.05;
+  const unsureN = [...bodyAns, ...colorAns].filter((a) => a === "unsure").length;
 
   const jump = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
@@ -725,11 +799,17 @@ function ResultSummary({
       <div style={{ marginTop: "14px" }}>
         <p style={{ ...label, marginBottom: "6px" }}>내 답은 이렇게 나뉘었어요</p>
         {order.map((t) => (
-          <Bar key={t} name={BODY_META[t].label} n={tally[t]} total={bodyAns.length} on={t === body} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+          <Bar key={t} name={BODY_META[t].label} n={tally[t]} total={BODY_QUESTIONS.length} on={t === body} acc={acc} bdr={bdr} txt={txt} sub={sub} />
         ))}
         <div style={{ height: "6px" }} />
-        <Bar name="웜톤" n={warm} total={warm + cool} on={warm >= cool} acc={acc} bdr={bdr} txt={txt} sub={sub} />
-        <Bar name="쿨톤" n={cool} total={warm + cool} on={cool > warm} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        <Bar name="웜톤" n={warm} total={3} on={isWarm} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        <Bar name="쿨톤" n={cool} total={3} on={!isWarm} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        <div style={{ height: "6px" }} />
+        <Bar name="밝은 색" n={light} total={2} on={isLight} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        <Bar name="깊은 색" n={deep} total={2} on={!isLight} acc={acc} bdr={bdr} txt={txt} sub={sub} />
+        {unsureN > 0 && (
+          <p style={{ fontFamily: sans, fontSize: "11px", color: sub, margin: "4px 0 0" }}>‘잘 모르겠어요’ {unsureN}개는 점수에서 뺐어요.</p>
+        )}
       </div>
 
       {/* 답이 갈렸을 때 */}
@@ -737,7 +817,7 @@ function ResultSummary({
         <div style={{ marginTop: "12px", padding: "11px 12px", backgroundColor: "var(--t-card)", border: `1px dashed ${acc}`, borderRadius: "4px" }}>
           <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, lineHeight: 1.6, margin: 0, wordBreak: "keep-all" }}>
             {bodyMixed && <>골격은 <b>{BODY_META[runnerUp].label}</b> 특징도 함께 보여요. 두 타입이 섞인 경우가 흔해요. </>}
-            {colorMixed && <>웜톤과 쿨톤 답이 반반이에요. 조명·화장에 따라 셀프 진단은 흔들릴 수 있어요. </>}
+            {colorMixed && <>웜톤과 쿨톤 답이 엇갈렸어요. 조명·화장에 따라 셀프 진단은 흔들릴 수 있어요. </>}
             정확히 알고 싶다면{" "}
             <a href="/apply" onClick={() => track("consult_click", { where: "diagnosis_mixed", method: "apply" })} style={{ color: acc, fontWeight: 600 }}>
               1:1로 직접 봐드릴게요 →
