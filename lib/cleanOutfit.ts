@@ -37,7 +37,11 @@ export function cleanName(name: string, color = ""): string {
 }
 
 export function cleanColor(color: string): string {
-  const s = stripParens(color || "").replace(/\s+/g, " ").trim();
+  let s = stripParens(color || "").replace(/\s+/g, " ").trim();
+  // "연청 데님 대신 그레이"처럼 바꾼 이유가 섞여 오면 바꾼 뒤의 색만 (2026-11-09 라이브에서 봄)
+  if (/\s대신\s/.test(s)) s = s.split(/\s대신\s/).pop()!.trim();
+  // 후보를 나열하면 첫 번째 하나만
+  s = s.split(ALT)[0].trim();
   return s || color;
 }
 
