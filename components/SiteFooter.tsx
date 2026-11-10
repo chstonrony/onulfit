@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR, CONTACT_EMAIL, INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/consult";
+import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, OPERATOR, CONTACT_EMAIL, INSTAGRAM_URL, INSTAGRAM_HANDLE, BLOG_URL } from "@/lib/consult";
 
 /* ── 모든 화면 공통 하단 (2026-11-08) ──
    개인정보처리방침은 누구나 쉽게 볼 수 있어야 해서 모든 화면 맨 아래에 둔다.
@@ -24,6 +24,9 @@ export default function SiteFooter({ style }: { style?: React.CSSProperties }) {
         <Link href="/privacy" style={link}>개인정보처리방침</Link>
         <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" style={link} aria-label={`오늘핏 인스타그램 @${INSTAGRAM_HANDLE}`}>
           인스타그램 @{INSTAGRAM_HANDLE}
+        </a>
+        <a href={BLOG_URL} target="_blank" rel="noopener noreferrer" style={link} aria-label="오늘핏 네이버 블로그">
+          네이버 블로그
         </a>
         {IS_CHANNEL_READY && (
           <a href={KAKAO_CHANNEL_URL} target="_blank" rel="noopener noreferrer" style={link}>카톡 문의</a>

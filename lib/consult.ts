@@ -37,6 +37,8 @@ export const PRIVACY_VERSION = "2026-11-08";
 /** 오늘핏 공식 인스타그램 (2026-11-09) */
 export const INSTAGRAM_HANDLE = "onulfit.official";
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
+/** 오늘핏 네이버 블로그 (2026-11-10) — 사진·후기 위주 글. 사이트 가이드 글과 같은 글을 올리지 않는다 */
+export const BLOG_URL = "https://blog.naver.com/chston";
 
 export const OPERATOR = "로니스튜디오 · 대표 최샤론";
 /** 공개 문의 이메일 — 오늘핏 전용 (2026-11-08 사용자 요청). 바꾸려면 여기 또는 NEXT_PUBLIC_CONTACT_EMAIL */

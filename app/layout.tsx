@@ -149,7 +149,7 @@ export default function RootLayout({
               description:
                 "20대 후반 여성을 위한 AI 패션 코디 · 골격/퍼스널컬러 1:1 스타일 진단 서비스",
               inLanguage: "ko",
-              sameAs: ["https://www.instagram.com/onulfit.official/"],
+              sameAs: ["https://www.instagram.com/onulfit.official/", "https://blog.naver.com/chston"],
             }),
           }}
         />
