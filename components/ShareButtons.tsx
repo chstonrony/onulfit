@@ -16,7 +16,7 @@ export default function ShareButtons({ situation, outfit }: ShareButtonsProps) {
   const shareUrl = "https://onulfit.com";
   const shareText = outfit
     ? `OnulFit이 추천한 오늘의 코디: "${outfit}"\n상황: ${situation}\n\n나도 오늘의 코디 추천 받기 →`
-    : `OnulFit — 오늘의 코디를 찾아보세요\n20대 후반 여성을 위한 AI 패션 코디 서비스`;
+    : `OnulFit — 오늘의 코디를 찾아보세요\n20대 후반 감성으로 입는 3050 AI 패션 코디 서비스`;
 
   /* ── 링크 복사 ── */
   const handleCopy = async () => {
