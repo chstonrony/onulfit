@@ -737,7 +737,7 @@ function ResultView({
         코디 받으러 가기
       </button>
 
-      {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
+      {/* 1:1 스타일 컨설팅 예약 (수익 깔때기) */}
       <div id="res-consult" style={{ scrollMarginTop: "16px" }}>
         <ConsultCTA where="diagnosis" />
       </div>
@@ -752,7 +752,7 @@ function ResultView({
 
 /* ── 결과 한눈에 요약 ──
    골격·컬러 결과를 나란히, 내 답이 어떻게 나뉘었는지 막대로.
-   답이 갈렸으면(믹스 골격 / 웜쿨 반반) 1:1 진단을 권한다. */
+   답이 갈렸으면(믹스 골격 / 웜쿨 반반) 1:1 컨설팅을 권한다. */
 function ResultSummary({
   body,
   color,
@@ -844,7 +844,7 @@ function ResultSummary({
           <p style={{ fontFamily: sans, fontSize: "12.5px", color: txt, lineHeight: 1.6, margin: 0, wordBreak: "keep-all" }}>
             {bodyMixed && <>골격은 <b>{BODY_META[runnerUp].label}</b> 특징도 함께 보여요. 두 타입이 섞인 경우가 흔해요. </>}
             {colorMixed && <>웜톤과 쿨톤 답이 엇갈렸어요. 조명·화장에 따라 셀프 진단은 흔들릴 수 있어요. </>}
-            정확히 알고 싶다면{" "}
+            헷갈린다면{" "}
             <a href="/apply" onClick={() => track("consult_click", { where: "diagnosis_mixed", method: "apply" })} style={{ color: acc, fontWeight: 600 }}>
               1:1로 직접 봐드릴게요 →
             </a>
@@ -858,7 +858,7 @@ function ResultSummary({
           ["res-body", "골격 코디 가이드"],
           ["res-color", "내 컬러 팔레트"],
           ["res-look", "추천 코디"],
-          ["res-consult", "1:1 진단"],
+          ["res-consult", "1:1 컨설팅"],
         ].map(([id, t]) => (
           <button
             key={id}

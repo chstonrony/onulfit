@@ -27,7 +27,7 @@ const STEPS = [
   ["신청서 작성", "아래 신청서를 보내주세요."],
   ["연락 드림", "적어주신 연락처로 일정·비용을 안내드려요."],
   ["일정·장소 확정", "가능한 날짜를 맞추고, 상세 위치를 알려드려요."],
-  ["1:1 진단", "직접 만나 골격(체형)과 퍼스널컬러를 함께 봐요."],
+  ["1:1 컨설팅", "직접 만나 체형(골격)과 어울리는 색을 함께 봐요."],
   ["결과 가이드", "나에게 맞는 색·핏·코디 방향을 정리해 드려요."],
 ];
 
@@ -102,7 +102,7 @@ export default function ApplyPage() {
           오늘핏 스타일 컨설팅 신청
         </h1>
         <p style={{ fontFamily: sans, fontSize: "15px", fontWeight: 500, lineHeight: 1.75, color: SUB, margin: "12px 0 0", wordBreak: "keep-all" }}>
-          퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요.
+          체형과 어울리는 색을 1:1로 함께 보고, 당신만의 코디로 번역해 드려요.
           지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 할인).
         </p>
 
@@ -116,7 +116,7 @@ export default function ApplyPage() {
             {[
               ["장소", CONSULT_INFO.place],
               ["비용", `${CONSULT_INFO.fee} ${CONSULT_INFO.feeNote}`],
-              ["방식", "1:1 대면 진단 · 골격(체형) + 퍼스널컬러"],
+              ["방식", "1:1 대면 스타일 컨설팅 · 체형(골격) + 어울리는 색"],
               ["변경·취소", CONSULT_INFO.cancel],
             ].map(([k, v]) => (
               <div key={k} style={{ display: "grid", gridTemplateColumns: "72px 1fr", gap: "10px", padding: "11px 0", borderTop: `1px solid ${BDR}` }}>

@@ -7,7 +7,7 @@ import { BlockButton } from "./Editorial";
 
 /* ── 가이드 글 하단 CTA ──
    검색으로 가이드 글에 바로 들어온 사람을
-   ① 무료 자가진단(홈 진단 오버레이 자동 오픈) ② 1:1 진단 신청으로 잇는다. */
+   ① 무료 자가진단(홈 진단 오버레이 자동 오픈) ② 1:1 컨설팅 신청으로 잇는다. */
 
 const INK = "#1D1F16";
 const ACC = "#5A6122";
@@ -44,10 +44,10 @@ export default function GuideCTA({ slug }: { slug: string }) {
             혼자 해봐도 헷갈린다면, 직접 봐드릴게요
           </p>
           <p style={{ fontFamily: sans, fontSize: "14px", fontWeight: 500, opacity: 0.9, lineHeight: 1.7, margin: "0 0 18px", wordBreak: "keep-all" }}>
-            골격과 퍼스널컬러를 1:1로 진단하고, 지금 가진 옷으로 어떻게 입으면 되는지까지 정리해 드려요.
+            체형과 어울리는 색을 1:1로 함께 보고, 지금 가진 옷으로 어떻게 입으면 되는지까지 정리해 드려요.
           </p>
           <BlockButton href="/apply" tone="ink" onClick={() => track("consult_click", { where: "guide", method: "apply", slug })}>
-            1:1 진단 신청하기
+            1:1 컨설팅 신청하기
           </BlockButton>
         </div>
       )}

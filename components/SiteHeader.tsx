@@ -8,7 +8,7 @@ import { INSTAGRAM_URL, INSTAGRAM_HANDLE } from "@/lib/consult";
 /* ── 모든 화면 공통 상단 메뉴 ──
    · 로고: 누르면 맨 처음 화면으로 (홈에서는 대화·결과를 비우고 첫 화면으로)
    · ←  : 홈이 아닌 화면에서 이전 화면으로 (이전 기록이 없으면 홈으로)
-   · 메뉴: 자가진단 · 가이드 · 1:1 진단 — 꼭 필요한 것만
+   · 메뉴: 자가진단 · 가이드 · 1:1 컨설팅 — 꼭 필요한 것만
    · 맨 오른쪽 인스타그램 아이콘 (2026-11-09: PC 홈은 오른쪽 칸만 스크롤돼서 푸터 링크가 잘 안 보였다) */
 
 const INK = "var(--t-txt, #1D1F16)";
@@ -17,7 +17,7 @@ const ACC = "var(--t-acc, #5A6122)";
 const MENU = [
   { href: "/self-check", label: "자가진단" },
   { href: "/guide", label: "가이드" },
-  { href: "/apply", label: "1:1 진단", accent: true },
+  { href: "/apply", label: "1:1 컨설팅", accent: true },
 ];
 
 export default function SiteHeader({

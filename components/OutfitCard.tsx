@@ -114,7 +114,7 @@ export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
         <CompletedLook color={profile?.color ?? ""} body={profile?.body ?? ""} vars={vars} />
       </div>
 
-      {/* 1:1 진단 컨설팅 예약 (수익 깔때기) */}
+      {/* 1:1 스타일 컨설팅 예약 (수익 깔때기) */}
       <ConsultCTA where="outfit" />
 
       {/* 공유 버튼 */}

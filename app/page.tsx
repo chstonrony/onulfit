@@ -303,7 +303,7 @@ export default function Home() {
               {freeLeftN > 0 ? (
                 <>오늘 무료 AI 코디 <b style={{ color: "var(--t-acc)" }}>{freeLeftN}/{FREE_DAILY}</b>번 남았어요</>
               ) : (
-                <>오늘 무료 코디를 다 썼어요 · <Link href="/apply" onClick={() => track("consult_click", { where: "ai_limit_bar", method: "apply" })} style={{ color: "var(--t-acc)", fontWeight: 700 }}>1:1 진단 신청 →</Link></>
+                <>오늘 무료 코디를 다 썼어요 · <Link href="/apply" onClick={() => track("consult_click", { where: "ai_limit_bar", method: "apply" })} style={{ color: "var(--t-acc)", fontWeight: 700 }}>1:1 컨설팅 신청 →</Link></>
               )}
             </p>
           )}
@@ -535,7 +535,7 @@ function WelcomeGuide({
         <GuideBanner />
       </Reveal>
 
-      {/* ── 05 1:1 진단 ── */}
+      {/* ── 05 1:1 컨설팅 ── */}
       <Reveal>
         <ApplyCTA vars={vars} />
       </Reveal>

@@ -4,7 +4,7 @@ import { IS_APPLY_READY } from "@/lib/consult";
 import { track } from "@/lib/track";
 import { BlockButton } from "./Editorial";
 
-/* ── 홈 1:1 진단 신청 CTA ──
+/* ── 홈 1:1 컨설팅 신청 CTA ──
    무료 진단을 넘어 "1:1 오프라인 컨설팅 신청"으로 잇는 깔때기.
    신청 폼이 준비되기 전엔 렌더하지 않는다(빈 링크 방지).
    디자인: 포인트 컬러 풀블록 — 홈에서 가장 강한 면. */
@@ -35,14 +35,14 @@ export default function ApplyCTA({ vars }: { vars: Record<string, string> }) {
         화면 진단을 넘어,<br />직접 봐드릴게요
       </h2>
       <p style={{ fontFamily: sans, fontWeight: 500, fontSize: "14.5px", lineHeight: 1.7, opacity: 0.9, margin: "0 0 22px", maxWidth: "360px", wordBreak: "keep-all" }}>
-        퍼스널컬러와 체형을 1:1로 진단하고, 당신만의 코디로 번역해 드려요. 지금은 포트폴리오 멤버를 먼저 모시고 있어요.
+        체형과 어울리는 색을 1:1로 함께 보고, 당신만의 코디로 번역해 드려요. 지금은 포트폴리오 멤버를 먼저 모시고 있어요.
       </p>
       <BlockButton
         href="/apply"
         tone="ink"
         onClick={() => track("consult_click", { where: "home", method: "apply" })}
       >
-        1:1 진단 신청하기
+        1:1 컨설팅 신청하기
       </BlockButton>
     </section>
   );

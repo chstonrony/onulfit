@@ -50,7 +50,7 @@ const PRETENDARD ='"Pretendard Variable", Pretendard, "Apple SD Gothic Neo", "Ma
 export const metadata: Metadata = {
   title: "오늘핏 OnulFit — 매일 아침, 가장 좋은 버전의 나",
   description:
-    "오늘핏(OnulFit) — 20대 후반 감성으로 입는 30~50대 여성 AI 패션 코디 서비스. 오늘의 상황을 알려주시면 상의부터 신발까지 딱 맞는 헤드투토 코디를 제안하고, 골격·퍼스널컬러 1:1 진단으로 이어드립니다.",
+    "오늘핏(OnulFit) — 20대 후반 감성으로 입는 30~50대 여성 AI 패션 코디 서비스. 오늘의 상황을 알려주시면 상의부터 신발까지 딱 맞는 헤드투토 코디를 제안하고, 체형·컬러 1:1 스타일 컨설팅으로 이어드립니다.",
   keywords: ["오늘핏", "OnulFit", "패션 코디", "AI 스타일링", "여성 패션", "오늘 코디", "패션 추천", "스타일 추천", "퍼스널컬러 진단", "골격 진단", "30대 코디", "40대 코디", "50대 코디", "3050 여성 코디", "데일리룩"],
   authors: [{ name: "오늘핏 OnulFit" }],
   creator: "오늘핏 OnulFit",
@@ -147,7 +147,7 @@ export default function RootLayout({
               alternateName: ["OnulFit", "오늘핏 스타일리스트"],
               url: "https://onulfit.com",
               description:
-                "20대 후반 감성으로 입는 30~50대 여성 AI 패션 코디 · 골격/퍼스널컬러 1:1 스타일 진단 서비스",
+                "20대 후반 감성으로 입는 30~50대 여성 AI 패션 코디 · 체형·컬러 1:1 스타일 컨설팅 서비스",
               inLanguage: "ko",
               sameAs: ["https://www.instagram.com/onulfit.official/", "https://blog.naver.com/chston"],
             }),

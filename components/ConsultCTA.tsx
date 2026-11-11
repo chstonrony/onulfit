@@ -4,8 +4,8 @@ import { KAKAO_CHANNEL_URL, IS_CHANNEL_READY, IS_APPLY_READY } from "@/lib/consu
 import { track } from "@/lib/track";
 import { BlockButton } from "./Editorial";
 
-/* ── 1:1 진단 컨설팅 CTA ──
-   무료 진단/코디 결과 끝에 붙어, "정확한 1:1 진단"으로 연결하는 깔때기.
+/* ── 1:1 스타일 컨설팅 CTA ──
+   무료 진단/코디 결과 끝에 붙어, 1:1 스타일 컨설팅으로 연결하는 깔때기(2026-11-11: 유료 서비스에 "진단"이라는 말을 쓰지 않는다).
    주 버튼 = 신청서(/apply, 신청 건수가 GA에 잡힘), 보조 = 카카오톡 문의.
    둘 다 설정 전이면 렌더하지 않는다(빈 링크 방지).
    디자인: 포인트 컬러 풀블록. */
@@ -30,15 +30,15 @@ export default function ConsultCTA({ where }: { where: "diagnosis" | "outfit" | 
         Personal consulting
       </p>
       <p style={{ fontFamily: sans, fontSize: "25px", fontWeight: 800, letterSpacing: "-0.05em", margin: "12px 0 10px", lineHeight: 1.22, wordBreak: "keep-all" }}>
-        결과가 더 궁금하세요?<br />1:1 진단으로 정확하게.
+        결과가 더 궁금하세요?<br />1:1로 직접 봐드릴게요.
       </p>
       <p style={{ fontFamily: sans, fontSize: "14px", fontWeight: 500, opacity: 0.9, lineHeight: 1.7, margin: "0 0 20px", wordBreak: "keep-all" }}>
-        화면 속 진단을 넘어, 퍼스널컬러·체형을 직접 봐드려요. 나에게 맞는 색과 핏을 평생 쓰는 가이드로 정리해 드립니다.
+        화면 속 자가진단을 넘어, 체형과 어울리는 색을 직접 봐드려요. 나에게 맞는 색과 핏을 평생 쓰는 가이드로 정리해 드립니다.
       </p>
 
       {IS_APPLY_READY && (
         <BlockButton href="/apply" tone="ink" onClick={() => track("consult_click", { where, method: "apply" })}>
-          1:1 진단 신청하기
+          1:1 컨설팅 신청하기
         </BlockButton>
       )}
 
