@@ -29,6 +29,7 @@ import { BODY_GUIDE, COLOR_GUIDE, CROSS_GUIDE } from "@/lib/styleGuide";
 import { lookboardChips, CURATED_BOARDS } from "@/lib/lookboards";
 import Lookboard from "./Lookboard";
 import CompletedLook from "./CompletedLook";
+import ZigzagPicks from "./ZigzagPicks";
 import BodyQuizArt, { BODY_ART_NOTE, BODY_ART_PHOTO, prefetchBodyArt } from "./BodyQuizArt";
 import ColorQuizArt, { COLOR_ART_NOTE } from "./ColorQuizArt";
 import BeforeAfterBoard, { prefetchBA } from "./BeforeAfterBoard";
@@ -670,6 +671,12 @@ function ResultView({
       {/* 완성 코디 — 결이 큐레이션한 룩 (상품 조합) */}
       <div id="res-look" style={{ scrollMarginTop: "16px" }}>
         <CompletedLook color={color} body={body} vars={vars} />
+      </div>
+
+      {/* 지그재그 제휴 — 체형·퍼스널컬러·계절에 맞춰 직접 고른 실제 상품 (2026-11-12) */}
+      <div id="res-pick" style={{ ...cardStyle, scrollMarginTop: "16px" }}>
+        {kicker("PICK · 지금 입기 좋은 아이템")}
+        <ZigzagPicks body={body} color={color} txt={txt} sub={sub} bdr={bdr} acc={acc} />
       </div>
 
       {/* 쇼핑 — W컨셉 제휴 (내 컬러로 골라보기) */}
