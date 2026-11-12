@@ -53,7 +53,9 @@ export default function ApplyPage() {
       subject: `[오늘핏 신청] ${fd.get("name") || "이름없음"}`,
       from_name: "오늘핏 신청 폼",
       성함: fd.get("name"),
-      연락처: fd.get("contact"),
+      전화번호: fd.get("phone"),
+      // Web3Forms는 email 값을 답장 주소로 쓴다
+      email: fd.get("email"),
       나이대: fd.get("age"),
       거주지역: fd.get("region"),
       인스타: fd.get("instagram"),
@@ -171,9 +173,27 @@ export default function ApplyPage() {
             <Field label="성함" required>
               <input name="name" required style={inputStyle} />
             </Field>
-            <Field label="연락처 (카톡 ID 또는 전화번호)" required>
-              <input name="contact" required style={inputStyle} />
+            <Field label="전화번호" required>
+              <input
+                name="phone" type="tel" inputMode="tel" autoComplete="tel" required
+                placeholder="010-0000-0000"
+                pattern="01[016789](-| )?[0-9]{3,4}(-| )?[0-9]{4}"
+                title="휴대폰 번호를 010-0000-0000처럼 적어 주세요"
+                style={inputStyle}
+              />
             </Field>
+            <Field label="이메일 주소" required>
+              <input
+                name="email" type="email" inputMode="email" autoComplete="email" required
+                placeholder="example@naver.com"
+                style={inputStyle}
+              />
+            </Field>
+            {/* 연락처 확인 안내 — 2026-11-12 사용자 요청(번호를 잘못 적은 신청이 있었음) */}
+            <p style={{ margin: "-8px 0 0", padding: "12px 14px", background: CARD, borderLeft: `3px solid ${ACCENT}`, fontFamily: sans, fontSize: "13.5px", fontWeight: 600, color: INK, lineHeight: 1.7, letterSpacing: "-0.02em", wordBreak: "keep-all" }}>
+              전화번호와 이메일 주소를 <span style={{ color: ACCENT }}>한 번 더 확인</span>해 주세요.<br />
+              잘못 적으시면 일정·장소 안내를 드릴 수 없어요.
+            </p>
             <Field label="나이대">
               <select name="age" defaultValue="" style={inputStyle}>
                 <option value="" disabled>선택해주세요</option>

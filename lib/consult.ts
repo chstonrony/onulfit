@@ -32,7 +32,7 @@ export const CONSULT_INFO = {
 } as const;
 
 /* ── 개인정보 수집·이용 안내 (신청서 동의 체크칸 + /privacy) ── */
-export const PRIVACY_VERSION = "2026-11-08";
+export const PRIVACY_VERSION = "2026-11-12";
 /** 운영자 — 2026-11-08 사용자 요청. 사업자 등록 후 상호·사업자번호를 더할 것 */
 /** 오늘핏 공식 인스타그램 (2026-11-09) */
 export const INSTAGRAM_HANDLE = "onulfit.official";
@@ -46,7 +46,7 @@ export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || "chston@n
 /** 개인정보 보호책임자 */
 export const PRIVACY_OFFICER = "최샤론 (로니스튜디오 대표)";
 export const PRIVACY = {
-  items: "성함, 연락처(카톡 ID 또는 전화번호), 나이대, 거주 지역, 인스타 아이디(선택), 고민·원하는 변화·가능한 일정·하고 싶은 말(선택), 사진·후기 게시 동의 여부",
+  items: "성함, 전화번호, 이메일 주소, 나이대, 거주 지역, 인스타 아이디(선택), 고민·원하는 변화·가능한 일정·하고 싶은 말(선택), 사진·후기 게시 동의 여부",
   purpose: "1:1 컨설팅 신청 확인, 일정·장소·비용 안내 연락, 상담 진행",
   retention: "신청일로부터 1년(상담을 진행한 경우 마지막 상담일로부터 1년) 보관 후 파기해요. 삭제를 요청하시면 바로 파기해요.",
   refuse: "동의를 거부할 수 있어요. 다만 동의하지 않으면 신청서를 보낼 수 없어요.",
