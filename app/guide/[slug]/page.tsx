@@ -3,7 +3,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { OG_IMAGE } from "@/lib/og";
+import { COVERS, coverFor } from "@/lib/covers";
 import { ARTICLES, getArticle } from "@/lib/articles";
 import GuideCTA from "@/components/GuideCTA";
 
@@ -42,6 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const a = getArticle(slug);
   if (!a) return { title: "오늘핏" };
+  // 글마다 다른 대표 그림(공유 미리보기·검색 결과용)
+  const cover = coverFor(a.slug, a.title);
+  const coverImage = { url: cover.url, width: cover.width, height: cover.height, alt: cover.alt };
   return {
     title: a.seoTitle,
     description: a.seoDescription,
@@ -55,8 +58,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `${BASE_URL}/guide/${a.slug}`,
       siteName: "오늘핏 OnulFit",
       locale: "ko_KR",
-      images: [OG_IMAGE],
+      images: [coverImage],
     },
+    twitter: { card: "summary_large_image", title: a.seoTitle, description: a.seoDescription, images: [cover.url] },
   };
 }
 
@@ -69,6 +73,9 @@ export default async function ArticlePage({ params }: Props) {
   const others = ARTICLES.filter((x) => x.slug !== a.slug);
   const related = [...others.filter((x) => x.category === a.category), ...others.filter((x) => x.category !== a.category)].slice(0, 3);
 
+  const cover = coverFor(a.slug, a.title);
+  const hasCover = !!COVERS[a.slug];
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -78,7 +85,7 @@ export default async function ArticlePage({ params }: Props) {
     inLanguage: "ko",
     datePublished: a.date,
     dateModified: a.updated ?? a.date,
-    image: `${BASE_URL}${OG_IMAGE.url}`,
+    image: { "@type": "ImageObject", url: `${BASE_URL}${cover.url}`, width: cover.width, height: cover.height },
     mainEntityOfPage: `${BASE_URL}/guide/${a.slug}`,
     author: { "@type": "Organization", name: "오늘핏" },
     publisher: { "@type": "Organization", name: "오늘핏", url: BASE_URL },
@@ -101,6 +108,21 @@ export default async function ArticlePage({ params }: Props) {
             {a.subtitle}
           </p>
         </header>
+
+        {/* 대표 그림 — 글 내용에 맞는 옷 그림(직접 만든 그림). 구글 이미지 검색에도 잡히게 글 화면에 보여 준다 */}
+        {hasCover && (
+          <figure style={{ margin: "0 0 30px" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={cover.webp}
+              width={cover.width}
+              height={cover.height}
+              alt={cover.alt}
+              fetchPriority="high"
+              style={{ display: "block", width: "100%", height: "auto", border: `1px solid ${INK}`, borderRadius: "2px" }}
+            />
+          </figure>
+        )}
 
         <div>
           {a.content.split("\n\n").map((p, i) =>

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ARTICLES } from "@/lib/articles";
+import { COVERS, coverFor } from "@/lib/covers";
 
 const BASE_URL = "https://onulfit.com";
 
@@ -17,6 +18,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: articleDate(a),
       changeFrequency: "monthly" as const,
       priority: 0.7,
+      // 글의 대표 그림도 함께 알린다(구글 이미지 검색)
+      ...(COVERS[a.slug] ? { images: [`${BASE_URL}${coverFor(a.slug, a.title).url.split("?")[0]}`] } : {}),
     })),
   ];
 }
