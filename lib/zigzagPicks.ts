@@ -41,6 +41,9 @@ export interface ZigzagPick {
   face?: boolean;
   /** 개성을 주는 포인트 아이템 */
   point?: boolean;
+  /** AI 코디·비포/애프터의 버튼 연결에만 쓰고, 진단 결과의 추천 칸에는 내지 않는다
+      (색이 하나뿐이거나 금속 색처럼 '톤별 색 안내'가 맞지 않는 상품) */
+  matchOnly?: boolean;
   /** 왜 골랐는지 — 체형별로 다르면 체형별로 */
   why: string | Partial<Record<BodyType, string>>;
 }
@@ -195,6 +198,91 @@ export const ZIGZAG_PICKS: ZigzagPick[] = [
     face: true, point: true,
     why: "모자 하나로 꾸민 티를 낼 수 있어요. 색이 39가지라 내 컬러를 고르기 쉬워요.",
   },
+
+  /* ── 2026-11-16 추가 16개 — AI 코디에 자주 나오는데 연결할 상품이 없던 품목 ── */
+  {
+    key: "crewneck-knit", slot: "top", item: "루즈핏 라운드 니트", shop: "메리어라운드", url: "https://s.zigzag.kr/abr/v3u3aWxe51",
+    bodies: ["natural"], seasons: COOL, face: true,
+    why: "넉넉한 품의 라운드 니트라 어깨 뼈대가 드러나지 않아요. 흰 티를 밑단에 살짝 보이게.",
+  },
+  {
+    key: "cable-knit", slot: "top", item: "울 케이블 니트", shop: "케이클럽", url: "https://s.zigzag.kr/abr/xfIhcJN0uz",
+    bodies: ["natural"], seasons: COLD, face: true, point: true,
+    why: "굵은 꽈배기 짜임이 부해 보이지 않고 분위기가 되는 체형이 내추럴이에요.",
+  },
+  {
+    key: "turtleneck", slot: "top", item: "터틀넥 니트", shop: "슬로우앤드", url: "https://s.zigzag.kr/abr/0ZlHSjaoRR",
+    bodies: ["wave"], seasons: COLD, face: true,
+    why: "목에 가볍게 붙는 터틀넥이 얇은 상체를 채워 줘요. 색이 8가지예요.",
+  },
+  {
+    key: "sweatshirt", slot: "top", item: "기모 맨투맨", shop: "후아유", url: "https://s.zigzag.kr/abr/MmrqKAIVIR",
+    bodies: ["natural"], seasons: COLD,
+    why: "편한 맨투맨도 내추럴이 입으면 힘 뺀 멋이 돼요. 안에 셔츠 깃을 꺼내 입어도 좋아요.",
+  },
+  {
+    key: "over-shirt", slot: "top", item: "오버핏 셔츠", shop: "라룸", url: "https://s.zigzag.kr/abr/QRCsvVQHlr",
+    bodies: ["natural"], seasons: COOL, face: true,
+    why: "큼직한 셔츠를 툭 걸치듯 입는 게 내추럴의 멋이에요. 니트 안에 겹쳐 입기도 좋아요.",
+  },
+  {
+    key: "hood-zip", slot: "outer", item: "후드 집업", shop: "원로그", url: "https://s.zigzag.kr/abr/GnJXxFeLBB",
+    bodies: ["natural"], seasons: COOL,
+    why: "넉넉한 후드 집업은 코트 안에 겹쳐 입어도 멋스러워요. 색이 8가지예요.",
+  },
+  {
+    key: "wide-slacks", slot: "bottom", item: "핀턱 와이드 슬랙스", shop: "케이클럽", url: "https://s.zigzag.kr/abr/KuIGcgxhiq",
+    bodies: ["wave", "natural"], seasons: COLD,
+    why: {
+      wave: "허리선이 높고 주름이 잡혀 있어 다리가 길어 보여요. 상의는 짧게 입어 주세요.",
+      natural: "길게 떨어지는 넓은 통이 골반 뼈를 자연스럽게 덮어 줘요.",
+    },
+  },
+  {
+    key: "denim-long-skirt", slot: "bottom", item: "데님 롱 스커트", shop: "모어라운드", url: "https://s.zigzag.kr/abr/Fel60kHAgo",
+    bodies: ["wave", "natural"], denim: true, point: true,
+    why: {
+      wave: "아래로 퍼지는 A라인이라 허리가 잘록해 보여요. 짧은 니트와 잘 맞아요.",
+      natural: "탄탄한 데님 롱 스커트는 내추럴의 편안한 멋과 잘 어울려요.",
+    },
+  },
+  {
+    key: "sneakers", slot: "shoes", item: "러닝 스니커즈", shop: "뉴발란스", url: "https://s.zigzag.kr/abr/7gDAScyfIk",
+    matchOnly: true,
+    why: "화이트·실버 러닝 스니커즈는 데님에도 슬랙스에도 잘 맞아요.",
+  },
+  {
+    key: "suede-sneakers", slot: "shoes", item: "스웨이드 로우 스니커즈", shop: "슈펜", url: "https://s.zigzag.kr/abr/2CuZaJkWeF",
+    why: "얇고 낮은 스웨이드 스니커즈는 긴 바지 아래에서 발끝을 가볍게 해 줘요.",
+  },
+  {
+    key: "ankle-boots", slot: "shoes", item: "삭스 앵클부츠", shop: "사뿐", url: "https://s.zigzag.kr/abr/NoaNDMUpws",
+    seasons: COOL,
+    why: "발목에 붙는 앵클부츠라 바지 아래에서도 스커트 아래에서도 선이 끊기지 않아요.",
+  },
+  {
+    key: "crossbody", slot: "accessory", item: "미니 크로스백", shop: "돈키", url: "https://s.zigzag.kr/abr/xidVHnJt0w",
+    why: "작은 크로스백을 짧게 메면 손이 가벼워지고 캐주얼한 옷이 정돈돼 보여요.",
+  },
+  {
+    key: "tote", slot: "accessory", item: "미니 토트백", shop: "고세", url: "https://s.zigzag.kr/abr/g07ZPqnHf8",
+    point: true,
+    why: "스웨이드 미니 토트백 하나가 무채색 코디에 따뜻한 질감을 더해 줘요.",
+  },
+  {
+    key: "beanie", slot: "accessory", item: "숏 비니", shop: "블랙업", url: "https://s.zigzag.kr/abr/oz94V7Urxs",
+    seasons: COLD, face: true,
+    why: "머리 손질이 귀찮은 날 비니 하나면 돼요. 얼굴 가까이 오니 내 컬러로 골라 주세요.",
+  },
+  {
+    key: "belt", slot: "accessory", item: "레더 벨트", shop: "블랙업", url: "https://s.zigzag.kr/abr/tRsVQ8fPJ9",
+    why: "벨트 하나로 허리선이 생겨요. 상의 앞자락만 살짝 넣고 벨트를 보이게 해 보세요.",
+  },
+  {
+    key: "necklace", slot: "accessory", item: "체인 목걸이", shop: "제인트", url: "https://s.zigzag.kr/abr/cLP9Uzq7RO",
+    matchOnly: true,
+    why: "가는 체인 목걸이 하나가 니트 위에 반짝임을 더해 줘요. 웜톤은 골드, 쿨톤은 실버로.",
+  },
 ];
 
 export const SLOT_LABEL: Record<PickSlot, string> = {
@@ -230,6 +318,7 @@ export function colorTip(p: ZigzagPick, color: ColorType, n = 0, allowPoint = tr
 export function poolFor(body: BodyType, color: ColorType, season: Season): ZigzagPick[] {
   return ZIGZAG_PICKS.filter(
     (p) =>
+      !p.matchOnly &&
       (!p.seasons || p.seasons.includes(season)) &&
       (!p.bodies || p.bodies.includes(body)) &&
       (!p.tones || p.tones.includes(color)),
@@ -279,19 +368,37 @@ const ITEM_RULES: ItemRule[] = [
   { re: /브이넥\s?니트|V넥\s?니트/i, keys: ["vneck-knit"] },
   { re: /크롭\s?니트/, keys: ["hairy-knit"] },
   { re: /헨리넥|오버핏\s?니트|박시\s?니트/, keys: ["henley-knit"] },
+  { re: /터틀넥|목폴라|폴라\s?니트/, keys: ["turtleneck"] },
+  { re: /케이블|꽈배기/, not: /가디건/, keys: ["cable-knit"] },
+  { re: /(크루넥|라운드넥?)\s?니트/, not: /반팔|슬리브리스/, keys: ["crewneck-knit"] },
+  { re: /맨투맨|스웨트\s?셔츠|스웻/, keys: ["sweatshirt"] },
+  { re: /후드\s?집업/, keys: ["hood-zip"] },
   { re: /스트라이프\s?셔츠/, keys: ["stripe-shirt"] },
   { re: /체크\s?셔츠/, keys: ["check-shirt"] },
+  // 오버핏 셔츠는 그대로, 그냥 '화이트·코튼 셔츠'는 넉넉한 핏이 맞는 내추럴일 때만
+  { re: /오버핏\s?셔츠/, not: /스트라이프|체크|코듀로이|새틴|데님/, keys: ["over-shirt"] },
+  { re: /(화이트|코튼)\s?셔츠/, not: /스트라이프|체크|코듀로이|새틴|데님/, bodies: ["natural"], keys: ["over-shirt"] },
   { re: /와이드\s?데님|(연청|중청|진청)\s?와이드\s?팬츠/, keys: ["wide-denim"] },
   { re: /스트레이트\s?데님|일자\s?데님/, keys: ["straight-denim"] },
   { re: /부츠컷/, not: /슬랙스/, keys: ["bootcut"] },
   { re: /카고/, keys: ["cargo"] },
+  { re: /와이드\s?슬랙스/, keys: ["wide-slacks"] },
+  { re: /데님\s?(롱|맥시)\s?스커트/, keys: ["denim-long-skirt"] },
   { re: /롱\s?스커트|플레어\s?스커트/, not: /데님|슬립|스웨이드|플리츠/, keys: ["cancan-skirt", "frill-skirt"] },
   { re: /로퍼/, keys: ["loafer"] },
   { re: /롱\s?부츠/, keys: ["long-boots"] },
   { re: /워커/, keys: ["walker"] },
+  { re: /앵클\s?부츠|첼시/, keys: ["ankle-boots"] },
+  { re: /스웨이드\s?스니커즈/, keys: ["suede-sneakers"] },
+  { re: /스니커즈|운동화/, not: /레더|가죽|스웨이드|캔버스/, keys: ["sneakers"] },
   { re: /숄더백/, not: /나일론/, keys: ["shoulder-bag"] },
   { re: /머플러|목도리/, keys: ["muffler"] },
   { re: /볼캡/, keys: ["ballcap"] },
+  { re: /비니/, keys: ["beanie"] },
+  { re: /크로스백/, keys: ["crossbody"] },
+  { re: /토트백/, not: /캔버스|에코|나일론/, keys: ["tote"] },
+  { re: /벨트/, not: /벨티드|벨트\s?백/, keys: ["belt"] },
+  { re: /(체인|레이어드)\s?목걸이/, keys: ["necklace"] },
 ];
 
 /** 아이템 이름에 맞는 지그재그 추천 상품. 맞는 것이 없으면 null(검색 결과 링크를 쓴다) */
