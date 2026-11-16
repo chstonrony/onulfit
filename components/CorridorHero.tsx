@@ -111,6 +111,7 @@ export default function CorridorHero({
       at(0);
       // 다 받은 뒤에 시작한다 (받으면서 재생하다 멈추는 '버퍼링' 방지)
       let watch = 0;
+      let guard = 0;
       const start = () => {
         if (started) return;
         started = true;
@@ -134,24 +135,39 @@ export default function CorridorHero({
         if (video.buffered.length === 0) start();
         else tryStart();
       };
-      // 6.5초 안에 다 못 받으면 기다리지 않고 마지막 장면으로 (받기도 멈춤). 그동안은 첫 장면 사진과 문구·버튼이 보인다
-      const guard = window.setTimeout(() => {
-        if (started) return;
-        if (video.buffered.length === 0) start();
-        else showEnd();
-      }, 6500);
       video.addEventListener("progress", tryStart);
       video.addEventListener("canplaythrough", tryStart);
       video.addEventListener("suspend", onSuspend);
       video.addEventListener("error", showEnd);
       if (video.readyState >= 4) tryStart();
-      if (!started) {
+      // 영상은 첫 화면(첫 장면 사진·문구·글꼴·화면 코드)을 다 받은 뒤에 받기 시작한다 (2026-11-16).
+      // 느린 데이터에서 영상(약 340KB)이 첫 화면과 통신을 나눠 쓰지 않게 — 페이지 로드가 끝나면 바로, 늦어도 1.5초 뒤에는 시작.
+      let begun = false;
+      let wait = 0;
+      const begin = () => {
+        if (begun || started) return;
+        begun = true;
+        window.clearTimeout(wait);
+        window.removeEventListener("load", begin);
+        // 받기 시작하고 6.5초 안에 다 못 받으면 기다리지 않고 마지막 장면으로 (받기도 멈춤). 그동안은 첫 장면 사진과 문구·버튼이 보인다
+        guard = window.setTimeout(() => {
+          if (started) return;
+          if (video.buffered.length === 0) start();
+          else showEnd();
+        }, 6500);
         video.preload = "auto";
         video.src = hd ? videoSrcHd! : videoSrc;
         video.load();
+      };
+      if (document.readyState === "complete") begin();
+      else {
+        window.addEventListener("load", begin);
+        wait = window.setTimeout(begin, 1500);
       }
       return () => {
         cancelAnimationFrame(raf);
+        window.clearTimeout(wait);
+        window.removeEventListener("load", begin);
         window.clearTimeout(guard);
         window.clearTimeout(watch);
         video.removeEventListener("progress", tryStart);

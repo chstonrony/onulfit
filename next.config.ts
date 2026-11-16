@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   /* 기본 보안 설정 — 다른 사이트가 오늘핏을 몰래 끼워 넣지 못하게, 파일 형식 속이기 막기 등 */
   async headers() {
     return [
+      /* 한글 글꼴(Pretendard) — 폴더 이름에 버전이 있어 내용이 바뀌지 않는다 → 1년 보관 (2026-11-16) */
+      {
+        source: "/fonts/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
       {
         source: "/:path*",
         headers: [
@@ -16,7 +21,7 @@ const nextConfig: NextConfig = {
       },
       /* 코디 사진·옷 사진·첫 화면 영상·문항 그림은 휴대폰에 하루 보관 (2026-11-09) — 다시 진단하거나 다시 들어올 때 새로 받지 않는다.
          파일 이름을 그대로 두고 사진을 바꿔도 최대 하루 뒤엔 새 사진이 보인다 */
-      ...["/lookbook/:path*", "/garments/:path*", "/hero/:path*", "/quiz/:path*"].map((source) => ({
+      ...["/lookbook/:path*", "/garments/:path*", "/hero/:path*", "/quiz/:path*", "/covers/:path*"].map((source) => ({
         source,
         headers: [{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" }],
       })),

@@ -6,6 +6,13 @@ import KakaoFloat from "@/components/KakaoFloat";
 import { OG_IMAGE } from "@/lib/og";
 import "./globals.css";
 
+/* 한글 글꼴 Pretendard — 우리 사이트에서 직접 내려 준다 (2026-11-16)
+   · 예전: 다른 서버(jsdelivr)의 CSS를 <link>로 불러옴 → 그 서버에 새로 연결하고 CSS를 다 받을 때까지 첫 화면이 기다렸다.
+   · 지금: 같은 파일을 public/fonts/pretendard-1.3.9/ 에 두고 우리 서버에서 받는다(이미 열린 연결을 그대로 씀).
+     스크립트로 늦게 붙이는 방법은 첫 화면이 조금 더 빠르지만, 다시 방문할 때마다 글꼴이 깜빡여서 쓰지 않았다.
+   · 출처·라이선스: public/fonts/pretendard-1.3.9/README.md */
+const PRETENDARD_CSS = "/fonts/pretendard-1.3.9/pretendardvariable-dynamic-subset.css";
+
 /* ── 타이포그래피 시스템 (2026-11 리뉴얼) ──────────────────────
    · 그로테스크(영문 워드마크·라벨): Inter Tight — 크고 촘촘한 에디토리얼 헤드라인
    · 액센트 세리프(영문 이탤릭 한마디): Fraunces — 둥글고 통통한 소프트 세리프(2026-11-06, 굵은 한글과 무게 맞춤)
@@ -130,12 +137,8 @@ export default function RootLayout({
       } as React.CSSProperties}
     >
       <head>
-        {/* 한글 글꼴 서버에 미리 연결 (모바일에서 연결 시간 단축) */}
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
-        />
+        {/* 한글 글꼴 CSS — 같은 서버에서 화면 CSS와 나란히 받는다(새 연결 없음) */}
+        <link rel="stylesheet" href={PRETENDARD_CSS} />
         {/* 검색엔진용 구조화 데이터 — 한글 브랜드명 '오늘핏' 인식 */}
         <script
           type="application/ld+json"

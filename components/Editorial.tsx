@@ -140,7 +140,8 @@ export function Marquee({ items, bg = "var(--t-fill, #BFC266)", color = "var(--t
                 }}
               >
                 {t}
-                <span style={{ marginLeft: "28px", fontStyle: "normal", fontSize: "13px", opacity: 0.8 }}>●</span>
+                {/* 점은 기본 글꼴로 — 여기만 세리프 정체를 쓰면 점 하나 때문에 글꼴 파일(약 120KB)을 하나 더 받는다 */}
+                <span style={{ marginLeft: "28px", fontFamily: "Arial, sans-serif", fontStyle: "normal", fontSize: "13px", opacity: 0.8 }}>●</span>
               </span>
             ))}
           </div>
