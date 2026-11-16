@@ -100,6 +100,18 @@ export const COVERS: Record<string, CoverItem[]> = {
     { kind: "knit", name: "로열 블루 니트", hex: "#2F5DA8" },
     { kind: "pants", name: "차콜 팬츠", hex: "#3A3E44" },
   ],
+  "warm-black-cool-beige": [
+    { kind: "coat", name: "블랙 코트", hex: "#232325" },
+    { kind: "scarf", name: "아이보리 머플러", hex: "#ECE4D3" },
+    { kind: "trench", name: "베이지 트렌치 코트", hex: "#C9B48C" },
+    { kind: "scarf", name: "그레이 머플러", hex: "#9A9EA6" },
+  ],
+  "personal-color-muffler-bag": [
+    { kind: "scarf", name: "봄 웜 코랄 머플러", hex: "#E2826C" },
+    { kind: "scarf", name: "여름 쿨 라벤더 머플러", hex: "#B9A7CF" },
+    { kind: "scarf", name: "가을 웜 머스타드 머플러", hex: "#C29B3A" },
+    { kind: "scarf", name: "겨울 쿨 버건디 머플러", hex: "#6E2233" },
+  ],
 };
 
 export interface Cover {
