@@ -66,17 +66,17 @@ export default function OutfitCard({ outfit, profile, vars }: OutfitCardProps) {
       {/* 아이템 그리드 */}
       <div className="space-y-4 mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ItemCard category="top" item={outfit.items.top} animationIndex={0} />
-          <ItemCard category="bottom" item={outfit.items.bottom} animationIndex={1} />
+          <ItemCard category="top" item={outfit.items.top} animationIndex={0} body={profile?.body} tone={profile?.color} />
+          <ItemCard category="bottom" item={outfit.items.bottom} animationIndex={1} body={profile?.body} tone={profile?.color} />
         </div>
-        <ItemCard category="outer" item={outfit.items.outer} animationIndex={2} />
+        <ItemCard category="outer" item={outfit.items.outer} animationIndex={2} body={profile?.body} tone={profile?.color} />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <ItemCard category="shoes" item={outfit.items.shoes} animationIndex={3} />
-          <ItemCard category="accessory" item={outfit.items.accessory} animationIndex={4} />
+          <ItemCard category="shoes" item={outfit.items.shoes} animationIndex={3} body={profile?.body} tone={profile?.color} />
+          <ItemCard category="accessory" item={outfit.items.accessory} animationIndex={4} body={profile?.body} tone={profile?.color} />
         </div>
         {/* AI 생성 표시(인공지능기본법) + 제휴 링크 안내(공정위 추천·보증 지침: 링크 가까이) */}
         <p style={{ fontSize: "11px", lineHeight: 1.6, color: "var(--t-sub)", margin: 0, wordBreak: "keep-all" }}>
-          * AI가 만든 참고용 코디예요. 옷 사진은 비슷한 실제 상품이고, W CONCEPT 링크는 제휴 링크라 구매 시 오늘핏에 수수료가 적립될 수 있어요.
+          * AI가 만든 참고용 코디예요. 옷 사진은 비슷한 실제 상품이고, W CONCEPT 링크와 지그재그 추천 상품 링크는 제휴 링크라 구매 시 오늘핏에 수수료가 적립될 수 있어요.
         </p>
       </div>
 

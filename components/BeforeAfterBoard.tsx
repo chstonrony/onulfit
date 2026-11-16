@@ -12,6 +12,7 @@ import type { BodyType, ColorType } from "@/lib/profile";
 import { BA_BLUR } from "@/lib/baBlur";
 import { BODY_META, COLOR_META } from "@/lib/profile";
 import { get29cmRefUrl, getZigzagRefUrl, getWConceptUrl } from "@/lib/shopping";
+import { zigzagForItem } from "@/lib/zigzagPicks";
 import { track } from "@/lib/track";
 
 const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
@@ -206,25 +207,30 @@ export default function BeforeAfterBoard({ body, color, txt, sub, bdr, acc }: {
             <li key={q} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", flexWrap: "wrap" }}>
               <span style={{ fontFamily: sans, fontSize: "12.5px", color: txt, wordBreak: "keep-all" }}>{q}</span>
               <span style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
-                {MALLS.map((m) => (
+                {MALLS.map((m) => {
+                  // 지그재그: 같은 품목의 추천 상품이 있으면 그 상품(제휴 링크)으로, 없으면 검색 결과로
+                  const zz = m.key === "zigzag" ? zigzagForItem(q, { color: q, body, tone: color }) : null;
+                  return (
                   <a
                     key={m.key}
-                    href={m.url(q)}
+                    href={zz ? zz.url : m.url(q)}
                     target="_blank"
-                    rel={m.sponsored ? "noopener noreferrer sponsored" : "noopener noreferrer"}
-                    onClick={() => track("shop_click", { mall: m.key, category: "ba_after", combo: key, item: q })}
+                    rel={m.sponsored || zz ? "noopener noreferrer sponsored" : "noopener noreferrer"}
+                    aria-label={zz ? `지그재그 추천 상품 보기 — ${zz.shop} ${zz.item}` : undefined}
+                    onClick={() => track("shop_click", zz ? { mall: m.key, category: "ba_after", combo: key, item: q, kind: "pick" } : { mall: m.key, category: "ba_after", combo: key, item: q })}
                     style={{ fontFamily: sans, fontSize: "11px", fontWeight: 600, color: txt, textDecoration: "none", border: `1px solid ${bdr}`, borderRadius: "999px", padding: "5px 10px", lineHeight: 1, whiteSpace: "nowrap", minHeight: "26px", display: "inline-flex", alignItems: "center" }}
                   >
                     {m.label}
                   </a>
-                ))}
+                  );
+                })}
               </span>
             </li>
           ))}
         </ul>
       </div>
       <p style={{ fontFamily: sans, fontSize: "10.5px", color: sub, lineHeight: 1.55, margin: "12px 0 0", wordBreak: "keep-all" }}>
-        * AI로 만든 연출 이미지예요. 같은 사람이 옷만 바꿨을 때의 차이를 보여드리려고 만들었어요. 아이템 버튼은 각 쇼핑몰 검색 결과로 이동해요. W컨셉은 링크를 통한 구매 시 오늘핏에 일정 수수료가 적립될 수 있어요.
+        * AI로 만든 연출 이미지예요. 같은 사람이 옷만 바꿨을 때의 차이를 보여드리려고 만들었어요. 아이템 버튼은 각 쇼핑몰 검색 결과로 이동해요(지그재그는 비슷한 추천 상품으로 이동하기도 해요). W컨셉과 지그재그 추천 상품은 링크를 통한 구매 시 오늘핏에 일정 수수료가 적립될 수 있어요.
       </p>
     </div>
   );

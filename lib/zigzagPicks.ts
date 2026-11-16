@@ -254,3 +254,62 @@ export function picksFor(body: BodyType, color: ColorType, shift = 0, d = new Da
   if (extra.length) picks.push(extra[n % extra.length]);
   return { picks, season, n, total: pool.length };
 }
+
+/* ── 아이템 이름 → 지그재그 추천 상품 (2026-11-16) ──
+   AI 코디 결과와 비포/애프터의 지그재그 버튼에 쓴다. 지그재그 공유리워드는 '검색 결과' 링크로는 수수료가 나오지 않고
+   상품 링크만 되므로, 아이템 이름이 위 목록의 상품과 같은 품목일 때만 그 상품으로 보낸다(아니면 예전처럼 검색 결과).
+   · 품목이 정확히 맞을 때만 잇는다 — 핏이나 무늬가 다른 상품으로 보내지 않는다(not, bodies 조건).
+   · 색은 상품마다 다르므로 화면에 "비슷한 추천 상품"이라고 밝힌다. */
+interface ItemRule {
+  re: RegExp;
+  /** 이 말이 있으면 다른 품목 */
+  not?: RegExp;
+  keys: string[];
+  /** 이 체형일 때만 (핏이 체형 규칙과 맞을 때만 잇기 위해) */
+  bodies?: BodyType[];
+}
+const ITEM_RULES: ItemRule[] = [
+  { re: /(레더|가죽|라이더)\s?(자켓|재킷)/, keys: ["leather-brown", "leather-black"] },
+  { re: /무스탕|시어링/, keys: ["mustang"] },
+  { re: /숏\s?패딩|푸퍼/, keys: ["short-padding"] },
+  { re: /하프\s?코트/, keys: ["half-coat"] },
+  { re: /발마칸|롱\s?코트|울\s?코트|싱글\s?코트/, not: /트렌치/, keys: ["balmacaan"] },
+  { re: /크롭\s?가디건/, keys: ["crop-cardigan"] },
+  { re: /가디건/, bodies: ["wave"], keys: ["crop-cardigan"] },
+  { re: /브이넥\s?니트|V넥\s?니트/i, keys: ["vneck-knit"] },
+  { re: /크롭\s?니트/, keys: ["hairy-knit"] },
+  { re: /헨리넥|오버핏\s?니트|박시\s?니트/, keys: ["henley-knit"] },
+  { re: /스트라이프\s?셔츠/, keys: ["stripe-shirt"] },
+  { re: /체크\s?셔츠/, keys: ["check-shirt"] },
+  { re: /와이드\s?데님|(연청|중청|진청)\s?와이드\s?팬츠/, keys: ["wide-denim"] },
+  { re: /스트레이트\s?데님|일자\s?데님/, keys: ["straight-denim"] },
+  { re: /부츠컷/, not: /슬랙스/, keys: ["bootcut"] },
+  { re: /카고/, keys: ["cargo"] },
+  { re: /롱\s?스커트|플레어\s?스커트/, not: /데님|슬립|스웨이드|플리츠/, keys: ["cancan-skirt", "frill-skirt"] },
+  { re: /로퍼/, keys: ["loafer"] },
+  { re: /롱\s?부츠/, keys: ["long-boots"] },
+  { re: /워커/, keys: ["walker"] },
+  { re: /숄더백/, not: /나일론/, keys: ["shoulder-bag"] },
+  { re: /머플러|목도리/, keys: ["muffler"] },
+  { re: /볼캡/, keys: ["ballcap"] },
+];
+
+/** 아이템 이름에 맞는 지그재그 추천 상품. 맞는 것이 없으면 null(검색 결과 링크를 쓴다) */
+export function zigzagForItem(
+  text: string,
+  opts: { color?: string; body?: BodyType | ""; tone?: ColorType | ""; d?: Date } = {},
+): ZigzagPick | null {
+  const rule = ITEM_RULES.find((r) => r.re.test(text) && !(r.not && r.not.test(text)) && (!r.bodies || (!!opts.body && r.bodies.includes(opts.body))));
+  if (!rule) return null;
+  const season = currentSeason(opts.d);
+  let cands = rule.keys
+    .map((k) => ZIGZAG_PICKS.find((p) => p.key === k))
+    .filter((p): p is ZigzagPick => !!p && (!p.seasons || p.seasons.includes(season)));
+  // 색이 하나뿐인 상품(레더 자켓): 아이템 색 → 없으면 퍼스널컬러로 고른다
+  if (cands.some((p) => p.fixedColor)) {
+    const c = `${opts.color ?? ""} ${text}`;
+    const want = /브라운|카멜|초콜릿|밤색/.test(c) ? "브라운" : /블랙|검정/.test(c) ? "블랙" : opts.tone === "spring" || opts.tone === "autumn" ? "브라운" : "블랙";
+    cands = cands.filter((p) => !p.fixedColor || p.fixedColor === want);
+  }
+  return cands[0] ?? null;
+}

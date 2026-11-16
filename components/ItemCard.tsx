@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ClothingItem, ProductPick } from "@/lib/types";
 import { getZigzagUrl, get29cmUrl, getWConceptUrl } from "@/lib/shopping";
 import { getColorHex, getLineColorHex } from "@/lib/colors";
+import { zigzagForItem } from "@/lib/zigzagPicks";
+import type { BodyType, ColorType } from "@/lib/profile";
 import { track } from "@/lib/track";
 import GarmentArt from "./GarmentArt";
 
@@ -35,13 +37,17 @@ interface ItemCardProps {
   category: string;
   item: ClothingItem;
   animationIndex?: number;
+  /** 진단 결과(있으면) — 지그재그 추천 상품을 고를 때 쓴다 */
+  body?: BodyType | "";
+  tone?: ColorType | "";
 }
 
 /* 아이템 카드
    · 실제 옷 사진: 네이버 쇼핑(W컨셉 상품이 있으면 맨 앞, 제휴 링크) — /api/products
    · 사진을 못 가져오면(키 없음·결과 없음) 그 색으로 그린 옷 그림(GarmentArt)을 보여준다
-   · 29CM·지그재그: 상품 정보를 가져올 공개 통로가 없어 브랜드 타일로 검색 결과에 연결만 */
-export default function ItemCard({ category, item, animationIndex = 0 }: ItemCardProps) {
+   · 29CM·지그재그: 상품 정보를 가져올 공개 통로가 없어 브랜드 타일로 검색 결과에 연결만
+   · 지그재그(2026-11-16): 같은 품목의 추천 상품이 있으면 그 상품(공유리워드 제휴 링크)으로, 없으면 검색 결과로 */
+export default function ItemCard({ category, item, animationIndex = 0, body, tone }: ItemCardProps) {
   const label = CATEGORY_LABELS[category] ?? category;
   const swatchHex = getColorHex(item.color);
   const [picks, setPicks] = useState<ProductPick[] | null>(null); // null = 불러오는 중
@@ -53,6 +59,7 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
   }, [item.searchKeyword, item.color]);
 
   const hasPhotos = !!picks && picks.length > 0;
+  const zz = zigzagForItem(`${item.name} ${item.searchKeyword}`, { color: item.color, body, tone });
   const sans = "var(--font-noto-sans), 'Apple SD Gothic Neo', sans-serif";
 
   return (
@@ -163,23 +170,37 @@ export default function ItemCard({ category, item, animationIndex = 0 }: ItemCar
       {/* 다른 쇼핑몰에서 찾기 — 브랜드 타일(검색 결과로 연결) */}
       <div className="grid grid-cols-3 gap-2">
         <ShopTile href={get29cmUrl(item.searchKeyword)} label="29CM" bg="#111111" fg="#FFFFFF" mall="29cm" category={category} />
-        <ShopTile href={getZigzagUrl(item.searchKeyword)} label="ZIGZAG" bg="#FF4D97" fg="#FFFFFF" mall="zigzag" category={category} />
+        <ShopTile
+          href={zz ? zz.url : getZigzagUrl(item.searchKeyword)}
+          label="ZIGZAG" bg="#FF4D97" fg="#FFFFFF" mall="zigzag" category={category}
+          sponsored={!!zz} pick={zz?.key}
+          ariaLabel={zz ? `지그재그 추천 상품 보기 — ${zz.shop} ${zz.item}` : undefined}
+        />
         <ShopTile href={getWConceptUrl(item.searchKeyword)} label="W CONCEPT" bg="#FFFFFF" fg="#111111" mall="wconcept" category={category} sponsored />
       </div>
+      {/* 지그재그 버튼이 검색 결과가 아니라 추천 상품으로 갈 때는 그렇게 밝힌다 */}
+      {zz && (
+        <p style={{ fontFamily: sans, fontSize: "10.5px", lineHeight: 1.5, color: "var(--t-sub)", margin: "8px 0 0", wordBreak: "keep-all" }}>
+          ZIGZAG는 결이 고른 비슷한 상품({zz.shop} · {zz.item})으로 이동해요. 색은 상품 페이지에서 골라 주세요.
+        </p>
+      )}
     </div>
   );
 }
 
-function ShopTile({ href, label, bg, fg, mall, category, sponsored }: {
+function ShopTile({ href, label, bg, fg, mall, category, sponsored, pick, ariaLabel }: {
   href: string; label: string; bg: string; fg: string; mall: string; category: string; sponsored?: boolean;
+  /** 추천 상품으로 갈 때 그 상품 키 (GA에서 검색 링크와 구분) */
+  pick?: string;
+  ariaLabel?: string;
 }) {
   return (
     <a
       href={href}
       target="_blank"
       rel={sponsored ? "noopener noreferrer sponsored" : "noopener noreferrer"}
-      onClick={() => track("shop_click", { mall, category })}
-      aria-label={`${label}에서 검색`}
+      onClick={() => track("shop_click", pick ? { mall, category, kind: "pick", item: pick } : { mall, category })}
+      aria-label={ariaLabel ?? `${label}에서 검색`}
       className="shop-tile"
       style={{
         height: "40px", display: "flex", alignItems: "center", justifyContent: "center",
