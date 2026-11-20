@@ -4,6 +4,7 @@
    - diag_start     : 인트로에서 "시작" 누름
    - diag_complete  : 진단 결과까지 완료 (body, color)
    - consult_click  : 1:1 상담 신청/카톡 버튼 클릭 (where, method: apply | kakao)
+   - apply_jump     : 신청 화면 맨 위 "신청서 바로 쓰기" 버튼 (where: top)
    - generate_lead  : 신청서 전송 성공 (app/apply/page.tsx)
    개인정보(이름·연락처)는 절대 보내지 않는다. */
 export function track(name: string, params: Record<string, string | number> = {}) {

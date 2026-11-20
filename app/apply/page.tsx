@@ -31,6 +31,9 @@ const STEPS = [
   ["결과 가이드", "나에게 맞는 색·핏·코디 방향을 정리해 드려요."],
 ];
 
+/* 2026-11-20 사용자 승인 문구 — 금액을 모르는 채로 연락처를 적는 부담을 덜기 위해 */
+const REASSURE = "신청은 예약 확정이 아니에요. 안내를 받아 보고 결정하셔도 돼요.";
+
 const CONCERNS = [
   "퍼스널컬러를 모르겠다",
   "내 체형에 뭐가 맞는지 모르겠다",
@@ -108,6 +111,28 @@ export default function ApplyPage() {
           지금은 포트폴리오 멤버를 먼저 모시고 있어요(사진·후기 동의 시 할인).
         </p>
 
+        {/* ── 신청서 바로가기 — 2026-11-20: 휴대폰에서 신청서가 두 화면 아래라 대부분 닿기 전에 나감 ── */}
+        {IS_APPLY_READY && status !== "done" && (
+          <div style={{ marginTop: "18px" }}>
+            <a
+              href="#apply-form"
+              onClick={() => track("apply_jump", { where: "top" })}
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                height: "56px", padding: "0 18px", borderRadius: "2px",
+                background: "#BFC266", color: INK, textDecoration: "none",
+                fontFamily: sans, fontWeight: 700, fontSize: "16px", letterSpacing: "-0.025em",
+              }}
+            >
+              <span>신청서 바로 쓰기</span>
+              <span aria-hidden="true">↓</span>
+            </a>
+            <p style={{ fontFamily: sans, fontSize: "13px", fontWeight: 500, lineHeight: 1.7, color: SUB, margin: "10px 0 0", wordBreak: "keep-all" }}>
+              {REASSURE}
+            </p>
+          </div>
+        )}
+
         {/* ── 시범 운영 안내 ── */}
         <section style={{ marginTop: "26px", padding: "18px 18px 6px", background: CARD, border: `1px solid ${BDR}`, borderTop: `1px solid ${INK}`, borderRadius: "2px" }}>
           <p className="ed-label" style={{ color: ACCENT, margin: 0 }}>Pilot · 시범 운영 중</p>
@@ -149,7 +174,7 @@ export default function ApplyPage() {
         </section>
 
         <div style={{ height: "1px", background: INK, margin: "30px 0 0" }} />
-        <p style={{ fontFamily: sans, fontSize: "17px", fontWeight: 800, letterSpacing: "-0.035em", color: INK, margin: "18px 0 0" }}>신청서</p>
+        <p id="apply-form" style={{ fontFamily: sans, fontSize: "17px", fontWeight: 800, letterSpacing: "-0.035em", color: INK, margin: "18px 0 0", scrollMarginTop: "16px" }}>신청서</p>
 
         {!IS_APPLY_READY ? (
           <div style={{ marginTop: "28px", padding: "26px 22px", background: CARD, border: `1px solid ${BDR}`, borderRadius: "4px", fontFamily: sans, fontSize: "14px", lineHeight: 1.8, color: SUB, wordBreak: "keep-all" }}>
@@ -203,10 +228,6 @@ export default function ApplyPage() {
             <Field label="거주 지역 (세션 장소 안내용)">
               <input name="region" placeholder="예) 남양주 다산동, 구리시" style={inputStyle} />
             </Field>
-            <Field label="인스타 아이디 (선택)">
-              <input name="instagram" placeholder="@" style={inputStyle} />
-            </Field>
-
             <Field label="가장 큰 고민은? (복수 선택 가능)">
               <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
                 {CONCERNS.map((c) => (
@@ -217,9 +238,6 @@ export default function ApplyPage() {
               </div>
             </Field>
 
-            <Field label="원하는 변화를 한 줄로 적어주세요">
-              <textarea name="change" rows={2} style={{ ...inputStyle, height: "auto", padding: "12px 14px", resize: "vertical", lineHeight: 1.6 }} />
-            </Field>
             <Field label="가능한 날짜·시간대">
               <input name="schedule" placeholder="예) 평일 오전, 주말 오후" style={inputStyle} />
             </Field>
@@ -231,9 +249,26 @@ export default function ApplyPage() {
               </div>
             </Field>
 
-            <Field label="하고 싶은 말 (선택)">
-              <textarea name="message" rows={3} style={{ ...inputStyle, height: "auto", padding: "12px 14px", resize: "vertical", lineHeight: 1.6 }} />
-            </Field>
+            {/* ── 선택 질문은 접어 둔다 (2026-11-20). 접혀 있어도 적은 내용은 함께 전송된다 ── */}
+            <details className="diag-more" style={{ borderTop: `1px solid ${BDR}`, borderBottom: `1px solid ${BDR}` }}>
+              <summary style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "14px 2px", cursor: "pointer", listStyle: "none" }}>
+                <span style={{ fontFamily: sans, fontSize: "14px", fontWeight: 700, letterSpacing: "-0.025em", color: INK, wordBreak: "keep-all" }}>
+                  더 적어 주실 내용이 있다면 <span style={{ fontWeight: 500, color: SUB }}>(선택)</span>
+                </span>
+                <span className="diag-more-icon" style={{ flexShrink: 0, fontFamily: sans, fontSize: "12.5px", fontWeight: 700, color: ACCENT }} />
+              </summary>
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px", padding: "6px 0 20px" }}>
+                <Field label="원하는 변화를 한 줄로 적어주세요">
+                  <textarea name="change" rows={2} style={{ ...inputStyle, height: "auto", padding: "12px 14px", resize: "vertical", lineHeight: 1.6 }} />
+                </Field>
+                <Field label="인스타 아이디">
+                  <input name="instagram" placeholder="@" style={inputStyle} />
+                </Field>
+                <Field label="하고 싶은 말">
+                  <textarea name="message" rows={3} style={{ ...inputStyle, height: "auto", padding: "12px 14px", resize: "vertical", lineHeight: 1.6 }} />
+                </Field>
+              </div>
+            </details>
 
             {/* ── 개인정보 수집·이용 동의 (필수) ── */}
             <div style={{ border: `1px solid ${INK}`, borderRadius: "2px", background: CARD }}>
@@ -268,6 +303,9 @@ export default function ApplyPage() {
               </p>
             )}
 
+            <p style={{ fontFamily: sans, fontSize: "13.5px", fontWeight: 600, color: INK, textAlign: "center", margin: 0, lineHeight: 1.7, letterSpacing: "-0.02em", wordBreak: "keep-all" }}>
+              {REASSURE}
+            </p>
             <button
               type="submit"
               disabled={status === "sending"}
