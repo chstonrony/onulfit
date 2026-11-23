@@ -145,7 +145,7 @@ export default function ApplyPage() {
               “출근할 때 입던 검정 코트, 토요일에는 어떻게 입죠?” 어깨선이 살아 있고 깃 안쪽에 배색이 들어간 싱글 롱코트로 두 벌을 입어 봤어요.
             </p>
             <figure style={{ margin: 0 }}>
-              <Image src={coatSample} alt="같은 검정 롱코트를 입은 두 착장. 왼쪽은 깃을 눕히고 차콜 롱스커트와 검정 부츠를, 오른쪽은 깃을 세우고 길게 떨어지는 연청 와이드 데님에 검정 레이스업 워커를 신었어요." sizes="(max-width: 760px) calc(100vw - 40px), 720px" style={{ display: "block", width: "100%", height: "auto", borderRadius: "2px" }} />
+              <Image src={coatSample} alt="같은 검정 롱코트를 입은 두 착장. 왼쪽은 깃을 눕히고 차콜 롱스커트와 검정 부츠를, 오른쪽은 깃을 세우고 여유 있는 연청 일자 데님에 검정 레이스업 워커를 신었어요." sizes="(max-width: 760px) calc(100vw - 40px), 720px" style={{ display: "block", width: "100%", height: "auto", borderRadius: "2px" }} />
               <figcaption style={{ marginTop: "7px", fontSize: "12px", color: SUB }}>왼쪽은 출근룩, 오른쪽은 주말룩이에요. AI로 연출한 상담 예시 이미지입니다.</figcaption>
             </figure>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: "14px 24px", marginTop: "18px" }}>
@@ -154,8 +154,8 @@ export default function ApplyPage() {
                 <p style={{ margin: "5px 0 0", fontSize: "15px", lineHeight: 1.75 }}>검정 니트에 차콜 일자 롱스커트와 검정 가죽 부츠를 신어요. 단추를 열고 깃을 눕히면 스커트와 부츠가 한 선으로 이어지고, 넓은 코트 안으로 가느다란 실루엣이 보여요.</p>
               </div>
               <div style={{ borderTop: `1px solid ${BDR}`, paddingTop: "10px" }}>
-                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 750 }}>주말룩 · 긴 연청 데님에 검정 워커</h3>
-                <p style={{ margin: "5px 0 0", fontSize: "15px", lineHeight: 1.75 }}>코트 뒤깃을 세우고 회색 니트에 빛이 바랜 와이드 데님을 입어요. 바짓단을 길게 내려 검정 워커의 끈을 살짝 덮으면, 걸을 때마다 둥근 가죽 앞코와 도톰한 밑창이 보여요.</p>
+                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 750 }}>주말룩 · 연청 일자 데님에 검정 워커</h3>
+                <p style={{ margin: "5px 0 0", fontSize: "15px", lineHeight: 1.75 }}>회색 니트에 연청 데님을 입고 코트 뒤깃을 살짝 세워요. 허벅지에 여유를 두고 무릎부터 밑단까지 곧게 떨어지는 바지를 골랐어요. 밑단이 검정 워커의 발등에 가볍게 닿아 둥근 앞코가 보여요.</p>
               </div>
             </div>
             <p style={{ margin: "14px 0 0", padding: "12px 14px", background: CARD, fontSize: "14px", lineHeight: 1.7 }}>
