@@ -35,9 +35,9 @@ export const COVERS: Record<string, CoverItem[]> = {
     { kind: "loafer", name: "로퍼", hex: "#3B2C22" },
   ],
   "wave-styling": [
-    { kind: "crop_cardigan", name: "크롭 가디건", hex: "#EADFC8" },
-    { kind: "pleated_skirt", name: "플리츠 스커트", hex: "#8E8E8E" },
-    { kind: "maryjane", name: "메리제인", hex: "#2A2826" },
+    { kind: "knit", name: "아이보리 니트", hex: "#EADFC8" },
+    { kind: "jeans", name: "진청 데님", hex: "#34465C" },
+    { kind: "coat", name: "네이비 코트", hex: "#313B50" },
   ],
   "natural-styling": [
     { kind: "shirt", name: "체크 셔츠", hex: "#6B6F3C", pattern: "check" },
@@ -129,8 +129,9 @@ export function coverFor(slug: string, title: string): Cover {
   const items = COVERS[slug];
   if (!items) return { url: OG_IMAGE.url, webp: OG_IMAGE.url, width: OG_IMAGE.width, height: OG_IMAGE.height, alt: OG_IMAGE.alt };
   const names = [...new Set(items.map((i) => i.name))].join(", ");
+  const version = slug === "wave-styling" ? "20261123" : COVER_VERSION;
   return {
-    url: `/covers/${slug}.png?v=${COVER_VERSION}`,
+    url: `/covers/${slug}.png?v=${version}`,
     webp: `/covers/${slug}.webp?v=${COVER_VERSION}`,
     width: 1200,
     height: 630,

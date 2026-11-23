@@ -125,12 +125,20 @@ export default async function ArticlePage({ params }: Props) {
         )}
 
         <div>
-          {a.content.split("\n\n").map((p, i) =>
-            p.startsWith("## ") ? (
-              <h2 key={i} style={{ fontFamily: sans, fontSize: "23px", fontWeight: 800, letterSpacing: "-0.045em", color: INK, lineHeight: 1.3, margin: "40px 0 14px", paddingTop: "10px", borderTop: `1px solid ${INK}`, wordBreak: "keep-all" }}>
-                {p.slice(3)}
-              </h2>
-            ) : p.startsWith("- ") ? (
+          {a.content.split("\n\n").map((p, i) => {
+            const heading = /^(##|###) (.+?)(?: \{#([a-z0-9-]+)\})?$/.exec(p);
+            if (heading) {
+              const [, level, label, id] = heading;
+              if (level === "###") {
+                return <h3 key={i} id={id} style={{ fontFamily: sans, fontSize: "19px", fontWeight: 700, color: INK, margin: "24px 0 10px", wordBreak: "keep-all" }}>{label}</h3>;
+              }
+              return (
+                <h2 key={i} id={id} style={{ fontFamily: sans, fontSize: "23px", fontWeight: 800, letterSpacing: "-0.045em", color: INK, lineHeight: 1.3, margin: "40px 0 14px", paddingTop: "10px", borderTop: `1px solid ${INK}`, wordBreak: "keep-all" }}>
+                  {label}
+                </h2>
+              );
+            }
+            return p.startsWith("- ") ? (
               <ul key={i} style={{ margin: "0 0 14px", paddingLeft: "18px" }}>
                 {p.split("\n").map((li, j) => (
                   <li key={j} style={{ fontFamily: sans, fontSize: "16px", color: BODY, lineHeight: 1.85, letterSpacing: "-0.015em", wordBreak: "keep-all" }}>
@@ -142,8 +150,8 @@ export default async function ArticlePage({ params }: Props) {
               <p key={i} style={{ fontFamily: sans, fontSize: "16px", color: BODY, lineHeight: 1.9, letterSpacing: "-0.015em", margin: "0 0 18px", wordBreak: "keep-all" }}>
                 {inline(p)}
               </p>
-            )
-          )}
+            );
+          })}
         </div>
 
         {/* CTA — 무료 자가진단(바로 열림) + 1:1 상담 신청 */}
