@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { track } from "@/lib/track";
@@ -131,6 +132,35 @@ export default function ApplyPage() {
               {REASSURE}
             </p>
           </div>
+        )}
+
+        {status !== "done" && (
+          <section id="coat-sample" aria-labelledby="coat-sample-title" style={{ marginTop: "28px", borderTop: `1px solid ${INK}`, paddingTop: "16px", fontFamily: sans, color: INK, wordBreak: "keep-all", scrollMarginTop: "16px" }}>
+            <p className="ed-label" style={{ color: ACCENT, margin: 0 }}>상담 결과물 예시</p>
+            <h2 id="coat-sample-title" style={{ fontSize: "clamp(23px, 5.5vw, 30px)", lineHeight: 1.35, letterSpacing: "-0.045em", fontWeight: 800, margin: "6px 0" }}>
+              검정 코트 한 벌로, 출근룩과 주말룩
+            </h2>
+            <p style={{ fontSize: "15px", lineHeight: 1.75, color: SUB, margin: "0 0 14px" }}>
+              “출근할 때 입던 검정 코트, 토요일에는 어떻게 입죠?” 어깨선이 살아 있고 깃 안쪽에 배색이 들어간 싱글 롱코트로 두 벌을 입어 봤어요.
+            </p>
+            <figure style={{ margin: 0 }}>
+              <Image src="/lookbook/black-coat-two-looks.webp" alt="같은 검정 롱코트를 입은 두 착장. 왼쪽은 깃을 눕히고 차콜 롱스커트와 검정 부츠를, 오른쪽은 깃을 세우고 워시드 데님과 낮은 스니커즈를 매치했어요." width={1200} height={800} sizes="(max-width: 760px) calc(100vw - 40px), 720px" style={{ display: "block", width: "100%", height: "auto", borderRadius: "2px" }} />
+              <figcaption style={{ marginTop: "7px", fontSize: "12px", color: SUB }}>왼쪽은 출근룩, 오른쪽은 주말룩이에요. AI로 연출한 상담 예시 이미지입니다.</figcaption>
+            </figure>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 230px), 1fr))", gap: "14px 24px", marginTop: "18px" }}>
+              <div style={{ borderTop: `1px solid ${BDR}`, paddingTop: "10px" }}>
+                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 750 }}>출근룩 · 깃을 눕히고, 긴 선을 살려요</h3>
+                <p style={{ margin: "5px 0 0", fontSize: "15px", lineHeight: 1.75 }}>검정 니트에 차콜 일자 롱스커트와 검정 가죽 부츠를 신어요. 단추를 열고 깃을 눕히면 스커트와 부츠가 한 선으로 이어지고, 넓은 코트 안으로 가느다란 실루엣이 보여요.</p>
+              </div>
+              <div style={{ borderTop: `1px solid ${BDR}`, paddingTop: "10px" }}>
+                <h3 style={{ margin: 0, fontSize: "17px", fontWeight: 750 }}>주말룩 · 깃을 세우고, 데님은 길게</h3>
+                <p style={{ margin: "5px 0 0", fontSize: "15px", lineHeight: 1.75 }}>뒤쪽 깃만 살짝 세워 안쪽의 차콜 배색을 보여줘요. 회색 니트 아래로 물 빠진 청바지가 낮은 스니커즈의 발등에 한 번 접히면, 같은 코트의 각진 어깨도 한결 편안해 보여요.</p>
+              </div>
+            </div>
+            <p style={{ margin: "14px 0 0", padding: "12px 14px", background: CARD, fontSize: "14px", lineHeight: 1.7 }}>
+              <strong>내 옷으로 해보기</strong> · 거울에서 두 걸음 물러나 평소 신는 부츠와 운동화를 번갈아 신어 보세요. 코트 아래로 스커트가 얼마나 보이는지, 청바지 밑단이 발등에 몇 번 접히는지 비교하면 내게 편한 길이를 찾기 쉬워요.
+            </p>
+          </section>
         )}
 
         {/* ── 시범 운영 안내 ── */}
